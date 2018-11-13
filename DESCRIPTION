@@ -1,0 +1,25 @@
+Package: TreeIndex
+Type: Package
+Title: R package to manage tree hierarchies
+Version: 0.1.0
+Authors@R: c( 
+          person("Jayaram", "Kancherla", email="jayaram.kancherla@gmail.com", role=c("aut")),
+          person("Justin", "Wagner", email="jwagner@cs.umd.edu", role=c("aut")),
+          person("Hector", "Corrada Bravo", email="hcorrada@gmail.com", role=c("aut", "cre"))
+          )
+Maintainer: Hector Corrada Bravo <hcorrada@gmail.com>
+Description: This package provides the TreeIndex class to support interactive data
+          visualization of datasets with tree hierarchies. The TreeIndex object provides methods to
+          split the tree at a certain level or given a node selection. The result of a 
+          split is a list of nodes and indices that can be used aggregate counts.
+License: What license is it under?
+Depends: R (>= 3.4), 
+        methods, data.table,
+        Biobase, digest, matrixStats
+Imports: GenomeInfoDb, httr
+Suggests: knitr, BiocStyle, testthat
+VignetteBuilder: knitr
+biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1

@@ -1,0 +1,235 @@
+
+
+#' Subset TreeIndex
+#' @param x TreeIndex to subset
+#' @param i,j indices to subset or keep
+#' @param ... other params to dataframe subset method
+#' @param drop drop the dimensions of the object. defaults to FALSE
+#' @export
+setMethod("[", "TreeIndex",
+          function(x, i, j, ..., drop = FALSE) {
+            sHierarchy <- x@.hierarchy[i, j, ..., drop = drop]
+            x@hierarchy_tree <-
+              .generate_hierarchy_tree(sHierarchy, x@feature_order)
+            x@node_ids_table <-
+              .generate_node_ids(x@hierarchy_tree, x@feature_order)
+            x@nodes_table <-
+              .generate_nodes_table(x@hierarchy_tree, x@node_ids_table, x@feature_order)
+            x@leaf_of_table <-
+              .generate_leaf_of_table(x@hierarchy_tree,
+                                      x@node_ids_table,
+                                      x@nodes_table,
+                                      x@feature_order)
+            # x@.hierarchy <- sHierarchy
+
+            new(
+              "TreeIndex",
+              feature_order = x@feature_order,
+              leaf_of_table = x@leaf_of_table,
+              hierarchy_tree = x@hierarchy_tree,
+              node_ids_table = x@node_ids_table,
+              nodes_table = x@nodes_table,
+              .hierarchy = sHierarchy
+            )
+          })
+
+#' Generic method to get nodes at a tree level
+#' @param x object
+#' @param ... other parameters
+#' @export
+setGeneric("getNodes", signature = "x",
+           function(x, ...)
+             standardGeneric("getNodes"))
+
+#' Method to get nodes at a tree level
+#' @param x a TreeIndex object
+#' @param selectedLevel tree level to select nodes from
+#' @param start,end indices to filter nodes by
+#' @export
+setMethod("getNodes", "TreeIndex",
+          function(x,
+                   selectedLevel = 3,
+                   start = 1,
+                   end = 1000) {
+            nodes_at_level <- x@nodes_table[level == selectedLevel,]
+            nodes_at_level_ids <- nodes_at_level[, id]
+            unique(data.frame(ids = nodes_at_level_ids, names = nodes_at_level$node_label))
+          })
+
+#' Generic method for possible node states
+#' @param x object
+#' @export
+setGeneric("getNodeStates", signature = "x",
+           function(x)
+             standardGeneric("getNodeStates"))
+
+#' Method to get possible node states
+#' a node state is 0 if removed, 1 if expanded to show children &
+#' 2 if counts are aggregated to the node
+#' @param x object
+#' @export
+setMethod("getNodeStates", "TreeIndex",
+          function(x) {
+            return(list(
+              "removed" = 0,
+              "expanded" = 1,
+              "aggregate" = 2
+            ))
+          })
+
+
+#' Generic method to split the tree
+#' @param x object
+#' @param ... other parameters
+#' @export
+setGeneric("splitAt", signature = "x",
+           function(x, ...)
+             standardGeneric("splitAt"))
+
+#' splitAt divides the TreeIndex into groups defined by the level,
+#' node selections and filters(start, end)
+#' @param x TreeIndex object
+#' @param selectedLevel tree level to select nodes from
+#' @param selectedNodes used to set states on individual nodes to define a cut on the tree
+#' @param start,end indices to filter nodes by
+#' @param format return format can be one of "list" or "TreeIndex"
+#' @export
+setMethod("splitAt", "TreeIndex",
+          function(x,
+                   selectedLevel = 3,
+                   selectedNodes = NULL,
+                   start = 1,
+                   end = NULL,
+                   format = "list") {
+
+            if(is.null(end)) {
+              end <- nrow(x@.hierarchy)
+            }
+
+            nodes_at_level <- x@nodes_table[level == selectedLevel,]
+            nodes_at_level_ids <- nodes_at_level[, id]
+
+            if (!is.null(selectedNodes) &&
+                !(length(selectedNodes) == 0)) {
+              nodes_at_level_selections <- rep(2, length(nodes_at_level_ids))
+              names(nodes_at_level_selections) <- nodes_at_level_ids
+              selectedNodes <-
+                c(selectedNodes, nodes_at_level_selections)
+
+              expand_selections <- which(selectedNodes == 1)
+              if (!is.null(expand_selections) &&
+                  length(expand_selections) > 0) {
+                expand_selection_indices = which(names(selectedNodes) %in% names(expand_selections))
+                selectedNodes <-
+                  selectedNodes[-expand_selection_indices]
+              }
+
+              expanded_children <-
+                x@nodes_table[parent %in% names(expand_selections), id]
+
+              child_lineage <-
+                x@nodes_table[id %in% names(selectedNodes), ]
+              remove_selections <- which(selectedNodes == 0)
+              if (length(remove_selections) > 0) {
+                kept_nodes <-
+                  child_lineage[!grepl(paste(paste(
+                    names(remove_selections), collapse = ",|"
+                  ), ",", sep = ""), lineage), ]
+                kept_nodes <-
+                  kept_nodes[!(id %in% names(remove_selections)), ]
+              } else {
+                kept_nodes <- child_lineage
+              }
+
+              agg_selections <- which(selectedNodes == 2)
+              if (length(agg_selections) > 0) {
+                kept_nodes <-
+                  kept_nodes[!grepl(paste(paste(names(
+                    agg_selections
+                  ), collapse = ",|"), ",", sep = ""), lineage), ]
+              }
+              kept_nodes <- as.character(kept_nodes[, id])
+              nodes_at_level <-
+                x@nodes_table[id %in% c(kept_nodes, expanded_children), ]
+            }
+
+            leaf_order_table <-
+              as.data.table(x@hierarchy_tree[, c(x@feature_order[length(x@feature_order)], "otu_index")])
+            setnames(leaf_order_table, c("leaf", "otu_index"))
+            leaf_order_table <-
+              leaf_order_table[, leaf := as.character(leaf)]
+            leaf_order_table <-
+              leaf_order_table[otu_index >= start & otu_index <= end]
+
+            leaf_indices <-
+              merge(leaf_order_table,
+                    merge(nodes_at_level, x@leaf_of_table, by = "id"),
+                    by = "leaf")
+            setorderv(leaf_indices, "otu_index.x")
+            leaf_indices$lineage.y <- NULL
+            leaf_indices$otu_index.y <- NULL
+            leaf_indices$node_label.y <- NULL
+            colnames(leaf_indices) <-
+              c("leaf",
+                "otu_index",
+                "id",
+                "parent",
+                "lineage",
+                "node_label",
+                "level",
+                "order")
+
+            if (format == "aggTable") {
+              return(leaf_indices)
+            }
+            else if (format == "TreeIndex") {
+              toLevel <- selectedLevel + 1
+              tHierarchy <-
+                unique(x@.hierarchy[leaf_indices$otu_index, x@feature_order[1:toLevel]])
+              newTreeIndex <-
+                TreeIndex(hierarchy = tHierarchy,
+                          feature_order = x@feature_order[1:toLevel])
+              return(newTreeIndex)
+            }
+            else if (format == "dataframe") {
+              groups <-
+                leaf_indices[, .(
+                  indices = paste0(otu_index, collapse = ","),
+                  leaf_nodes = paste0(leaf, collapse = ",")
+                ), by = .(id, parent, lineage, node_label, level, order)]
+              return(groups)
+            }
+            else if (format == "list") {
+              groups <-
+                leaf_indices[, .(
+                  indices = paste0(otu_index, collapse = ","),
+                  leaf_nodes = paste0(leaf, collapse = ",")
+                ), by = .(id, parent, lineage, node_label, level, order)]
+              nodes <- as.list(unique(groups$indices))
+              nodes_exp <- lapply(nodes, function(nl) {
+                as.integer(strsplit(nl, ",")[[1]])
+              })
+              names(nodes_exp) <- unique(groups$node_label)
+              return(nodes_exp)
+            }
+            return(leaf_indices)
+          })
+
+setAs("DataFrame", "TreeIndex", function(from) {
+  from@.hierarchy
+})
+
+#' Show the TreeIndex object
+#' @export
+setMethod("show", "TreeIndex", function(object) {
+  cat(
+    "Tree Index",
+    "with height:",
+    length(object@feature_order),
+    "\n Tree levels:",
+    paste(object@feature_order, collapse = " -> "),
+    "\n Leaf nodes:",
+    nrow(object@.hierarchy),
+    sep = " "
+  )
+})
