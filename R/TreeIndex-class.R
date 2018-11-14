@@ -1,17 +1,17 @@
+setClassUnion("CharacterOrNull", c("character", "NULL"))
+
 #' TreeIndex class to manage and query hierarchical data
-#'
 #' @import S4Vectors
 setClass(
   "TreeIndex",
-  slots = list(
-    feature_order = "character",
+  contains = c("DataFrame"),
+  representation(
+    feature_order = "CharacterOrNull",
     leaf_of_table = "data.table",
     hierarchy_tree = "data.frame",
     node_ids_table = "data.table",
-    nodes_table = "data.table",
-    .hierarchy = "data.frame"
-  ),
-  contains = c("DataFrame")
+    nodes_table = "data.table"
+  )
 )
 
 #' create a new TreeIndex object
@@ -24,12 +24,26 @@ TreeIndex <- function(hierarchy = NULL,
     return(
       new(
         "TreeIndex",
-        feature_order = c(),
+        DataFrame(),
+        feature_order = feature_order,
         leaf_of_table = data.table(),
-        hierarchy_tree = data.table(),
+        hierarchy_tree = data.frame(),
         node_ids_table = data.table(),
-        nodes_table = data.table(),
-        .hierarchy = data.table()
+        nodes_table = data.table()
+      )
+    )
+  }
+
+  if (ncol(hierarchy) == 0) {
+    return(
+      new(
+        "TreeIndex",
+        DataFrame(hierarchy),
+        feature_order = feature_order,
+        leaf_of_table = data.table(),
+        hierarchy_tree = data.frame(),
+        node_ids_table = data.table(),
+        nodes_table = data.table()
       )
     )
   }
@@ -47,14 +61,16 @@ TreeIndex <- function(hierarchy = NULL,
   leaf_of_table <-
     .generate_leaf_of_table(hierarchy_tree, node_ids_table, nodes_table, feature_order)
 
+  hierarchy_df <- DataFrame(hierarchy)
+
   new(
     "TreeIndex",
+    hierarchy_df,
     feature_order = feature_order,
     leaf_of_table = leaf_of_table,
     hierarchy_tree = hierarchy_tree,
     node_ids_table = node_ids_table,
-    nodes_table = nodes_table,
-    .hierarchy = hierarchy
+    nodes_table = nodes_table
   )
 }
 
@@ -100,7 +116,7 @@ TreeIndex <- function(hierarchy = NULL,
 
     level_features <- as.character(table_node_ids[[level]])
     for (i in seq_len(nrow(temp_level_count))) {
-      row <- temp_level_count[i, ]
+      row <- temp_level_count[i,]
       if (depth == 1 && i == 1) {
         id <- paste(depth - 1, 0, sep = "-")
       } else{
@@ -144,7 +160,7 @@ TreeIndex <- function(hierarchy = NULL,
         parent = root_parents,
         lineage = node_ids_table[, get(feature_order[1])],
         node_label = hierarchy_tree[, 1],
-        level = rep(0, length(hierarchy_tree[, 1]))
+        level = rep(1, length(hierarchy_tree[, 1]))
       )
 
     for (i in seq(2, length(feature_order))) {
@@ -155,11 +171,11 @@ TreeIndex <- function(hierarchy = NULL,
                                                         1])],
           lineage = lineage_DT[, get(feature_order[i])],
           node_label = hierarchy_tree[, i],
-          level = rep(i - 1, length(hierarchy_tree[, i]))
+          level = rep(i, length(hierarchy_tree[, i]))
         )
 
       nodes_tab <-
-        rbind(nodes_tab[rownames(unique(nodes_tab[, c("id", "parent")])), ], temp_nodes_tab[rownames(unique(temp_nodes_tab[, c("id", "parent")])), ])
+        rbind(nodes_tab[rownames(unique(nodes_tab[, c("id", "parent")])),], temp_nodes_tab[rownames(unique(temp_nodes_tab[, c("id", "parent")])),])
     }
 
     ret_table <- as.data.table(nodes_tab)
@@ -203,7 +219,8 @@ TreeIndex <- function(hierarchy = NULL,
     setnames(label_table, c("leaf", "otu_index", "node_label"))
 
     label_table <- label_table[, leaf := as.character(leaf)]
-    label_table <- label_table[, otu_index := as.character(otu_index)]
+    label_table <-
+      label_table[, otu_index := as.character(otu_index)]
 
     lineage_DF <- as.data.frame(node_ids_table)
     lineage_table <- node_ids_table

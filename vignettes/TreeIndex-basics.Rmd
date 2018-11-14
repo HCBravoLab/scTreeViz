@@ -9,6 +9,8 @@ output: BiocStyle::html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## loading required packages
+
 ```{r load-packages, message=FALSE, warning=FALSE}
 library(TreeIndex)
 library(metagenomeSeq)
@@ -27,7 +29,7 @@ hierarchy <- fData(mouseData)
 
 ## Create `TreeIndex` object from feature hierarchy
 ```{r}
-tree <- TreeIndex(fData(mouseData))
+tree <- TreeIndex(hierarchy)
 tree
 ```
 
@@ -36,7 +38,7 @@ tree
 Similar to subset operations in data frames, `TreeIndex` objects can subset leaf nodes in the tree. The result is a new `TreeIndex` object with the filtered rows.
 
 ```{r}
-subset <- tree[1:1000]
+subset <- tree[1:1000,]
 subset
 ```
 

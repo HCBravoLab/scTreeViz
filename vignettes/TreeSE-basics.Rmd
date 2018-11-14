@@ -1,0 +1,50 @@
+---
+title: "TreeSe-basics"
+author: "Jayaram Kancherla, Hector Corrada Bravo"
+date: "November 13, 2018"
+output: BiocStyle::html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## loading required packages
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(TreeIndex)
+library(metagenomeSeq)
+library(msd16s)
+library(S4Vectors)
+```
+
+## Example Data
+
+```{r}
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+```
+
+
+## creating a `TreeSE` object
+
+In this vignette, we will use a microbiome dataset to create a `TreeSE` object. 
+
+```{r} 
+tree <- TreeIndex(hierarchy)
+
+mbiome <- TreeSE(SimpleList(counts=counts), rowData=tree)
+mbiome
+```
+
+
+## Operations on TreeSE objects
+
+`TreeSE` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeSE` object. In a similar way one can perform these operations on single cell datasets where column 
+has a hierarchy.
+
+```{r}
+aggr <- aggregateTree(mbiome, selectedLevel=3, by="row", start = 1, end = 1000)
+aggr
+```

@@ -7,7 +7,7 @@
 node selections and filters(start, end)}
 \usage{
 \S4method{splitAt}{TreeIndex}(x, selectedLevel = 3,
-  selectedNodes = NULL, start = 1, end = 1000, format = "list")
+  selectedNodes = NULL, start = 1, end = NULL, format = "list")
 }
 \arguments{
 \item{x}{TreeIndex object}
