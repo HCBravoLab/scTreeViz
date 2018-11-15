@@ -6,7 +6,7 @@
 \title{Method to get nodes at a tree level}
 \usage{
 \S4method{getNodes}{TreeIndex}(x, selectedLevel = 3, start = 1,
-  end = 1000)
+  end = NULL)
 }
 \arguments{
 \item{x}{a TreeIndex object}

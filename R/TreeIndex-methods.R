@@ -8,7 +8,8 @@
 setMethod("[", "TreeIndex",
           function(x, i, j, ..., drop = FALSE) {
             # obj <- callNextMethod()
-            new_hierarchy_tree <- unique(x@hierarchy_tree[i, j, ..., drop = drop])
+            new_hierarchy_tree <-
+              unique(x@hierarchy_tree[i, j, ..., drop = drop])
             new_feature_order <- colnames(new_hierarchy_tree)
 
             TreeIndex(hierarchy = new_hierarchy_tree,
@@ -32,8 +33,12 @@ setMethod("getNodes", "TreeIndex",
           function(x,
                    selectedLevel = 3,
                    start = 1,
-                   end = 1000) {
-            nodes_at_level <- x@nodes_table[level == selectedLevel, ]
+                   end = NULL) {
+            if (is.null(end)) {
+              end <- nrow(x)
+            }
+            nodes_at_level <-
+              x@nodes_table[level == selectedLevel,]
             nodes_at_level_ids <- nodes_at_level[, id]
             unique(data.frame(ids = nodes_at_level_ids, names = nodes_at_level$node_label))
           })
@@ -89,7 +94,8 @@ setMethod("splitAt", "TreeIndex",
 
             selectedLevel <- selectedLevel + 1
 
-            nodes_at_level <- x@nodes_table[level == selectedLevel, ]
+            nodes_at_level <-
+              x@nodes_table[level == selectedLevel,]
             nodes_at_level_ids <- nodes_at_level[, id]
 
             if (!is.null(selectedNodes) &&
@@ -111,15 +117,15 @@ setMethod("splitAt", "TreeIndex",
                 x@nodes_table[parent %in% names(expand_selections), id]
 
               child_lineage <-
-                x@nodes_table[id %in% names(selectedNodes),]
+                x@nodes_table[id %in% names(selectedNodes), ]
               remove_selections <- which(selectedNodes == 0)
               if (length(remove_selections) > 0) {
                 kept_nodes <-
                   child_lineage[!grepl(paste(paste(
                     names(remove_selections), collapse = ",|"
-                  ), ",", sep = ""), lineage),]
+                  ), ",", sep = ""), lineage), ]
                 kept_nodes <-
-                  kept_nodes[!(id %in% names(remove_selections)),]
+                  kept_nodes[!(id %in% names(remove_selections)), ]
               } else {
                 kept_nodes <- child_lineage
               }
@@ -129,11 +135,11 @@ setMethod("splitAt", "TreeIndex",
                 kept_nodes <-
                   kept_nodes[!grepl(paste(paste(names(
                     agg_selections
-                  ), collapse = ",|"), ",", sep = ""), lineage),]
+                  ), collapse = ",|"), ",", sep = ""), lineage), ]
               }
               kept_nodes <- as.character(kept_nodes[, id])
               nodes_at_level <-
-                x@nodes_table[id %in% c(kept_nodes, expanded_children),]
+                x@nodes_table[id %in% c(kept_nodes, expanded_children), ]
             }
 
             leaf_order_table <-
@@ -169,7 +175,8 @@ setMethod("splitAt", "TreeIndex",
             else if (format == "TreeIndex") {
               toLevel <- selectedLevel
               new_feature_order <- x@feature_order[1:toLevel]
-              new_hierarchy_tree <- unique(x@hierarchy_tree[start:end, new_feature_order])
+              new_hierarchy_tree <-
+                unique(x@hierarchy_tree[start:end, new_feature_order])
               newTreeIndex <-
                 TreeIndex(hierarchy = new_hierarchy_tree,
                           feature_order = new_feature_order)

@@ -4,8 +4,16 @@
 \alias{TreeSE}
 \title{The TreeSE class.}
 \usage{
-TreeSE(assays = SimpleList(), rowData = TreeIndex(),
-  colData = TreeIndex(), ...)
+TreeSE(assays = SimpleList(), rowData = NULL, colData = NULL, ...)
+}
+\arguments{
+\item{assays}{simple list of counts}
+
+\item{rowData}{rowData}
+
+\item{colData}{colData}
+
+\item{...}{other parameters for SummarizedExperiment}
 }
 \description{
 SummarizedExperiment-like class for datasets that have hierarchies on either rowData or colData.
