@@ -8,20 +8,24 @@ setClass("TreeSE",
 #' For single cell data, colData is a tree hierarchy
 #' @importFrom SummarizedExperiment SummarizedExperiment rowData colData rowData<- colData<-
 #' @import S4Vectors
+#' @param assays simple list of counts
+#' @param rowData rowData
+#' @param colData colData
+#' @param ... other parameters for SummarizedExperiment
 #' @export
 TreeSE <- function(assays = SimpleList(),
-                   rowData = TreeIndex(),
-                   colData = TreeIndex(),
+                   rowData = NULL,
+                   colData = NULL,
                    ...) {
-
   sumExp <- SummarizedExperiment(assays = assays, ...)
 
-  if(!missing(rowData)) {
+  if (!missing(rowData) && !is.null(rowData)) {
     rowData(sumExp) <- rowData
   }
 
-  if(!missing(colData)) {
+  if (!missing(colData) && !is.null(colData)) {
     colData(sumExp) <- colData
+
   }
 
   new("TreeSE", sumExp)

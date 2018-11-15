@@ -30,6 +30,7 @@ setGeneric("aggregateTree", signature = "x",
 #' @param aggFun aggregate function to use, by default colSums if by="row", rowSums if by="col"
 #' @param format return format can be one of "counts" or "TreeSE"
 #' @import matrixStats
+#' @importFrom SummarizedExperiment assays rowData colData
 #' @export
 setMethod("aggregateTree", "TreeSE",
           function(x,
@@ -40,7 +41,6 @@ setMethod("aggregateTree", "TreeSE",
                    end = NULL,
                    by = "row",
                    format = "TreeSE") {
-
             if (is.null(end) || missing(end)) {
               end <- nrow(x)
             }
@@ -61,11 +61,11 @@ setMethod("aggregateTree", "TreeSE",
               newMat <- array(NA, dim = c(length(groups), ncol(x)))
               for (i in seq_along(groups)) {
                 indices <- groups[[i]]
-                if(length(indices) == 1) {
-                  newMat[i,] = counts[indices,]
+                if (length(indices) == 1) {
+                  newMat[i, ] = counts[indices, ]
                 }
                 else {
-                  newMat[i,] = aggFun(counts[indices,])
+                  newMat[i, ] = aggFun(counts[indices, ])
                 }
               }
 
@@ -89,7 +89,7 @@ setMethod("aggregateTree", "TreeSE",
               newMat <- array(NA, dim = c(nrow(x), length(groups)))
               for (i in seq_along(groups)) {
                 indices <- groups[[i]]
-                if(length(indices) == 1) {
+                if (length(indices) == 1) {
                   newMat[, i] = counts[, indices]
                 }
                 else {
@@ -99,6 +99,10 @@ setMethod("aggregateTree", "TreeSE",
 
               colnames(newMat) <- names(groups)
               rownames(newMat) <- rownames(x)
+            }
+
+            if(!is.null(selectedNodes)) {
+              return(newMat)
             }
 
             if (format == "TreeSE") {
@@ -128,7 +132,8 @@ setMethod("aggregateTree", "TreeSE",
                   )
               }
 
-              newSumExp <- SummarizedExperiment(SimpleList(counts = newMat))
+              newSumExp <-
+                SummarizedExperiment(SimpleList(counts = newMat))
               rowData(newSumExp) <- newRowData
               colData(newSumExp) <- newColData
 
