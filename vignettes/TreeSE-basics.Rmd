@@ -29,8 +29,6 @@ hierarchy <- fData(mouseData)
 
 ## creating a `TreeSE` object
 
-In this vignette, we will use a microbiome dataset to create a `TreeSE` object. 
-
 ```{r} 
 tree <- TreeIndex(hierarchy)
 
@@ -41,10 +39,33 @@ mbiome
 
 ## Operations on TreeSE objects
 
-`TreeSE` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeSE` object. In a similar way one can perform these operations on single cell datasets where column 
-has a hierarchy.
+`TreeSE` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeSE` object. In a similar way, one can perform these operations on single cell datasets where colData has a hierarchy.
 
 ```{r}
-aggr <- aggregateTree(mbiome, selectedLevel=3, by="row", start = 1, end = 1000)
+aggr <- aggregateTree(mbiome, selectedLevel=3, by="row")
 aggr
 ```
+
+### Defining a cut in the tree
+
+The selectedLevel parameter cuts the tree at a given level. In the previous example, we cut the tree at level 3. We can also remove nodes from analysis or aggregate nodes at a different level. Each node can be in one of three possible states removed (0), expanded (1) and aggregated (2)
+
+Note: A UI will help make node selections easier. (`metavizr` - facetZoom)
+
+```{r}
+
+# lets get the list of nodes at level 3
+
+nodes_3 <- getNodes(tree, selectedLevel=3)
+
+# remove Bacilli and Cyanobacteria
+node_selection <- list("2-0a979c035"=0, "2-b3d031854"=0)
+
+# also lets expand all children of Actinobateria to level 4
+node_selection <- c(node_selection, list("2-3bd9c1c91"=1))
+
+# aggregate counts
+agg_sel <- aggregateTree(mbiome, selectedLevel=3, selectedNodes=node_selection, by="row")
+agg_sel
+```
+

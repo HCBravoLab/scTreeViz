@@ -35,21 +35,21 @@ tree
 
 ## Operations on `TreeIndex` object
 
-Similar to subset operations in data frames, `TreeIndex` objects can subset leaf nodes in the tree. The result is a new `TreeIndex` object with the filtered rows.
+Similar to subset operations in data frame, `TreeIndex` objects can subset leaf nodes in the tree. The result is a new `TreeIndex` object with the filtered rows.
 
 ```{r}
 subset <- tree[1:1000,]
 subset
 ```
 
-We can also prune to the tree to a given level as shown below. The result is a list of nodes and their indices. The indices can then be used to aggregate counts in `SummarizedExperiment` objects
+We can also prune the tree to a given level as shown below. The result is a list of nodes and their indices. The indices can then be used to aggregate counts in `SummarizedExperiment` objects
 
 ```{r}
 tree_level <- splitAt(tree, selectedLevel = 2)
 tree_level
 ```
 
-We can also return the result of a prune operation as another TreeIndex object. however, the indices info is lost in translation.
+We can also format the result of a prune operation as a `TreeIndex` object. however, the mapping of indices to the count matrix are lost in translation.
 
 ```{r}
 tree_level <- splitAt(tree, selectedLevel = 2, format="TreeIndex")
