@@ -48,24 +48,24 @@ aggr
 
 ### Defining a cut in the tree
 
-The selectedLevel parameter cuts the tree at a given level. In the previous example, we cut the tree at level 3. We can also remove nodes from analysis or aggregate nodes at a different level. Each node can be in one of three possible states removed (0), expanded (1) and aggregated (2)
+In the previous example, we use the selectedLevel parameter to cut the tree at a given level 3.  Each node can be in one of three possible states removed (0), expanded (1) and aggregated (2). using this, we can cut a tree at different levels.
 
-Note: A UI will help make node selections easier. (`metavizr` - facetZoom)
+Note: A `facetZoom` visualization from `metavizr` will help make node selections easier
 
 ```{r}
 
-# lets get the list of nodes at level 3
+# lets get the list of nodes
 
-nodes_3 <- getNodes(tree, selectedLevel=3)
+nodes <- getNodes(tree)
 
-# remove Bacilli and Cyanobacteria
-node_selection <- list("2-0a979c035"=0, "2-b3d031854"=0)
+# select/remove rows in data frame to only keep nodes to aggregate 
+# this example chooses all level 3 nodes and 2 nodes from level 4 (Bacillales and Lactobacillales) 
+# to define the cut at different levels
+nodes <- nodes[level %in% c(3,4),][1:19]
 
-# also lets expand all children of Actinobateria to level 4
-node_selection <- c(node_selection, list("2-3bd9c1c91"=1))
 
 # aggregate counts
-agg_sel <- aggregateTree(mbiome, selectedLevel=3, selectedNodes=node_selection, by="row")
+agg_sel <- aggregateTree(mbiome, selectedLevel=3, selectedNodes=nodes, by="row")
 agg_sel
 ```
 

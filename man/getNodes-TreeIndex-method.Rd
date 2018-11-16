@@ -5,15 +5,12 @@
 \alias{getNodes,TreeIndex-method}
 \title{Method to get nodes at a tree level}
 \usage{
-\S4method{getNodes}{TreeIndex}(x, selectedLevel = 3, start = 1,
-  end = NULL)
+\S4method{getNodes}{TreeIndex}(x, selectedLevel = NULL)
 }
 \arguments{
 \item{x}{a TreeIndex object}
 
 \item{selectedLevel}{tree level to select nodes from}
-
-\item{start, end}{indices to filter nodes by}
 }
 \description{
 Method to get nodes at a tree level

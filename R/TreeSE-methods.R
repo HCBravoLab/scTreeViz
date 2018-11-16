@@ -30,7 +30,6 @@ setGeneric("aggregateTree", signature = "x",
 #' @param aggFun aggregate function to use, by default colSums if by="row", rowSums if by="col"
 #' @param format return format can be one of "counts" or "TreeSE"
 #' @import matrixStats
-#' @importFrom SummarizedExperiment assays rowData colData
 #' @export
 setMethod("aggregateTree", "TreeSE",
           function(x,
@@ -43,6 +42,17 @@ setMethod("aggregateTree", "TreeSE",
                    format = "TreeSE") {
             if (is.null(end) || missing(end)) {
               end <- nrow(x)
+            }
+
+            if(is(selectedNodes, "data.table")) {
+              node_ids <- selectedNodes$id
+              snodes <- rep(1, length(node_ids))
+
+              if("state" %in% colnames(selectedNodes)) {
+               snodes <- selectedNodes$state
+              }
+              names(snodes) <- node_ids
+              selectedNodes <- snodes
             }
 
             if (by == "row") {

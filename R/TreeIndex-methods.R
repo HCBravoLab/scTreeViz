@@ -27,15 +27,13 @@ setGeneric("getNodes", signature = "x",
 #' Method to get nodes at a tree level
 #' @param x a TreeIndex object
 #' @param selectedLevel tree level to select nodes from
-#' @param start,end indices to filter nodes by
 #' @export
 setMethod("getNodes", "TreeIndex",
           function(x,
-                   selectedLevel = 3,
-                   start = 1,
-                   end = NULL) {
-            if (is.null(end)) {
-              end <- nrow(x)
+                   selectedLevel = NULL) {
+
+            if (is.null(selectedLevel)) {
+              return(x@nodes_table[,c("id", "lineage", "node_label", "level")])
             }
             nodes_at_level <-
               x@nodes_table[level == selectedLevel,]
@@ -196,12 +194,12 @@ setMethod("splitAt", "TreeIndex",
                   indices = paste0(otu_index, collapse = ","),
                   leaf_nodes = paste0(leaf, collapse = ",")
                 ), by = .(id, parent, lineage, node_label, level, order)]
-              nodes <- as.list(unique(groups$indices))
+              nodes <- as.list(groups$indices)
               nodes_exp <- lapply(nodes, function(nl) {
                 as.integer(strsplit(nl, ",")[[1]])
               })
-              names(nodes_exp) <- unique(groups$node_label)
-              return(nodes_exp)
+              names(nodes_exp) <- groups$node_label
+              return(unique(nodes_exp))
             }
           })
 
@@ -220,7 +218,6 @@ setMethod("show", "TreeIndex", function(object) {
   )
 })
 
-#' @export
 setAs("DataFrame", "TreeIndex", function(from) {
   as.data.frame(from)
 })

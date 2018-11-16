@@ -1,3 +1,6 @@
+
+#' TreeSE class wrapper for SummarizedExperiment objects
+#' @import SummarizedExperiment
 setClass("TreeSE",
          contains = "SummarizedExperiment")
 
@@ -6,8 +9,6 @@ setClass("TreeSE",
 #' SummarizedExperiment-like class for datasets that have hierarchies on either rowData or colData.
 #' For microbiome data, rowData is a tree hierarchy
 #' For single cell data, colData is a tree hierarchy
-#' @importFrom SummarizedExperiment SummarizedExperiment rowData colData rowData<- colData<-
-#' @import S4Vectors
 #' @param assays simple list of counts
 #' @param rowData rowData
 #' @param colData colData

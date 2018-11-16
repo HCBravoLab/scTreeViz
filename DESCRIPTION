@@ -15,7 +15,8 @@ Description: This package provides the TreeIndex class to support interactive da
 License: What license is it under?
 Depends: R (>= 3.4), 
         methods, data.table,
-        Biobase, digest, matrixStats, S4Vectors
+        Biobase, digest, S4Vectors
+Imports: SummarizedExperiment
 Suggests: knitr, BiocStyle, testthat
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
