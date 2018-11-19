@@ -85,6 +85,7 @@ TreeIndex <- function(hierarchy = NULL,
 
   nas_replaced <-
     .replaceNAFeatures(replacing_na_obj_fData, feature_order)
+
   obj_fData <- as.data.table(nas_replaced)
   cols <- feature_order[1:length(feature_order) - 1]
   order <- rep(1, length(feature_order) - 1)

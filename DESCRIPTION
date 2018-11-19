@@ -13,11 +13,9 @@ Description: This package provides the TreeIndex class to support interactive da
           The `TreeSE` class extends `SummarizedExperiment` where rowData and colData can be Tree 
           hierarchies.
 License: What license is it under?
-Depends: R (>= 3.4), 
-        methods, data.table,
-        Biobase, digest, S4Vectors
-Imports: SummarizedExperiment
-Suggests: knitr, BiocStyle, testthat
+Depends: R (>= 3.4), methods, BiocGenerics, Biobase, SummarizedExperiment, data.table, S4Vectors, digest
+Imports: metagenomeSeq
+Suggests: knitr, BiocStyle, testthat, metagenomeSeq, clustree, Seurat
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8
