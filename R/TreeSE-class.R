@@ -69,13 +69,15 @@ ImportFromSeurat <- function(seurat, clustree, cluster_names = NULL) {
     col <- clusters[, cn]
     col <- paste0(cn, "C", col)
     for (i in names(clusnames)) {
-      col <- replace(col, col==i,paste0("cluster", clusnames[[i]]))
+      col <- replace(col, col==i, paste0(i, "-cluster", clusnames[[i]]))
     }
     col
   })
 
   names(clusters) <- cluster_names
   clusters <- as.data.frame(clusters)
+  clusters$samples <- colnames(seurat@data)
+  cluster_names <- c(cluster_names, "samples")
 
   tree <- TreeIndex(clusters, cluster_names)
   rownames(tree) <- colnames(seurat@data)

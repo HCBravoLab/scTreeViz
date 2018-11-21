@@ -29,7 +29,7 @@ setGeneric("aggregateTree", signature = "x",
 #' @param by "row" to aggregate the TreeIndex on rowData, "col" to aggregate TreeIndex on colData
 #' @param aggFun aggregate function to use, by default colSums if by="row", rowSums if by="col"
 #' @param format return format can be one of "counts" or "TreeSE"
-#' @import matrixStats
+#' @importFrom Matrix rowSums colSums
 #' @export
 setMethod("aggregateTree", "TreeSE",
           function(x,
@@ -56,7 +56,7 @@ setMethod("aggregateTree", "TreeSE",
             }
 
             if (by == "row") {
-              aggfun <- colSums
+              aggFun <- colSums
               groups <-
                 splitAt(
                   rowData(x),
@@ -84,7 +84,7 @@ setMethod("aggregateTree", "TreeSE",
 
             }
             else if (by == "col") {
-              aggfun <- rowSums
+              aggFun <- rowSums
               groups <-
                 splitAt(
                   colData(x),

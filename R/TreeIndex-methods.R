@@ -90,8 +90,6 @@ setMethod("splitAt", "TreeIndex",
               end <- nrow(x)
             }
 
-            selectedLevel <- selectedLevel + 1
-
             nodes_at_level <-
               x@nodes_table[level == selectedLevel,]
             nodes_at_level_ids <- nodes_at_level[, id]
@@ -175,6 +173,9 @@ setMethod("splitAt", "TreeIndex",
               new_feature_order <- x@feature_order[1:toLevel]
               new_hierarchy_tree <-
                 unique(x@hierarchy_tree[start:end, new_feature_order])
+              new_hierarchy_tree <- na.omit(new_hierarchy_tree)
+
+              new_hierarchy_tree <- as.data.frame(unique(as.data.table(new_hierarchy_tree), by=new_feature_order[toLevel]))
               newTreeIndex <-
                 TreeIndex(hierarchy = new_hierarchy_tree,
                           feature_order = new_feature_order)
@@ -194,12 +195,12 @@ setMethod("splitAt", "TreeIndex",
                   indices = paste0(otu_index, collapse = ","),
                   leaf_nodes = paste0(leaf, collapse = ",")
                 ), by = .(id, parent, lineage, node_label, level, order)]
-              nodes <- as.list(groups$indices)
+              nodes <- as.list(unique(groups$indices))
               nodes_exp <- lapply(nodes, function(nl) {
                 as.integer(strsplit(nl, ",")[[1]])
               })
-              names(nodes_exp) <- groups$node_label
-              return(unique(nodes_exp))
+              names(nodes_exp) <- unique(groups$node_label)
+              return(nodes_exp)
             }
           })
 

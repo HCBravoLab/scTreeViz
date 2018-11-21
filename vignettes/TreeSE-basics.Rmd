@@ -110,7 +110,11 @@ graph <- clustree(pbmc, return="graph")
 
 pbmc_TreeSE <- ImportFromSeurat(pbmc, graph)
 pbmc_TreeSE
-
 ```
 
 We can now perform similar Tree operations on the colData similar to the rowData from the previous examples. 
+
+```{r}
+aggregateTree(pbmc_TreeSE, selectedLevel=3, by="col")
+```
+}
