@@ -1,17 +1,18 @@
 Package: TreeIndex
 Type: Package
-Title: R package to manage tree hierarchies
+Title: R/Bioconductor package to manage hierarchies in genomic datasets
 Version: 0.1.0
 Authors@R: c( 
           person("Jayaram", "Kancherla", email="jayaram.kancherla@gmail.com", role=c("aut")),
           person("Hector", "Corrada Bravo", email="hcorrada@gmail.com", role=c("aut", "cre"))
           )
 Maintainer: Hector Corrada Bravo <hcorrada@gmail.com>
-Description: This package provides the TreeIndex class to support interactive data
-          visualization of genomic datasets with tree hierarchies. The `TreeIndex` class 
-          provides methods to split the tree at a certain level or given a node selection. 
-          The `TreeSE` class extends `SummarizedExperiment` where rowData and colData can be Tree 
-          hierarchies.
+Description: This package provides classes to support interactive data
+          aggregation and visualization of genomic datasets with hierarchies. The `TreeIndex` class 
+          provides methods to manage hierarchy as tree and split the tree at a given level or at
+          a given node selection thats spans across levels. The `TreeSE` class extends `SummarizedExperiment` 
+          and performs aggregations where either rowData or colData or both can be a 
+          hierarchy (a `TreeIndex` class).
 License: What license is it under?
 Depends: R (>= 3.4), methods, BiocGenerics, Biobase, SummarizedExperiment, data.table, S4Vectors, digest, Matrix
 Imports: metagenomeSeq
