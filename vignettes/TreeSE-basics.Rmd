@@ -63,7 +63,7 @@ nodes <- getNodes(tree)
 
 # select/remove rows in data frame to only keep nodes to aggregate 
 # this example chooses all level 3 nodes and two nodes from level 4 (Bacillales and Lactobacillales) 
-# to define the node selection
+# to define the node selection. The dataframe can also be filtered by name and lineage.
 nodes <- nodes[level %in% c(3,4),][1:19]
 
 # aggregate counts to node selection
