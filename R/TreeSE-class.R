@@ -28,16 +28,13 @@ TreeSE <- function(assays = SimpleList(),
                    rowData = NULL,
                    colData = NULL,
                    ...) {
-  sumExp <- SummarizedExperiment(assays = assays, ...)
 
-  if (!missing(rowData) && !is.null(rowData)) {
-    rowData(sumExp) <- rowData
+  if (missing(colData) || is.null(colData)) {
+    assay <- assays[[1]]
+    colData <- DataFrame(x=seq_len(ncol(assay)), row.names=colnames(assay))[, FALSE]
   }
 
-  if (!missing(colData) && !is.null(colData)) {
-    colData(sumExp) <- colData
-
-  }
+  sumExp <- SummarizedExperiment(assays = assays, rowData = rowData, colData = colData, ...)
 
   new("TreeSE", sumExp)
 }

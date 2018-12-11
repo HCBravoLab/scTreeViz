@@ -143,9 +143,7 @@ setMethod("aggregateTree", "TreeSE",
               }
 
               newSumExp <-
-                SummarizedExperiment(SimpleList(counts = newMat))
-              rowData(newSumExp) <- newRowData
-              colData(newSumExp) <- newColData
+                SummarizedExperiment(SimpleList(counts = newMat), rowData = newRowData, colData = newColData)
 
               newTreeSE <- new("TreeSE", newSumExp)
 

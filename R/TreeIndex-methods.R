@@ -191,15 +191,15 @@ setMethod("splitAt", "TreeIndex",
             }
             else if (format == "list") {
               groups <-
-                leaf_indices[, .(
+                unique(leaf_indices[, .(
                   indices = paste0(otu_index, collapse = ","),
                   leaf_nodes = paste0(leaf, collapse = ",")
-                ), by = .(id, parent, lineage, node_label, level, order)]
-              nodes <- as.list(unique(groups$indices))
+                ), by = .(id, parent, lineage, node_label, level, order)])
+              nodes <- as.list(groups$indices)
               nodes_exp <- lapply(nodes, function(nl) {
                 as.integer(strsplit(nl, ",")[[1]])
               })
-              names(nodes_exp) <- unique(groups$node_label)
+              names(nodes_exp) <- groups$node_label
               return(nodes_exp)
             }
           })
