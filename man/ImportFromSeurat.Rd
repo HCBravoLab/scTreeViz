@@ -2,7 +2,7 @@
 % Please edit documentation in R/TreeSE-class.R
 \name{ImportFromSeurat}
 \alias{ImportFromSeurat}
-\title{Import `Seurat` and `Clustree` into `TreeSE`}
+\title{Import `Seurat` and `Clustree` into `TreeSummarizedExperiment`}
 \usage{
 ImportFromSeurat(seurat, clustree, cluster_names = NULL)
 }
@@ -14,5 +14,5 @@ ImportFromSeurat(seurat, clustree, cluster_names = NULL)
 \item{cluster_names}{sluter names from seurat if different from standard}
 }
 \description{
-Import `Seurat` and `Clustree` into `TreeSE`
+Import `Seurat` and `Clustree` into `TreeSummarizedExperiment`
 }

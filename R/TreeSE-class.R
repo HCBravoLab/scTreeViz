@@ -1,11 +1,11 @@
 
-#' TreeSE class wrapper for SummarizedExperiment objects
+#' TreeSummarizedExperiment class wrapper for SummarizedExperiment objects
 #' @import SummarizedExperiment
-setClass("TreeSE",
+setClass("TreeSummarizedExperiment",
          contains = "SummarizedExperiment")
 
 # validity
-setValidity("TreeSE", function(object) {
+setValidity("TreeSummarizedExperiment", function(object) {
   msg <- NULL
   if(!(is(rowData(object), "TreeIndex") || is(colData(object), "TreeIndex"))) {
      msg <- "neither rowData nor colData are TreeIndex objects, use SummarizedExperiment instead."
@@ -14,7 +14,7 @@ setValidity("TreeSE", function(object) {
   if(is.null(msg)) TRUE else msg
 })
 
-#' The TreeSE class.
+#' The TreeSummarizedExperiment class.
 #'
 #' SummarizedExperiment-like class for datasets that have hierarchies on either rowData or colData.
 #' For microbiome data, rowData is a tree hierarchy
@@ -24,7 +24,7 @@ setValidity("TreeSE", function(object) {
 #' @param colData colData
 #' @param ... other parameters for SummarizedExperiment
 #' @export
-TreeSE <- function(assays = SimpleList(),
+TreeSummarizedExperiment <- function(assays = SimpleList(),
                    rowData = NULL,
                    colData = NULL,
                    ...) {
@@ -36,10 +36,10 @@ TreeSE <- function(assays = SimpleList(),
 
   sumExp <- SummarizedExperiment(assays = assays, rowData = rowData, colData = colData, ...)
 
-  new("TreeSE", sumExp)
+  new("TreeSummarizedExperiment", sumExp)
 }
 
-#' Import `Seurat` and `Clustree` into `TreeSE`
+#' Import `Seurat` and `Clustree` into `TreeSummarizedExperiment`
 #'
 #' @param seurat seurat object that contains rowData
 #' @param cluster_names sluter names from seurat if different from standard
@@ -79,7 +79,7 @@ ImportFromSeurat <- function(seurat, clustree, cluster_names = NULL) {
   tree <- TreeIndex(clusters, cluster_names)
   rownames(tree) <- colnames(seurat@data)
 
-  TreeSE(SimpleList(counts = seurat@data), colData = tree)
+  TreeSummarizedExperiment(SimpleList(counts = seurat@data), colData = tree)
 }
 
 

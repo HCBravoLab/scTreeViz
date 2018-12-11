@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(TreeIndex)
+library(TreeSummarizedExperiment)
 library(metagenomeSeq)
 library(msd16s)
 library(S4Vectors)
@@ -29,19 +29,19 @@ hierarchy <- fData(mouseData)
 ```
 
 
-## creating a `TreeSE` object
+## creating a `TreeSummarizedExperiment` object
 
 ```{r} 
 tree <- TreeIndex(hierarchy)
 
-mbiome <- TreeSE(SimpleList(counts=counts), rowData=tree)
+mbiome <- TreeSummarizedExperiment(SimpleList(counts=counts), rowData=tree)
 mbiome
 ```
 
 
-## Operations on TreeSE objects
+## Operations on TreeSummarizedExperiment objects
 
-`TreeSE` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeSE` object. In a similar way, one can perform these operations on single cell datasets where colData has a hierarchy.
+`TreeSummarizedExperiment` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeSummarizedExperiment` object. In a similar way, one can perform these operations on single cell datasets where colData has a hierarchy.
 
 ```{r}
 aggr <- aggregateTree(mbiome, selectedLevel=3, by="row")
@@ -72,9 +72,9 @@ agg_sel
 ```
 
 
-### Import a `Seurat` and `clustree` into `TreeSE`
+### Import a `Seurat` and `clustree` into `TreeSummarizedExperiment`
 
-The previous example use a metagenomic dataset. In this section, we will show how to import a Seurat object along with the cluster hierarchy generated from the clustree into a TreeSE object
+The previous example use a metagenomic dataset. In this section, we will show how to import a Seurat object along with the cluster hierarchy generated from the clustree into a TreeSummarizedExperiment object
 
 ```{r, eval=FALSE}
 # Seurat tutorial on pbmc 3k dataset

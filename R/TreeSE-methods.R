@@ -1,9 +1,9 @@
 #' show object
-#' @param x TreeSE object
+#' @param x TreeSummarizedExperiment object
 #' @export
-setMethod("show", signature("TreeSE"),
+setMethod("show", signature("TreeSummarizedExperiment"),
           function(object) {
-            cat("class: TreeSE \n", sep = " ")
+            cat("class: TreeSummarizedExperiment \n", sep = " ")
             cat("dim:", nrow(object), ncol(object), "\n", sep = " ")
             cat("metadata:\n")
             cat(show(metadata(object)))
@@ -21,17 +21,17 @@ setGeneric("aggregateTree", signature = "x",
            function(x, ...)
              standardGeneric("aggregateTree"))
 
-#' Method to aggregate a TreeSE object
-#' @param x TreeSE object
+#' Method to aggregate a TreeSummarizedExperiment object
+#' @param x TreeSummarizedExperiment object
 #' @param selectedLevel level to select nodes from
 #' @param selectedNodes used to set states on individual nodes to define a cut on the tree
 #' @param start,end indices to filter nodes
 #' @param by "row" to aggregate the TreeIndex on rowData, "col" to aggregate TreeIndex on colData
 #' @param aggFun aggregate function to use, by default colSums if by="row", rowSums if by="col"
-#' @param format return format can be one of "counts" or "TreeSE"
+#' @param format return format can be one of "counts" or "TreeSummarizedExperiment"
 #' @importFrom Matrix rowSums colSums
 #' @export
-setMethod("aggregateTree", "TreeSE",
+setMethod("aggregateTree", "TreeSummarizedExperiment",
           function(x,
                    selectedLevel = 3,
                    selectedNodes = NULL,
@@ -39,7 +39,7 @@ setMethod("aggregateTree", "TreeSE",
                    start = 1,
                    end = NULL,
                    by = "row",
-                   format = "TreeSE") {
+                   format = "TreeSummarizedExperiment") {
             if (is.null(end) || missing(end)) {
               end <- nrow(x)
             }
@@ -115,7 +115,7 @@ setMethod("aggregateTree", "TreeSE",
               return(newMat)
             }
 
-            if (format == "TreeSE") {
+            if (format == "TreeSummarizedExperiment") {
               if (by == "row") {
                 newRowData <-
                   splitAt(
@@ -145,7 +145,7 @@ setMethod("aggregateTree", "TreeSE",
               newSumExp <-
                 SummarizedExperiment(SimpleList(counts = newMat), rowData = newRowData, colData = newColData)
 
-              newTreeSE <- new("TreeSE", newSumExp)
+              newTreeSE <- new("TreeSummarizedExperiment", newSumExp)
 
               return(newTreeSE)
             }

@@ -1,4 +1,4 @@
-Package: TreeIndex
+Package: TreeSummarizedExperiment
 Type: Package
 Title: R/Bioconductor package to manage hierarchies in genomic datasets
 Version: 0.1.0

@@ -2,7 +2,7 @@
 
 export(ImportFromSeurat)
 export(TreeIndex)
-export(TreeSE)
+export(TreeSummarizedExperiment)
 export(aggregateTree)
 export(getNodeStates)
 export(getNodes)

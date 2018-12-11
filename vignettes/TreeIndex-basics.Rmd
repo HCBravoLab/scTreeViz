@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(TreeIndex)
+library(TreeSummarizedExperiment)
 library(metagenomeSeq)
 library(msd16s)
 ```
