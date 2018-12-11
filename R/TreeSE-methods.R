@@ -56,7 +56,7 @@ setMethod("aggregateTree", "TreeSummarizedExperiment",
             }
 
             if (by == "row") {
-              aggFun <- colSums
+              aggFun <- Matrix::colSums
               groups <-
                 splitAt(
                   rowData(x),
@@ -84,7 +84,7 @@ setMethod("aggregateTree", "TreeSummarizedExperiment",
 
             }
             else if (by == "col") {
-              aggFun <- rowSums
+              aggFun <- Matrix::rowSums
               groups <-
                 splitAt(
                   colData(x),
