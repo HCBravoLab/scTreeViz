@@ -1,8 +1,12 @@
 ---
 title: "Basic create and access TreeIndex objects"
 author: "Jayaram Kancherla, Hector Corrada Bravo"
-date: "November 13, 2018"
+date: "`r Sys.Date()`"
 output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Introduction to metavizr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

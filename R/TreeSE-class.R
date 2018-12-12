@@ -23,6 +23,9 @@ setValidity("TreeSummarizedExperiment", function(object) {
 #' @param rowData rowData
 #' @param colData colData
 #' @param ... other parameters for SummarizedExperiment
+#' @importFrom S4Vectors SimpleList
+#' @importFrom S4Vectors DataFrame
+#' @importFrom methods new
 #' @export
 TreeSummarizedExperiment <- function(assays = SimpleList(),
                    rowData = NULL,

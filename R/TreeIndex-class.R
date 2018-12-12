@@ -1,7 +1,6 @@
 setClassUnion("CharacterOrNull", c("character", "NULL"))
 
 #' TreeIndex class to manage and query hierarchical data
-#' @import S4Vectors
 setClass(
   "TreeIndex",
   contains = c("DataFrame"),
@@ -17,6 +16,14 @@ setClass(
 #' create a new TreeIndex object
 #' @param hierarchy hierarchy as a data.table
 #' @param feature_order order of the tree if different from colnames
+#' @importFrom methods new
+#' @importFrom data.table data.table
+#' @importFrom data.table as.data.table
+#' @importFrom data.table setorderv
+#' @importFrom data.table melt
+#' @importFrom data.table setnames
+#' @importFrom S4Vectors DataFrame
+#' @import digest
 #' @export
 TreeIndex <- function(hierarchy = NULL,
                       feature_order = NULL) {

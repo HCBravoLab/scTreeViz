@@ -78,6 +78,8 @@ setGeneric("splitAt", signature = "x",
 #' @param selectedNodes used to set states on individual nodes to define a cut on the tree
 #' @param start,end indices to filter nodes by
 #' @param format return format can be one of "list" or "TreeIndex"
+#' @importFrom stats na.omit
+#' @importFrom methods is
 #' @export
 setMethod("splitAt", "TreeIndex",
           function(x,
@@ -211,6 +213,8 @@ setMethod("splitAt", "TreeIndex",
           })
 
 #' Show the TreeIndex object
+#' @importFrom methods show
+#' @param object TreeIndex object
 #' @export
 setMethod("show", "TreeIndex", function(object) {
   cat(

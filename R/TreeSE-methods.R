@@ -1,5 +1,7 @@
 #' show object
-#' @param x TreeSummarizedExperiment object
+#' @param object TreeSummarizedExperiment object
+#' @importFrom methods show
+#' @importFrom S4Vectors metadata
 #' @export
 setMethod("show", signature("TreeSummarizedExperiment"),
           function(object) {
@@ -56,7 +58,7 @@ setMethod("aggregateTree", "TreeSummarizedExperiment",
             }
 
             if (by == "row") {
-              aggFun <- Matrix::colSums
+              aggFun <- colSums
               groups <-
                 splitAt(
                   rowData(x),
@@ -84,7 +86,7 @@ setMethod("aggregateTree", "TreeSummarizedExperiment",
 
             }
             else if (by == "col") {
-              aggFun <- Matrix::rowSums
+              aggFun <- rowSums
               groups <-
                 splitAt(
                   colData(x),

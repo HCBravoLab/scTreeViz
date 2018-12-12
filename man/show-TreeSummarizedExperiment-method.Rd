@@ -8,7 +8,7 @@
 \S4method{show}{TreeSummarizedExperiment}(object)
 }
 \arguments{
-\item{x}{TreeSummarizedExperiment object}
+\item{object}{TreeSummarizedExperiment object}
 }
 \description{
 show object

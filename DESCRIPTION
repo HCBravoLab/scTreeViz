@@ -13,10 +13,10 @@ Description: This package provides classes to support interactive data
           a given node selection thats spans across levels. The `TreeSE` class extends `SummarizedExperiment` 
           and performs aggregations where either rowData or colData or both can be a 
           hierarchy (a `TreeIndex` class).
-License: What license is it under?
-Depends: R (>= 3.4), methods, BiocGenerics, Biobase, SummarizedExperiment, data.table, S4Vectors, digest, Matrix
-Imports: metagenomeSeq
-Suggests: knitr, BiocStyle, testthat, metagenomeSeq, clustree, Seurat
+License: Artistic-2.0
+Depends: R (>= 3.4), methods
+Imports: BiocGenerics, Biobase, SummarizedExperiment, data.table, S4Vectors, digest, Matrix, tidygraph
+Suggests: knitr, BiocStyle, testthat, metagenomeSeq, clustree, Seurat, msd16s
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8

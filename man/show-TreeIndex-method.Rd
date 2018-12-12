@@ -7,6 +7,9 @@
 \usage{
 \S4method{show}{TreeIndex}(object)
 }
+\arguments{
+\item{object}{TreeIndex object}
+}
 \description{
 Show the TreeIndex object
 }
