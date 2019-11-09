@@ -85,4 +85,47 @@ ImportFromSeurat <- function(seurat, clustree, cluster_names = NULL) {
   TreeSummarizedExperiment(SimpleList(counts = seurat@data), colData = tree)
 }
 
+#' Import `SingleCellExperiment` and `Clustree` into `TreeSummarizedExperiment`
+#'
+#' @param scExp SingleCellExperiment object that contains colData
+#' @param cluster_names sluter names from SingleCellExperiment if different from standard
+#' @param clustree clustree object in graph format
+#' @import tidygraph
+#' @export
+ImportFromSingleCellExperiment <- function(scExp, clustree, cluster_names = NULL) {
+  counts <- assays(scExp)$counts
+
+  clusters <- colData(scExp)
+  if(is.null(cluster_names)) {
+    cluster_names <- colnames(clusters)
+  }
+
+  clusters <- clusters[, cluster_names]
+
+  # get cluster nodes from clustree
+  clusnodes <- as.data.frame(with_graph(clustree, .N()))
+  clusnames <- clusnodes$cluster
+  names(clusnames) <- clusnodes$node
+
+  # parse and create a dataframe-ish structure
+  clusters <- lapply(colnames(clusters), function(cn) {
+    col <- clusters[, cn]
+    col <- paste0(cn, "C", col)
+    for (i in names(clusnames)) {
+      col <- replace(col, col==i, paste0(i, "-cluster", clusnames[[i]]))
+    }
+    col
+  })
+
+  names(clusters) <- cluster_names
+  clusters <- as.data.frame(clusters)
+  clusters$samples <- colnames(counts)
+  cluster_names <- c(cluster_names, "samples")
+
+  tree <- TreeIndex(clusters, cluster_names)
+  rownames(tree) <- colnames(counts)
+
+  TreeSummarizedExperiment(SimpleList(counts = counts), colData = tree)
+}
+
 

@@ -16,7 +16,7 @@ Description: This package provides classes to support interactive data
 License: Artistic-2.0
 Depends: R (>= 3.4), methods
 Imports: BiocGenerics, Biobase, SummarizedExperiment, data.table, S4Vectors, digest, Matrix, tidygraph
-Suggests: knitr, BiocStyle, testthat, metagenomeSeq, clustree, Seurat, msd16s
+Suggests: knitr, BiocStyle, testthat, metagenomeSeq, clustree, Seurat, msd16s, SingleCellExperiment
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8

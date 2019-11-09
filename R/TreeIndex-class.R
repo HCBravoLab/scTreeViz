@@ -124,7 +124,7 @@ TreeIndex <- function(hierarchy = NULL,
 
     level_features <- as.character(table_node_ids[[level]])
     for (i in seq_len(nrow(temp_level_count))) {
-      row <- temp_level_count[i, ]
+      row <- temp_level_count[i,]
       if (depth == 1 && i == 1) {
         id <- paste(depth - 1, 0, sep = "-")
       } else{
@@ -183,7 +183,7 @@ TreeIndex <- function(hierarchy = NULL,
         )
 
       nodes_tab <-
-        rbind(nodes_tab[rownames(unique(nodes_tab[, c("id", "parent")])), ], temp_nodes_tab[rownames(unique(temp_nodes_tab[, c("id", "parent")])), ])
+        rbind(nodes_tab[rownames(unique(nodes_tab[, c("id", "parent")])),], temp_nodes_tab[rownames(unique(temp_nodes_tab[, c("id", "parent")])),])
     }
 
     ret_table <- as.data.table(nodes_tab)
@@ -278,8 +278,7 @@ TreeIndex <- function(hierarchy = NULL,
         replacing_na_obj_fData[, feature_order[i]][na_indices[j]] <-
           paste("Not_Annotated",
                 feature_order[i],
-                # replacing_na_obj_fData[, feature_order[1]][na_indices[j]],
-                replacing_na_obj_fData[, feature_order[i-1]][na_indices[j]],
+                replacing_na_obj_fData[, feature_order[1]][na_indices[j]],
                 sep = "_")
       } else {
         replacing_na_obj_fData[, feature_order[i]][na_indices[j]] <-
@@ -293,8 +292,7 @@ TreeIndex <- function(hierarchy = NULL,
         replacing_na_obj_fData[, feature_order[i]][na_indices[j]] <-
           paste("Not_Annotated",
                 feature_order[i],
-                # replacing_na_obj_fData[, feature_order[1]][na_indices[j]],
-                replacing_na_obj_fData[, feature_order[i-1]][na_indices[j]],
+                replacing_na_obj_fData[, feature_order[1]][na_indices[j]],
                 sep = "_")
       } else{
         replacing_na_obj_fData[, feature_order[i]][na_indices[j]] <-
@@ -308,8 +306,7 @@ TreeIndex <- function(hierarchy = NULL,
         replacing_na_obj_fData[, feature_order[i]][null_indices[j]] <-
           paste("Not_Annotated",
                 feature_order[i],
-                # replacing_na_obj_fData[, feature_order[1]][na_indices[j]],
-                replacing_na_obj_fData[, feature_order[i-1]][na_indices[j]],
+                replacing_na_obj_fData[, feature_order[1]][null_indices[j]],
                 sep = "_")
       } else{
         replacing_na_obj_fData[, feature_order[i]][null_indices[j]] <-

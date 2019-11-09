@@ -4,7 +4,7 @@ author: "Jayaram Kancherla, Hector Corrada Bravo"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Introduction to metavizr}
+  %\VignetteIndexEntry{Introduction to TreeSE}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,6 +22,7 @@ library(msd16s)
 library(S4Vectors)
 library(clustree)
 library(Seurat)
+library(SingleCellExperiment)
 ```
 
 ## Example Data
@@ -124,3 +125,19 @@ We can now perform similar Tree operations on the colData similar to the rowData
 aggregateTree(pbmc_TreeSE, selectedLevel=3, by="col")
 ```
 }
+
+Importing Single Cell Experiment Objects
+
+(using the example from clustree)
+```{r}
+
+sce <- SingleCellExperiment(assays = list(counts = sc_example$counts,
+                                          logcounts = sc_example$logcounts),
+                            colData = sc_example$sc3_clusters,
+                            reducedDims = SimpleList(TSNE = sc_example$tsne))
+
+graph <- clustree(sce, prefix = "sc3_", suffix = "_clusters", return="graph")
+
+treeSE <- ImportFromSingleCellExperiment(sce, graph)
+treeSE
+```

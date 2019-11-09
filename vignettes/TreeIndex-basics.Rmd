@@ -4,7 +4,7 @@ author: "Jayaram Kancherla, Hector Corrada Bravo"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Introduction to metavizr}
+  %\VignetteIndexEntry{Introduction to TreeIndex}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
