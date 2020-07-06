@@ -1,6 +1,6 @@
-Package: TreeSummarizedExperiment
+Package: TreeViz
 Type: Package
-Title: R/Bioconductor package to manage hierarchies in genomic datasets
+Title: R/Bioconductor package to interactively explore and visualize datasets with hierarhical annotations (Single Cell, Metagenomics etc.)
 Version: 0.1.0
 Authors@R: c( 
           person("Jayaram", "Kancherla", email="jayaram.kancherla@gmail.com", role=c("aut")),
@@ -14,12 +14,14 @@ Description: This package provides classes to support interactive data
           and performs aggregations where either rowData or colData or both can be a 
           hierarchy (a `TreeIndex` class).
 License: Artistic-2.0
-Depends: R (>= 3.4), methods
-Imports: BiocGenerics, Biobase, SummarizedExperiment, data.table, S4Vectors, digest, Matrix, tidygraph
+Depends: R (>= 3.4), methods, epivizrData, epivizr, epivizrServer
+Imports: epivizrStandalone, BiocGenerics, Biobase, 
+        SummarizedExperiment, data.table, S4Vectors, digest, Matrix, tidygraph, Rtsne, GenomeInfoDb, httr
 Suggests: knitr, BiocStyle, testthat, metagenomeSeq, clustree, Seurat, msd16s, SingleCellExperiment
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8
 LazyData: true
-Collate: 'TreeIndex-class.R' 'TreeIndex-methods.R' 'TreeSE-class.R' 'TreeSE-methods.R'
-RoxygenNote: 6.1.1
+Collate: 'TreeIndex-class.R' 'TreeIndex-methods.R' 'TreeViz-class.R' 'TreeViz-methods.R' 'startTreeViz.R' 
+         'TreeVizApp-class.R' 'EpivizTreeData-class.R' 
+RoxygenNote: 7.1.1

@@ -1,4 +1,4 @@
----
+  ---
 title: "TreeSE-basics"
 author: "Jayaram Kancherla, Hector Corrada Bravo"
 date: "`r Sys.Date()`"
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(TreeSummarizedExperiment)
+library(TreeViz)
 library(metagenomeSeq)
 library(msd16s)
 library(S4Vectors)
@@ -34,19 +34,19 @@ hierarchy <- fData(mouseData)
 ```
 
 
-## creating a `TreeSummarizedExperiment` object
+## creating a `TreeViz` object
 
 ```{r} 
 tree <- TreeIndex(hierarchy)
 
-mbiome <- TreeSummarizedExperiment(SimpleList(counts=counts), rowData=tree)
+mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
 mbiome
 ```
 
 
-## Operations on TreeSummarizedExperiment objects
+## Operations on TreeViz objects
 
-`TreeSummarizedExperiment` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeSummarizedExperiment` object.
+`TreeViz` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeViz` object.
 
 ```{r}
 aggr <- aggregateTree(mbiome, selectedLevel=3, by="row")
@@ -77,9 +77,9 @@ agg_sel
 ```
 
 
-### Import a `Seurat` and `clustree` into `TreeSummarizedExperiment`
+### Import a `Seurat` and `clustree` into `TreeViz`
 
-The previous example use a metagenomic dataset. In this section, we will show how to import a Seurat object along with the cluster hierarchy generated from the clustree into a TreeSummarizedExperiment object
+The previous example use a metagenomic dataset. In this section, we will show how to import a Seurat object along with the cluster hierarchy generated from the clustree into a TreeViz object
 
 ```{r, eval=FALSE}
 # Seurat tutorial on pbmc 3k dataset
