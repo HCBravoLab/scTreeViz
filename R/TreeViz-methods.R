@@ -168,3 +168,50 @@ setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...)
   return(EpivizTreeData$new(object=object, tree=tree, columns=columns, ...))
 })
 
+#' plot tree from TreeViz
+#'
+#' @param x treeviz object
+#' @param y none
+#' @return Dataframe containing cluster information at different resolutions
+#' 
+#' @import dplyr
+#' @import ggraph
+#' @import igraph
+#' @export
+#' 
+setMethod("plot", "TreeViz", function(x, y, ...) {
+  object <- x
+  
+  if(is(colData(object), "TreeIndex")) {
+    hierarchydf <- colData(object)@hierarchy_tree
+  }
+  else {
+    hierarchydf <- rowData(object)@hierarchy_tree
+  }
+    
+  
+  hierarchydf <- hierarchydf[, !colnames(hierarchydf) %in% c("samples", "otu_index")]
+  
+  df <- data.frame(from = numeric(), to = numeric())
+  for (i in seq(ncol(hierarchydf) - 1)) {
+    edges <- hierarchydf %>%
+      dplyr::rename(from = colnames(hierarchydf)[i],
+                    to = colnames(hierarchydf)[i + 1]) %>%
+      select(i, i + 1) %>%
+      unique
+    
+    df <- rbind(df, edges)
+  }
+  
+  mygraph <- graph_from_data_frame(df)
+  
+  fig <- ggraph(mygraph, layout = 'dendrogram', circular = FALSE) +
+    ggraph::geom_edge_diagonal() +
+    ggraph::geom_node_point(show.legend = TRUE) +
+    ggraph::geom_node_label(aes(label = substring(V(mygraph)$name, 8))) +
+    theme_void()
+  show(fig)
+
+})
+
+

@@ -543,22 +543,21 @@ EpivizTreeData$methods(
     "
     if (!("tsne"  %in% names(metadata(.self$.object)))) {
       tsne <- Rtsne(t(as.matrix(assays(.self$.object)$counts)))
-      .self$.object@metadata[['tsne']] <- tsne
+      metadata(.self$.object)$tsne <- tsne
     }
     
-    #SE_tsne<-Rtsne(t(as.matrix(assays(.self$.object)$counts)))
-    #print(SE_tsne)
+    # data_rows = .self$getRows(measurements = measurements, selectedLevels = .self$.levelSelected, 
+    #                           selections = .self$.nodeSelections)
+    
+    
     measurements <-  metadata(.self$.object)$tsne
     data <- list()
-    #tsne_plot <- data.frame(x = SE_tsne$Y[,1], y = SE_tsne$Y[,2])
-    #ggplot(tsne_plot) + geom_point(aes(x=x, y=y, color=col))
-    for (col in seq(colnames(.self$.object))) {
-      #print(col)
+    for (col in seq(rownames(metadata(.self$.object)$tsne))) {
       temp    <-
         list(
-          sample_id = colnames(.self$.object)[col],
-          PC1 = measurements$Y[col, 1],
-          PC2 = measurements$Y[col, 2]
+          sample_id = col,
+          PC1 = unname(measurements[col, 1]),
+          PC2 = unname(measurements[col, 2])
         )
       data[[col]] <- temp
     }
@@ -583,7 +582,7 @@ EpivizTreeData$methods(
     }
     "
 
-    # update node selections types to metaviztree
+    # update node selections types to tree
     if(!is.null(nodeSelection)) {
       for(n in names(nodeSelection)){
         .self$.nodeSelections[[n]] = nodeSelection[[n]]
@@ -593,7 +592,9 @@ EpivizTreeData$methods(
     if(is.null(selectedLevels)) {
       selectedLevels = .self$.levelSelected
     }
-    selections = list()
+    
+    # selections = .self$.nodeSelections
+    selections <- list()
     measurements = unique(measurements)
 
     data_rows = .self$getRows(measurements = measurements, start = start, end = end, selectedLevels = selectedLevels, selections = selections)
@@ -603,7 +604,7 @@ EpivizTreeData$methods(
     data_columns = list()
     
     if (mes$.treeIn == "row") {
-      for(m in measurements){
+      for(m in measurements) {
         if(m %in% colnames(aggcounts)){
           inner_result <- aggcounts[,m]
           data_columns[[m]] <- unname(unlist(inner_result))

@@ -170,6 +170,7 @@
 
 #' Start treeviz app and create \code{\link[treevizr]{TreevizApp}} object to manage connection.
 #'
+#' @param data TreeViz object to explore
 #' @param host (character) host address to launch.
 #' @param register_function (function) function used to register actions and charts on the treeviz app.
 #' @param ... additional parameters passed to \code{\link[epivizr]{startEpiviz}}.
@@ -177,6 +178,7 @@
 #' @return An object of class \code{\link[treevizr]{TreevizApp}}
 #'
 #' @import epivizr
+#' @import sys
 #' 
 #' @seealso \code{\link[treevizr]{TreevizApp}}
 #' @examples
@@ -185,16 +187,58 @@
 #' app$stop_app()
 #'
 #' @export
-startTreeviz <- function(host="http://metaviz.cbcb.umd.edu",
+startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
                          register_function = .register_all_treeviz_things,
                          ...) {
   chr="treevizr"
   start <- 1
-  end <- 100
+  end <- 100000
   app <- startEpiviz(host = host, register_function = register_function,
                      chr=chr, start=start, end=end, ...)
   mApp <- TreeVizApp$new(.url_parms=app$.url_parms, .browser_fun=app$.browser_fun,
                          server=app$server, data_mgr=app$data_mgr, chart_mgr=app$chart_mgr)
+  
+  
+  # if (is(data, "Seurat")) {
+  #   treeViz <- createFromSeurat(data)
+  # }
+  # else if (is(data, "SingleCellExperiment")) {
+  #   treeViz <- createFromSCE(data) 
+  # }
+  
+  if (!is.null(data)) {
+    # treeViz <- data 
+    
+    # find variable genes
+    data <- find_top_variable_genes(data, 100)
+    
+    now <- Sys.time()
+    while ((Sys.time() - now) < 10) {
+      # just iterate
+      # mApp$server$wait_to_clear_requests()
+    }
+    
+    # add facetZoom
+    facetZoom <- mApp$plot(data, datasource_name = "SCRNA", tree = "col")
+    
+    mApp$server$wait_to_clear_requests()
+    
+    mes <- mApp$get_ms_object(chart_id_or_object = facetZoom)
+    # Get Measurements from the plot
+    ms_list <- facetZoom$get_measurements()
+    subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+    
+    # add Heatmap
+    mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+    
+    mApp$server$wait_to_clear_requests()
+    
+    # TSNE
+    mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
+    
+    mApp$server$wait_to_clear_requests() 
+  }
+  
   mApp
 }
 

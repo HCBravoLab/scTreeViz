@@ -5,12 +5,15 @@
 \title{Start treeviz app and create \code{\link[treevizr]{TreevizApp}} object to manage connection.}
 \usage{
 startTreeviz(
+  data = NULL,
   host = "http://metaviz.cbcb.umd.edu",
   register_function = .register_all_treeviz_things,
   ...
 )
 }
 \arguments{
+\item{data}{TreeViz object to explore}
+
 \item{host}{(character) host address to launch.}
 
 \item{register_function}{(function) function used to register actions and charts on the treeviz app.}

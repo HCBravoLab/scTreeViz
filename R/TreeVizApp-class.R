@@ -22,6 +22,59 @@ TreeVizApp <- setRefClass("TreeVizApp",
                         )
 )
 
+TreeVizApp$methods(
+  explore=function(data) {
+    'explore adds facetZoon, heatmap and TSNE to the app.'
+    # treeViz <- data 
+    
+    # find variable genes
+    data <- find_top_variable_genes(data, 100)
+    
+    now <- Sys.time()
+    while ((Sys.time() - now) < 10) {
+      # just iterate
+      # .self$server$wait_to_clear_requests()
+    }
+    
+    .self$server$wait_to_clear_requests()
+    
+    # add facetZoom
+    facetZoom <- .self$plot(data, datasource_name = "SCRNA", tree = "col")
+    
+    .self$server$wait_to_clear_requests()
+    
+    now <- Sys.time()
+    while ((Sys.time() - now) < 10) {
+      # just iterate
+      # .self$server$wait_to_clear_requests()
+    }
+    
+    mes <- .self$get_ms_object(chart_id_or_object = facetZoom)
+    # Get Measurements from the plot
+    ms_list <- facetZoom$get_measurements()
+    subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+    
+    print("variable genes length")
+    print(length(subset_ms_list))
+    
+    # add Heatmap
+    .self$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+    
+    .self$server$wait_to_clear_requests()
+    
+    now <- Sys.time()
+    while ((Sys.time() - now) < 10) {
+      # just iterate
+      # .self$server$wait_to_clear_requests()
+    }
+    
+    # TSNE
+    .self$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
+    
+    .self$server$wait_to_clear_requests() 
+  }
+)
+
 # # navigation methods
 # TreeVizApp$methods(
 #   navigate=function(node) {

@@ -1,0 +1,156 @@
+---
+title: "Interactively explore and visualize Single Cell RNA seq data"
+author: "Kazi Tasnim Zinat, Jayaram Kancherla, Héctor Corrada Bravo"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Explore Data using TreeViz}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+[`TreeViz`](https://github.com/HCBravoLab/TreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `TreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in metagenomic datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for TSNE.
+
+## loading required packages
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(TreeViz)
+library(dplyr)
+library(Seurat)
+library(SC3)
+library(scran)
+library(scater)
+library(clustree)
+library(igraph)
+```
+
+# Preparing Datasets
+
+In this section, we show ways to generate a `TreeViz` object from existing Single Cell packages (SingleCellExperiment or Seurat) or from a raw count matrix and cluster hierarchy
+
+## Create TreeViz from count matrix and Cluster hierarchy
+
+```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+n=64
+df<- data.frame(cluster0=rep(1,n))
+for(i in seq(1,5)){
+  df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+}
+counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
+treeViz <- createTreeViz(df, counts)
+treeViz
+```
+
+
+## From `Seurat`
+
+We use the dataset `pbmc_small` available through Seurat to create a `TreeViz` object. We then preprocess the data and find clusters at different resolutions. 
+
+```{r}
+pbmc <- pbmc_small
+pbmc
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+pbmc <- NormalizeData(pbmc)
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, vars.to.regress = "percent.mt")
+pbmc <- FindVariableFeatures(object = pbmc)
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0), print.output = 0, save.SNN = TRUE)
+pbmc
+```
+
+We use the helper function to create a TreeViz object from Seurat
+
+```{r, eval=TRUE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
+treeViz <- createFromSeurat(pbmc)
+plot(treeViz)
+```
+
+## From `SingleCellExperiment`
+
+We create a `mock SingleCellExperiment` object
+
+```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+
+sce<- mockSCE()
+
+# Normalization.
+sce <- logNormCounts(sce)
+
+# define feature names in feature_symbol column
+rowData(sce)$feature_symbol <- rownames(sce)
+# remove features with duplicated names
+sce <- sce[!duplicated(rowData(sce)$feature_symbol), ]
+
+# Dimensionality reduction.
+sce <- runPCA(sce)
+```
+
+We create clusters at different resolutions using the `SC3` package.
+
+```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+counts(sce) <- as.matrix(counts(sce))
+logcounts(sce) <- as.matrix(logcounts(sce))
+sce <- sc3(sce, ks = 1:10)
+
+for(i in  seq(10)){
+  clust.kmeans <- kmeans(reducedDim(sce, "PCA"), centers=i)
+  sce[[paste0("cluster",i)]] <- factor(clust.kmeans$cluster)
+  
+}
+
+sce
+```
+
+We use the helper function to create a `TreeViz` object from SCE
+
+```{r, eval=TRUE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
+treeViz <- createFromSCE(sce)
+plot(treeViz)
+```
+
+# Interactively explore `TreeViz` object
+
+## The metavizr session manager
+
+Start the App from the `treeViz` object we created. This should add a `facetZoom` to navigate the hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE showing various clusters. 
+ 
+```{r, eval=FALSE, echo=TRUE}
+# doesn't work
+# app <- startTreeviz(treeViz)
+
+# doesn't work
+# app <- startTreeviz()
+# app$explore(treeViz)
+
+app <- startTreeviz()
+treeViz <- find_top_variable_genes(treeViz, 100)
+
+icicle_plot <- app$plot(treeViz, datasource_name = "SCRNA", tree = "col")
+mes <- app$get_ms_object(chart_id_or_object = icicle_plot)
+
+ms_list <- icicle_plot$get_measurements()
+subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+
+# add Heatmap
+app$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+
+# add TSNE
+app$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= icicle_plot)
+```
+
+## Stop App
+
+```{r, eval=FALSE, echo=TRUE}
+app$stop_app()
+```

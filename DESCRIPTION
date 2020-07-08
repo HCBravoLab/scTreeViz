@@ -16,12 +16,13 @@ Description: This package provides classes to support interactive data
 License: Artistic-2.0
 Depends: R (>= 3.4), methods, epivizrData, epivizr, epivizrServer
 Imports: epivizrStandalone, BiocGenerics, Biobase, 
-        SummarizedExperiment, data.table, S4Vectors, digest, Matrix, tidygraph, Rtsne, GenomeInfoDb, httr
-Suggests: knitr, BiocStyle, testthat, metagenomeSeq, clustree, Seurat, msd16s, SingleCellExperiment
+        SummarizedExperiment, data.table, S4Vectors, digest, Matrix, tidygraph, Rtsne, GenomeInfoDb, 
+        httr, ggraph, igraph
+Suggests: knitr, BiocStyle, testthat, clustree, Seurat, msd16s, SingleCellExperiment
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8
 LazyData: true
 Collate: 'TreeIndex-class.R' 'TreeIndex-methods.R' 'TreeViz-class.R' 'TreeViz-methods.R' 'startTreeViz.R' 
-         'TreeVizApp-class.R' 'EpivizTreeData-class.R' 
+         'TreeVizApp-class.R' 'EpivizTreeData-class.R' 'helper-functions.R'
 RoxygenNote: 7.1.1

@@ -8,4 +8,9 @@
 \description{
 Class managing connection to metaviz application.
 }
+\section{Methods}{
+
+\describe{
+\item{\code{explore(data)}}{explore adds facetZoon, heatmap and TSNE to the app.}
+}}
 

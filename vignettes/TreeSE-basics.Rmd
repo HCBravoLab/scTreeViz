@@ -1,4 +1,4 @@
-  ---
+---
 title: "TreeSE-basics"
 author: "Jayaram Kancherla, Hector Corrada Bravo"
 date: "`r Sys.Date()`"
