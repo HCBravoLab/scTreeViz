@@ -375,41 +375,19 @@ createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
 #' @return `TreeViz` Object
 #' @export
 #'
-createFromSCE <-
-  function(object,
-           prefix = "cluster",
-           check_colData = FALSE,
-           reduced_dim = c("TSNE")) {
-    if (check_colData == TRUE) {
-      clusterdata <- colData(object)
-      clusterdata <-
-        clusterdata[, startsWith(colnames(clusterdata), prefix)]
-      if (length(colnames(clusterdata)) == 0) {
-        stop("No cluster information found")
-      }
-    }
-    else{
-      message("No default clusters provided")
-      if (is.null(metadata(object)$treeviz_clusters)) {
-        message("calculating walktrap clusters")
-        object <- generate_walktrap_hierarchy(object)
-      }
-      clusterdata <- metadata(object)$treeviz_clusters
-    }
-    rownames(clusterdata) <- colnames(object)
-    count <- counts(object)
-    rownames(count) <- rownames(counts(object))
-    
-    treeviz <- createTreeViz(as.data.frame(clusterdata), count)
-    for(dim_names in reduced_dim){
-      if (dim_names %in% reducedDimNames(object)) {
-        metadata(treeviz)$reduced_dim[[dim_names]] <-
-          reducedDims(object)[[dim_names]][, 1:2]
-        
-        rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
-      }
-    }
-    treeviz
+createFromSCE <- function(object) {
+  clusterdata <- colData(object)
+  clusterdata <-
+    clusterdata[, grep("(cluster|sc3_)", colnames(clusterdata), ignore.case = TRUE)]
+  
+  count <- counts(object)
+  rownames(count) <- rownames(counts(object))
+  
+  treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
+  
+  if ("TSNE" %in% reducedDimNames(object)) {
+      #print(reducedDims(object)$"TSNE")
+      metadata(treeviz)$tsne <- unname(reducedDims(object)$"TSNE")
   }
 
 #' Creates `TreeViz` object from hierarchy and count matrix

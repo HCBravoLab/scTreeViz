@@ -545,7 +545,40 @@ EpivizTreeData$methods(
     "
     return(list())
   },
-  
+
+  getPCA=function(measurements = NULL) {
+    " Compute PCA over all features for given samples
+
+    \\describe{
+    \\item{measurements}{Samples to compute PCA over}
+    \\item{start}{Start of feature range to query }
+    \\item{end}{End of feature range to query}
+    }
+    "
+    if (!("tsne"  %in% names(metadata(.self$.object)))) {
+      tsne <- Rtsne(t(as.matrix(assays(.self$.object)$counts)), perplexity=2)
+      metadata(.self$.object)$tsne <- tsne
+    }
+    
+    # data_rows = .self$getRows(measurements = measurements, selectedLevels = .self$.levelSelected, 
+    #                           selections = .self$.nodeSelections)
+    
+    
+    measurements <-  metadata(.self$.object)$tsne
+    data <- list()
+    for (col in seq(nrow(metadata(.self$.object)$tsne))) {
+      temp    <-
+        list(
+          sample_id = col,
+          PC1 = unname(measurements[col, 1]),
+          PC2 = unname(measurements[col, 2])
+        )
+      data[[col]] <- temp
+    }
+    result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    return(result)
+  },
+
   getCombined=function(measurements = NULL,
                        seqName, start = 1, end = 1000,
                        order = NULL, nodeSelection = NULL, selectedLevels = NULL) {
