@@ -313,7 +313,7 @@ createFromSeurat <- function(object) {
 createFromSCE <- function(object) {
   clusterdata <- colData(object)
   clusterdata <-
-    clusterdata[, grep("(cluster|sc3)_", colnames(clusterdata), ignore.case = TRUE)]
+    clusterdata[, grep("(cluster|sc3_)", colnames(clusterdata), ignore.case = TRUE)]
   
   count <- counts(object)
   rownames(count) <- rownames(counts(object))
