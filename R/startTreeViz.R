@@ -168,6 +168,37 @@
   })
 }
 
+.wait_until_connected <- function(server, timeout=60L) {
+  ptm <- proc.time()
+  while (!server$is_socket_connected() && (proc.time() - ptm < timeout)["elapsed"]) {
+    Sys.sleep(0.001)
+    server$service()
+  }
+  if (!server$is_socket_connected()) {
+    stop("[epivizrStandalone] Error starting app. UI unable to connect to websocket server.")
+  }
+  invisible()
+}
+
+.delay_requests <- function(server, timeout=2L) {
+  ptm <- proc.time()
+  while ((proc.time() - ptm < timeout)["elapsed"]) {
+    Sys.sleep(0.001)
+    server$service()
+  }
+  invisible()
+}
+
+.viewer_option_browse_fun <- function(url) {
+  viewer <- getOption("viewer")
+  if (is.null(viewer)) {
+    utils::browseURL(url)
+  } else {
+    viewer(url)
+  }
+}
+
+
 #' Start treeviz app and create \code{\link[treevizr]{TreevizApp}} object to manage connection.
 #'
 #' @param data TreeViz object to explore
@@ -206,38 +237,46 @@ startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
   #   treeViz <- createFromSCE(data) 
   # }
   
-  if (!is.null(data)) {
-    # treeViz <- data 
+  tryCatch({
     
-    # find variable genes
-    data <- find_top_variable_genes(data, 100)
+    send_request <- mApp$server$is_interactive()
+    # print(paste0("Server is interactive? ", send_request))
     
-    now <- Sys.time()
-    while ((Sys.time() - now) < 10) {
-      # just iterate
-      # mApp$server$wait_to_clear_requests()
+    if (mApp$server$is_interactive()) {
+      .wait_until_connected(mApp$server)      
     }
     
-    # add facetZoom
-    facetZoom <- mApp$plot(data, datasource_name = "SCRNA", tree = "col")
-    
-    mApp$server$wait_to_clear_requests()
-    
-    mes <- mApp$get_ms_object(chart_id_or_object = facetZoom)
-    # Get Measurements from the plot
-    ms_list <- facetZoom$get_measurements()
-    subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
-    
-    # add Heatmap
-    mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
-    
-    mApp$server$wait_to_clear_requests()
-    
-    # TSNE
-    mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
-    
-    mApp$server$wait_to_clear_requests() 
-  }
+    if (!is.null(data)) {
+      
+      data <- find_top_variable_genes(data, 100)
+      
+      mApp$navigate(chr, start, end) 
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+      
+      # facetZoom
+      facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
+      mApp$server$wait_to_clear_requests()
+      mApp$chart_mgr$plot(facetZoom, send_request=send_request)
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+      
+      # Heatmap
+      ms_list <- facetZoom$get_measurements()
+      subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+      mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+      
+      # TSNE
+      mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
+      mApp$server$wait_to_clear_requests() 
+      
+    }
+  }, error=function(e) {
+    mApp$stop_app()
+    stop(e)
+  })
   
   mApp
 }
