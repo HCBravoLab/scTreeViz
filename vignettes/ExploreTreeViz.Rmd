@@ -39,7 +39,7 @@ In this section, we show ways to generate a `TreeViz` object from existing Singl
 
 ## Create TreeViz from count matrix and Cluster hierarchy
 
-```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 n=64
 df<- data.frame(cluster0=rep(1,n))
 for(i in seq(1,5)){
@@ -80,7 +80,7 @@ plot(treeViz)
 
 We create a `mock SingleCellExperiment` object
 
-```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 
 sce<- mockSCE()
 
@@ -98,7 +98,7 @@ sce <- runPCA(sce)
 
 We create clusters at different resolutions using the `SC3` package.
 
-```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 counts(sce) <- as.matrix(counts(sce))
 logcounts(sce) <- as.matrix(logcounts(sce))
 sce <- sc3(sce, ks = 1:10)
@@ -114,7 +114,7 @@ sce
 
 We use the helper function to create a `TreeViz` object from SCE
 
-```{r, eval=TRUE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
+```{r, warning=FALSE, error=FALSE, message=FALSE}
 treeViz <- createFromSCE(sce)
 plot(treeViz)
 ```
@@ -123,33 +123,17 @@ plot(treeViz)
 
 ## The metavizr session manager
 
-Start the App from the `treeViz` object we created. This should add a `facetZoom` to navigate the hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE showing various clusters. 
+Start the App from the `treeViz` object we created. This adds a `facetZoom` to navigate the cluster hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE dimensions. 
  
 ```{r, eval=FALSE, echo=TRUE}
-# doesn't work
-# app <- startTreeviz(treeViz)
-
-# doesn't work
-# app <- startTreeviz()
-# app$explore(treeViz)
-
-app <- startTreeviz()
-treeViz <- find_top_variable_genes(treeViz, 100)
-
-icicle_plot <- app$plot(treeViz, datasource_name = "SCRNA", tree = "col")
-mes <- app$get_ms_object(chart_id_or_object = icicle_plot)
-
-ms_list <- icicle_plot$get_measurements()
-subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
-
-# add Heatmap
-app$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
-
-# add TSNE
-app$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= icicle_plot)
+app <- startTreeviz(treeViz)
 ```
 
+Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
+
 ## Stop App
+
+After exploring the dataset, this command the websocket connection. 
 
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()

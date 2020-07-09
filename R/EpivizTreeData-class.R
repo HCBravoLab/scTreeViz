@@ -42,6 +42,7 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
 
                                   .self$.levelSelected <- 3
                                   .self$.lastRootId <- "0-0"
+                                  .self$.nodeSelections <- list()
                                   .self$.treeIn <- tree
 
                                   if(tree == "row") {
@@ -593,17 +594,16 @@ EpivizTreeData$methods(
       selectedLevels = .self$.levelSelected
     }
     
-    # selections = .self$.nodeSelections
-    selections <- list()
+    selections = .self$.nodeSelections
     measurements = unique(measurements)
-
+    
     data_rows = .self$getRows(measurements = measurements, start = start, end = end, selectedLevels = selectedLevels, selections = selections)
     row_order = unlist(data_rows$metadata$label)
     aggcounts = aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, by=.self$.treeIn, format="counts")
-
+    
     data_columns = list()
     
-    if (mes$.treeIn == "row") {
+    if (.self$.treeIn == "row") {
       for(m in measurements) {
         if(m %in% colnames(aggcounts)){
           inner_result <- aggcounts[,m]
@@ -613,7 +613,7 @@ EpivizTreeData$methods(
           data_columns[[m]] <- inner_result
         }
       }
-    } else if (mes$.treeIn == "col") {
+    } else if (.self$.treeIn == "col") {
       for(m in measurements) {
         if(m %in% rownames(aggcounts)){
           inner_result <- aggcounts[m,]

@@ -14,11 +14,11 @@ Description: This package provides classes to support interactive data
           and performs aggregations where either rowData or colData or both can be a 
           hierarchy (a `TreeIndex` class).
 License: Artistic-2.0
-Depends: R (>= 3.4), methods, epivizrData, epivizr, epivizrServer
+Depends: R (>= 3.4), methods, epivizr, SummarizedExperiment
 Imports: epivizrStandalone, BiocGenerics, Biobase, 
-        SummarizedExperiment, data.table, S4Vectors, digest, Matrix, tidygraph, Rtsne, GenomeInfoDb, 
-        httr, ggraph, igraph
-Suggests: knitr, BiocStyle, testthat, clustree, Seurat, msd16s, SingleCellExperiment
+        data.table, S4Vectors, digest, Matrix, tidygraph, Rtsne, GenomeInfoDb, 
+        httr, ggraph, igraph, clustree, dplyr, scran, sys, epivizrData, epivizrServer
+Suggests: knitr, BiocStyle, testthat, Seurat, msd16s, SingleCellExperiment
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8
