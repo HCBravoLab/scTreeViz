@@ -183,7 +183,6 @@
 
 .delay_requests <- function(server, timeout=2L) {
   ptm <- proc.time()
-  
   while ((proc.time() - ptm < timeout)["elapsed"]) {
     Sys.sleep(0.001)
     server$service()
@@ -242,56 +241,38 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
   tryCatch({
     
     send_request <- mApp$server$is_interactive()
+    # print(paste0("Server is interactive? ", send_request))
     
     if (mApp$server$is_interactive()) {
-      .wait_until_connected(mApp$server)
+      .wait_until_connected(mApp$server)      
     }
     
     if (!is.null(data)) {
       
-      if (!is.null(genes)) {
-        data <- set_gene_list(data, genes)
-      } else {
-        data <- find_top_variable_genes(data, top_genes)
-      }
+      data <- find_top_variable_genes(data, 100)
       
-      if (!("reduced_dim"  %in% names(metadata(data)))) {
-        data <- calculate_tsne(data)
-      }
-      
-      mApp$navigate(chr, start, end)
+      mApp$navigate(chr, start, end) 
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, timeout =  delay)
+      .delay_requests(mApp$server)
       
       # facetZoom
       facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, timeout = delay)
+      mApp$chart_mgr$plot(facetZoom, send_request=send_request)
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
       
+      # Heatmap
       ms_list <- facetZoom$get_measurements()
-      mea <- ms_list[[1]]
-      mea@id <- "all"
-      
-      mApp$chart_mgr$visualize(chart_type = "epiviz.ui.charts.tree.Icicle",  measurements = list(mea))
+      subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+      mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, timeout = delay)
+      .delay_requests(mApp$server)
       
-      mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = list(mea))
-      mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, timeout=delay)
+      # TSNE
+      mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
+      mApp$server$wait_to_clear_requests() 
       
-      if ("reduced_dim" %in% names(metadata(data))) {
-        for (dim in names(metadata(data)$reduced_dim)) {
-          ms_list <- facetZoom$get_measurements()
-          mea <- ms_list[[1]]
-          mea@id <- dim
-          
-          # TSNE
-          mApp$chart_mgr$visualize(chart_type = "TSNEPlot", measurements = list(mea))
-          mApp$server$wait_to_clear_requests()
-          .delay_requests(mApp$server, timeout=delay)
-        }        
-      }
     }
   }, error=function(e) {
     mApp$stop_app()

@@ -40,7 +40,7 @@ The first step in using the `Treeviz` package is to wrap datasets into `TreeViz`
 
 ## Create TreeViz from count matrix and Cluster hierarchy
 
-```{r, eval=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 n=64
 # create a hierarchy
 df<- data.frame(cluster0=rep(1,n))
@@ -100,16 +100,7 @@ plot(treeViz)
 
 A number of Single cell datasets are available as `SingleCellExperiment` objects through the `scRNAseq` package, for this usecase, we use `LunSpikeInData` dataset. In addition, we calculate the dimensionality reductions; UMAP, TSNE and PCA from the functions provided in `scater` package. 
 
-```{r, eval=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-# load dataset
-sce<- LunSpikeInData('416b')
-# Normalization
-sce <- logNormCounts(sce)
-# calculate umap and tsne
-sce <- runUMAP(sce)
-sce<- runTSNE(sce)
-sce<- runPCA(sce)
-```
+```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 
 Similar to the `Seurat` methods, we provide `createFromSCE` function to create a `TreeViz` object from `SingleCellExperiment` object. Here, the workflow works in two ways:
 
@@ -126,7 +117,10 @@ plot(treeViz)
 
 # Interactively explore `TreeViz` object
 
-## Start the TreeViz App (using hosted app)
+```{r, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+counts(sce) <- as.matrix(counts(sce))
+logcounts(sce) <- as.matrix(logcounts(sce))
+sce <- sc3(sce, ks = 1:10)
 
 We provide `startTreeViz` method to initialize interactive exploration of data from the `treeViz` object we created before. 
 
@@ -136,43 +130,26 @@ app <- startTreeviz(treeViz, top_genes = 500)
 
 This process
 
-1. Opens the browser (http://epiviz.cbcb.umd.edu/treeviz) 
-2. Adds a `facetZoom` visualization to navigate the cluster hierarchy
-3. Heatmap of the top `n` (default to 100) most variable genes from the dataset
-4. Scatter plots for each of the reduced dimensions available in the object.  
- 
-![Treeviz](images/Treeviz.png)
- 
-In addition, users can also use the application UI to explore the same dataset using different visualizations available through TreeViz.
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+treeViz <- createFromSCE(sce)
+plot(treeViz)
+```
 
 ## Visualize gene expression across clusters
 
 Users can add Box plots per gene through either the `Add Visualization` button in frontend, or from the R session using the `plot_gene` function. 
 
+Start the App from the `treeViz` object we created. This adds a `facetZoom` to navigate the cluster hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE dimensions. 
+ 
 ```{r, eval=FALSE, echo=TRUE}
-# to add a box plot of expression for a gene
-app$plotGene(gene="TYROBP")
+app <- startTreeviz(treeViz)
 ```
 
-Here, we visualize the 5th, 50th and 500th most variable gene as Box plot,
-
-![BoxPlot](images/Boxplot.png)
+Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
 
 ## Stop App
 
-After exploring the dataset, this command closes the app and the websocket connection. 
-
-```{r, eval=FALSE, echo=TRUE}
-app$stop_app()
-```
-
-## Start TreeViz with app running locally
-
-```{r, eval=FALSE, echo=TRUE}
-setTreevizStandalone()
-app <- startTreevizStandalone(treeViz)
-```
-## Stop App
+After exploring the dataset, this command the websocket connection. 
 
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
