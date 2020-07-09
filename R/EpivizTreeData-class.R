@@ -543,7 +543,7 @@ EpivizTreeData$methods(
     }
     "
     if (!("tsne"  %in% names(metadata(.self$.object)))) {
-      tsne <- Rtsne(t(as.matrix(assays(.self$.object)$counts)))
+      tsne <- Rtsne(t(as.matrix(assays(.self$.object)$counts)), perplexity=2)
       metadata(.self$.object)$tsne <- tsne
     }
     

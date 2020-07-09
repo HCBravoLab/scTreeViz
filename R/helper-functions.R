@@ -322,7 +322,7 @@ createFromSCE <- function(object) {
   treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
   
   if ("TSNE" %in% reducedDimNames(object)) {
-      print(reducedDims(object)$"TSNE")
+      #print(reducedDims(object)$"TSNE")
       metadata(treeviz)$tsne <- unname(reducedDims(object)$"TSNE")
   }
   treeviz
