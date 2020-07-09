@@ -184,7 +184,7 @@ checkRoot <- function(cluster_df) {
   # Handle Forests
   cols <- colnames(cluster_df)
   if (length(unique(cluster_df[[1]])) > 1) {
-    cluster_df$root <- "AllClusters"
+    cluster_df$root <- "ClusterAll"
     cols <- c("root", cols)
   }
   
@@ -298,7 +298,8 @@ createFromSeurat <- function(object) {
   
   if ("tsne" %in% Reductions(object)) {
     reducdim <- Reductions(object, slot = "tsne")
-    metadata(treeviz)$tsne <- reducdim@cell.embeddings
+    #View(reducdim@cell.embeddings)
+    metadata(treeviz)$tsne <- unname(reducdim@cell.embeddings)
   }
   treeviz
 }
@@ -321,7 +322,8 @@ createFromSCE <- function(object) {
   treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
   
   if ("TSNE" %in% reducedDimNames(object)) {
-    metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
+      print(reducedDims(object)$"TSNE")
+      metadata(treeviz)$tsne <- unname(reducedDims(object)$"TSNE")
   }
   treeviz
 }
@@ -369,9 +371,10 @@ createTreeViz <- function(clusters, counts) {
 #' @import scran
 #' @export
 #'
-find_top_variable_genes <- function(treeseobject, top=100) {
-  dec.Tree_SE <- modelGeneVar(assays(treeseobject)$counts)
-  top_n <- getTopHVGs(dec.Tree_SE, n = top)
-  treeseobject@metadata[['top_variable']] <- top_n
-  treeseobject
+find_top_variable_genes <- function(treeviz, top=100) {
+  dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
+  top_n <- getTopHVGs(dec.treeviz, n = top)
+  metadata(treeviz)$top_variable <- top_n
+  #treeseobject@metadata[['top_variable']] <- top_n
+  treeviz
 }
