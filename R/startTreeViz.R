@@ -210,7 +210,7 @@
 #'
 #' @import epivizr
 #' @import sys
-#' 
+#'
 #' @seealso \code{\link[treevizr]{TreevizApp}}
 #' @examples
 #' # see package vignette for example usage
@@ -228,56 +228,58 @@ startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
                      chr=chr, start=start, end=end, ...)
   mApp <- TreeVizApp$new(.url_parms=app$.url_parms, .browser_fun=app$.browser_fun,
                          server=app$server, data_mgr=app$data_mgr, chart_mgr=app$chart_mgr)
-  
-  
+
+
   # if (is(data, "Seurat")) {
   #   treeViz <- createFromSeurat(data)
   # }
   # else if (is(data, "SingleCellExperiment")) {
-  #   treeViz <- createFromSCE(data) 
+  #   treeViz <- createFromSCE(data)
   # }
-  
+
   tryCatch({
-    
+
     send_request <- mApp$server$is_interactive()
     # print(paste0("Server is interactive? ", send_request))
-    
+
     if (mApp$server$is_interactive()) {
-      .wait_until_connected(mApp$server)      
+      .wait_until_connected(mApp$server)
     }
-    
+
     if (!is.null(data)) {
-      
+
       data <- find_top_variable_genes(data, 100)
-      
-      mApp$navigate(chr, start, end) 
+
+      mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
-      
+
       # facetZoom
       facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
       mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+
       mApp$chart_mgr$plot(facetZoom, send_request=send_request)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
-      
+
       # Heatmap
       ms_list <- facetZoom$get_measurements()
       subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
-      
+
       # TSNE
       mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
-      mApp$server$wait_to_clear_requests() 
-      
+      mApp$server$wait_to_clear_requests()
+
     }
   }, error=function(e) {
     mApp$stop_app()
     stop(e)
   })
-  
+
   mApp
 }
 
