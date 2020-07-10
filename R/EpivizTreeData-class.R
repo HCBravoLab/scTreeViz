@@ -553,7 +553,7 @@ EpivizTreeData$methods(
     
     measurements <-  metadata(.self$.object)$tsne
     data <- list()
-    for (col in rownames(metadata(.self$.object)$tsne)) {
+    for (col in seq(nrow(metadata(.self$.object)$tsne))) {
       temp    <-
         list(
           sample_id = col,
