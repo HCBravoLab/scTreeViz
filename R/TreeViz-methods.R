@@ -193,13 +193,11 @@ setMethod("plot", "TreeViz", function(x, y, ...) {
   hierarchydf <- hierarchydf[, !colnames(hierarchydf) %in% c("samples", "otu_index")]
   
   df <- data.frame(from = numeric(), to = numeric())
+  
   for (i in seq(ncol(hierarchydf) - 1)) {
-    edges <- hierarchydf %>%
-      dplyr::rename(from = colnames(hierarchydf)[i],
-                    to = colnames(hierarchydf)[i + 1]) %>%
-      select(i, i + 1) %>%
-      unique
-    
+    edges<- hierarchydf[,c(i,i+1)]
+    edges<-unique(edges)
+    colnames(edges)<- c("from","to")
     df <- rbind(df, edges)
   }
   
