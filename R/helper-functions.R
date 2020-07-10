@@ -222,8 +222,7 @@ check_unique_parent <- function(clusterdata) {
   for (i in seq(2, ncol(clusterdata))) {
     childs <- unique(clusterdata[[i]])
     for (values in childs) {
-      subsetted_list <-
-        clusterdata[clusterdata[[colnames(clusterdata)[[i]]]] == values, ]
+      subsetted_list <- clusterdata[clusterdata[[colnames(clusterdata)[[i]]]] == values,]
       
       
       parent <- length(unique(subsetted_list[[i - 1]]))
