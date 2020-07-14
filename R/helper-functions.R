@@ -299,7 +299,7 @@ createFromSeurat <- function(object) {
   if ("tsne" %in% Reductions(object)) {
     reducdim <- Reductions(object, slot = "tsne")
     #View(reducdim@cell.embeddings)
-    metadata(treeviz)$tsne <- unname(reducdim@cell.embeddings)
+    metadata(treeviz)$tsne <- reducdim@cell.embeddings
   }
   treeviz
 }
@@ -323,7 +323,7 @@ createFromSCE <- function(object) {
   
   if ("TSNE" %in% reducedDimNames(object)) {
       #print(reducedDims(object)$"TSNE")
-      metadata(treeviz)$tsne <- unname(reducedDims(object)$"TSNE")
+      metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
   }
   treeviz
 }
