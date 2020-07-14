@@ -4,12 +4,12 @@
 \alias{find_top_variable_genes}
 \title{Finds top variable genes `TreeViz`}
 \usage{
-find_top_variable_genes(treeseobject, top = 100)
+find_top_variable_genes(treeviz, top = 100)
 }
 \arguments{
-\item{treeseobject}{TreeViz object}
-
 \item{top}{number of top genes to be calculated}
+
+\item{treeseobject}{TreeViz object}
 }
 \value{
 `TreeViz` Object with added top_variable_gene information in metadata
