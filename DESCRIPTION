@@ -16,8 +16,8 @@ Description: This package provides classes to support interactive data
 License: Artistic-2.0
 Depends: R (>= 3.4), methods, epivizr, SummarizedExperiment
 Imports: epivizrStandalone, BiocGenerics, Biobase, 
-        data.table, S4Vectors, digest, Matrix, tidygraph, Rtsne, GenomeInfoDb, 
-        httr, ggraph, igraph, clustree, dplyr, scran, sys, epivizrData, epivizrServer
+        data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
+        httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer
 Suggests: knitr, BiocStyle, testthat, Seurat, msd16s, SingleCellExperiment
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell

@@ -119,16 +119,21 @@
   })
   
   app$server$register_action("getPCA", function(request_data) {
-    
-    obj <- app$data_mgr$.find_datasource(request_data$datasource)
-    if (is.null(obj)) {
-      stop("cannot find datasource", request_data$measurements)
-    }
-    
-    result <- obj$getReducedDim(method=request_data$measurements[[request_data$datasource]][1],
-                                gene=request_data$gene)
-    result <- list(data = result)
-    names(result) <- request_data$datasource
+
+    measurementsList <- request_data$measurements
+    result <- lapply(names(measurementsList), function(m) {
+      seqName <- request_data$seqName
+      measurements <- measurementsList[[m]]
+
+      obj <- app$data_mgr$.find_datasource(m)
+      if (is.null(obj)) {
+        stop("cannot find datasource", m)
+      }
+      #cat("In getPCA")
+      obj$getPCA(measurements)
+      #cat("outgetPCA")
+    })
+    names(result) <- names(measurementsList)
     result
     
   })
@@ -250,7 +255,16 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
     if (!is.null(data)) {
 
       data <- find_top_variable_genes(data, 100)
-
+      #print("abc")
+      #print(data)
+      if ("tsne"  %in% names(metadata(data))) {
+         #print("Hello2")
+      }
+      # if (!("tsne"  %in% names(metadata(data)))) {
+      #   print("Hello")
+      #   tsne <- Rtsne(t(as.matrix(assays(data)$counts)), perplexity=2)
+      #   metadata(data)$tsne <- tsne
+      # }
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
@@ -267,6 +281,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
       # Heatmap
       ms_list <- facetZoom$get_measurements()
       subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+      #print(subset_ms_list)
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)

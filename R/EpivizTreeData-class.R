@@ -555,7 +555,11 @@ EpivizTreeData$methods(
     \\item{end}{End of feature range to query}
     }
     "
+    if ("tsne"  %in% names(metadata(.self$.object))) {
+      #print("Hello123")
+    }
     if (!("tsne"  %in% names(metadata(.self$.object)))) {
+      #print("Hello")
       tsne <- Rtsne(t(as.matrix(assays(.self$.object)$counts)), perplexity=2)
       metadata(.self$.object)$tsne <- tsne
     }
@@ -565,17 +569,27 @@ EpivizTreeData$methods(
     
     
     measurements <-  metadata(.self$.object)$tsne
+    #print("123")
+    #print(measurements)
+    
     data <- list()
-    for (col in seq(nrow(metadata(.self$.object)$tsne))) {
+    level<- .self$.levelSelected
+    i<- 1
+    for (col in rownames(metadata(.self$.object)$tsne)) {
       temp    <-
         list(
           sample_id = col,
           PC1 = unname(measurements[col, 1]),
-          PC2 = unname(measurements[col, 2])
+          PC2 = unname(measurements[col, 2]),
+          cluster = unname(treeviz@colData@listData[[level]][i])
+          
         )
       data[[col]] <- temp
+      i<- i+1
     }
     result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    #print(result)
+    #print(selected)
     return(result)
   },
 

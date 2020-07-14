@@ -353,13 +353,10 @@ createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
   treeviz <-
     preprocessAndCreateTreeViz(clusterdata, GetAssayData(object))
   
-  for(dim_names in reduced_dim){
-    if (dim_names %in% Reductions(object)) {
-      reducdim <- Reductions(object, slot = dim_names)
-      
-      metadata(treeviz)$reduced_dim[[dim_names]] <- reducdim@cell.embeddings[, 1:2]
-      rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
-    }
+  if ("tsne" %in% Reductions(object)) {
+    reducdim <- Reductions(object, slot = "tsne")
+    #View(reducdim@cell.embeddings)
+    metadata(treeviz)$tsne <- reducdim@cell.embeddings
   }
   treeviz
 }
@@ -386,7 +383,7 @@ createFromSCE <- function(object) {
   
   if ("TSNE" %in% reducedDimNames(object)) {
       #print(reducedDims(object)$"TSNE")
-      metadata(treeviz)$tsne <- unname(reducedDims(object)$"TSNE")
+      metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
   }
 
 #' Creates `TreeViz` object from hierarchy and count matrix
