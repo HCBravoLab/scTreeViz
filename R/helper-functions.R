@@ -423,7 +423,7 @@ createTreeViz <- function(clusters, counts) {
 #'
 #' Finds the n top variable genes within the genes present in `TreeViz` object
 #'
-#' @param treeVizobject TreeViz object
+#' @param treeViz TreeViz object
 #' @param top number of top genes to be calculated
 #' @return `TreeViz` Object with added top_variable_gene information in metadata
 #'
