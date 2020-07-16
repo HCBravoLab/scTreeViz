@@ -129,9 +129,8 @@
       if (is.null(obj)) {
         stop("cannot find datasource", m)
       }
-      #cat("In getPCA")
       obj$getPCA(measurements)
-      #cat("outgetPCA")
+    
     })
     names(result) <- names(measurementsList)
     result
@@ -246,8 +245,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
   tryCatch({
 
     send_request <- mApp$server$is_interactive()
-    # print(paste0("Server is interactive? ", send_request))
-
+    
     if (mApp$server$is_interactive()) {
       .wait_until_connected(mApp$server)
     }
@@ -255,16 +253,8 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
     if (!is.null(data)) {
 
       data <- find_top_variable_genes(data, 100)
-      #print("abc")
-      #print(data)
-      if ("tsne"  %in% names(metadata(data))) {
-         #print("Hello2")
-      }
-      # if (!("tsne"  %in% names(metadata(data)))) {
-      #   print("Hello")
-      #   tsne <- Rtsne(t(as.matrix(assays(data)$counts)), perplexity=2)
-      #   metadata(data)$tsne <- tsne
-      # }
+      
+      
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
@@ -281,7 +271,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
       # Heatmap
       ms_list <- facetZoom$get_measurements()
       subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
-      #print(subset_ms_list)
+      
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)

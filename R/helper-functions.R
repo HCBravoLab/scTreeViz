@@ -355,8 +355,9 @@ createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
   
   if ("tsne" %in% Reductions(object)) {
     reducdim <- Reductions(object, slot = "tsne")
-    #View(reducdim@cell.embeddings)
+    
     metadata(treeviz)$tsne <- reducdim@cell.embeddings
+    rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
   treeviz
 }
@@ -382,8 +383,8 @@ createFromSCE <- function(object) {
   treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
   
   if ("TSNE" %in% reducedDimNames(object)) {
-      #print(reducedDims(object)$"TSNE")
       metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
+      rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
 
 #' Creates `TreeViz` object from hierarchy and count matrix
@@ -422,7 +423,7 @@ createTreeViz <- function(clusters, counts) {
 #'
 #' Finds the n top variable genes within the genes present in `TreeViz` object
 #'
-#' @param treeViz TreeViz object
+#' @param treeVizobject TreeViz object
 #' @param top number of top genes to be calculated
 #' @return `TreeViz` Object with added top_variable_gene information in metadata
 #'
@@ -433,15 +434,6 @@ find_top_variable_genes <- function(treeviz, top = 100) {
   dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
   top_n <- getTopHVGs(dec.treeviz, n = top)
   metadata(treeviz)$top_variable <- top_n
-  
-  treeviz
-}
-
-#' Sets gene list for visualization
-#' 
-set_gene_list <- function(treeviz, genes) {
-  genes_in_assay  <- rownames(assays(treeviz)$counts)
-  metadata(treeviz)$top_variable <- intersect(genes_in_assay, genes)
   
   treeviz
 }
