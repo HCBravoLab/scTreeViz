@@ -184,7 +184,7 @@ checkRoot <- function(cluster_df) {
   # Handle Forests
   cols <- colnames(cluster_df)
   if (length(unique(cluster_df[[1]])) > 1) {
-    cluster_df$root <- "ClusterAll"
+    cluster_df$root <- "ClusterAllClusters"
     cols <- c("root", cols)
   }
   
@@ -298,8 +298,9 @@ createFromSeurat <- function(object) {
   
   if ("tsne" %in% Reductions(object)) {
     reducdim <- Reductions(object, slot = "tsne")
-    #View(reducdim@cell.embeddings)
+    
     metadata(treeviz)$tsne <- reducdim@cell.embeddings
+    rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
   treeviz
 }
@@ -322,8 +323,8 @@ createFromSCE <- function(object) {
   treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
   
   if ("TSNE" %in% reducedDimNames(object)) {
-      #print(reducedDims(object)$"TSNE")
       metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
+      rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
   treeviz
 }
@@ -362,9 +363,9 @@ createTreeViz <- function(clusters, counts) {
 
 #' Finds top variable genes `TreeViz`
 #'
-#' Finds the n top variable genes within the genes present in Summarized Experiment object
+#' Finds the n top variable genes within the genes present in `TreeViz` object
 #'
-#' @param treeseobject TreeViz object
+#' @param treeVizobject TreeViz object
 #' @param top number of top genes to be calculated
 #' @return `TreeViz` Object with added top_variable_gene information in metadata
 #' 
@@ -375,6 +376,6 @@ find_top_variable_genes <- function(treeviz, top=100) {
   dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
   top_n <- getTopHVGs(dec.treeviz, n = top)
   metadata(treeviz)$top_variable <- top_n
-  #treeseobject@metadata[['top_variable']] <- top_n
+  
   treeviz
 }
