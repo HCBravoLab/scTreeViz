@@ -6,7 +6,6 @@
 #' @import digest
 #' @import methods
 #' @import httr
-#' @import GenomeInfoDb
 #' @import SummarizedExperiment
 #' @import Rtsne
 #' @exportClass EpivizTreeData
