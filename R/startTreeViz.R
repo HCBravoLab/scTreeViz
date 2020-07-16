@@ -120,19 +120,13 @@
 
   app$server$register_action("getPCA", function(request_data) {
 
-    measurementsList <- request_data$measurements
-    result <- lapply(names(measurementsList), function(m) {
-      seqName <- request_data$seqName
-      measurements <- measurementsList[[m]]
-
-      obj <- app$data_mgr$.find_datasource(m)
-      if (is.null(obj)) {
-        stop("cannot find datasource", m)
-      }
-      obj$getPCA(measurements)
-    
-    })
-    names(result) <- names(measurementsList)
+    obj <- app$data_mgr$.find_datasource(request_data$measurements)
+    if (is.null(obj)) {
+      stop("cannot find datasource", request_data$measurements)
+    }
+    result <- obj$getPCA()
+    result <- list(data = result)
+    names(result) <- request_data$measurements
     result
 
   })
@@ -273,7 +267,7 @@ startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
       .delay_requests(mApp$server)
 
       # TSNE
-      mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
+      mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
       mApp$server$wait_to_clear_requests()
 
     }
@@ -313,7 +307,7 @@ startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
 #'
 #'
 #' @export
-startTreevizStandalone <- function(register_function = .register_all_treeviz_things,
+startTreevizStandalone <- function(data = NULL, register_function = .register_all_treeviz_things,
                                    use_viewer_option=FALSE, ...) {
   chr="treevizr"
   start=1
@@ -325,8 +319,6 @@ startTreevizStandalone <- function(register_function = .register_all_treeviz_thi
 
   path <- system.file("www", package="epivizrStandalone")
 
-
-
   app <- startStandalone(seqinfo=seq,
                          register_function=register_function,
                          use_viewer_option = use_viewer_option,
@@ -334,6 +326,49 @@ startTreevizStandalone <- function(register_function = .register_all_treeviz_thi
 
   mApp <- TreeVizApp$new(.url_parms=app$.url_parms, .browser_fun=app$.browser_fun,
                          server=app$server, data_mgr=app$data_mgr, chart_mgr=app$chart_mgr)
+  tryCatch({
+
+    send_request <- mApp$server$is_interactive()
+    
+    if (mApp$server$is_interactive()) {
+      .wait_until_connected(mApp$server)
+    }
+
+    if (!is.null(data)) {
+
+      data <- find_top_variable_genes(data, 100)
+      
+      mApp$navigate(chr, start, end)
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+
+      # facetZoom
+      facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+
+      mApp$chart_mgr$plot(facetZoom, send_request=send_request)
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+
+      # Heatmap
+      ms_list <- facetZoom$get_measurements()
+      subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+      
+      mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+      mApp$server$wait_to_clear_requests()
+      .delay_requests(mApp$server)
+
+      # TSNE
+      mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
+      mApp$server$wait_to_clear_requests()
+
+    }
+  }, error=function(e) {
+    mApp$stop_app()
+    stop(e)
+  })
+
   mApp
 }
 
@@ -354,6 +389,6 @@ startTreevizStandalone <- function(register_function = .register_all_treeviz_thi
 #' }
 #'
 #' @export
-setTreevizStandalone <- function(url="https://github.com/epiviz/epiviz.git", branch="metaviz-4.1", local_path=NULL, non_interactive=FALSE) {
+setTreevizStandalone <- function(url="https://github.com/epiviz/epiviz.git", branch="transitions-live", local_path=NULL, non_interactive=FALSE) {
   setStandalone(url = url, branch = branch, local_path = local_path, non_interactive = non_interactive)
 }
