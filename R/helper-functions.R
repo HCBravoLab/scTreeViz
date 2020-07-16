@@ -184,7 +184,7 @@ checkRoot <- function(cluster_df) {
   # Handle Forests
   cols <- colnames(cluster_df)
   if (length(unique(cluster_df[[1]])) > 1) {
-    cluster_df$root <- "AllClusters"
+    cluster_df$root <- "ClusterAllClusters"
     cols <- c("root", cols)
   }
   
@@ -201,8 +201,8 @@ check_unique_parent <- function(clusterdata) {
   for (i in seq(2, ncol(clusterdata))) {
     childs <- unique(clusterdata[[i]])
     for (values in childs) {
-      subsetted_list <- clusterdata %>%
-        filter(.data[[colnames(clusterdata)[[i]]]] == values)
+      subsetted_list <- clusterdata[clusterdata[[colnames(clusterdata)[[i]]]] == values,]
+      
       
       parent <- length(unique(subsetted_list[[i - 1]]))
       
@@ -298,7 +298,9 @@ createFromSeurat <- function(object) {
   
   if ("tsne" %in% Reductions(object)) {
     reducdim <- Reductions(object, slot = "tsne")
+    
     metadata(treeviz)$tsne <- reducdim@cell.embeddings
+    rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
   treeviz
 }
@@ -313,7 +315,7 @@ createFromSeurat <- function(object) {
 createFromSCE <- function(object) {
   clusterdata <- colData(object)
   clusterdata <-
-    clusterdata[, grep("(cluster|sc3)_", colnames(clusterdata), ignore.case = TRUE)]
+    clusterdata[, grep("(cluster|sc3_)", colnames(clusterdata), ignore.case = TRUE)]
   
   count <- counts(object)
   rownames(count) <- rownames(counts(object))
@@ -321,7 +323,8 @@ createFromSCE <- function(object) {
   treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
   
   if ("TSNE" %in% reducedDimNames(object)) {
-    metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
+      metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
+      rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
   treeviz
 }
@@ -360,18 +363,19 @@ createTreeViz <- function(clusters, counts) {
 
 #' Finds top variable genes `TreeViz`
 #'
-#' Finds the n top variable genes within the genes present in Summarized Experiment object
+#' Finds the n top variable genes within the genes present in `TreeViz` object
 #'
-#' @param treeseobject TreeViz object
+#' @param treeViz TreeViz object
 #' @param top number of top genes to be calculated
 #' @return `TreeViz` Object with added top_variable_gene information in metadata
 #' 
 #' @import scran
 #' @export
 #'
-find_top_variable_genes <- function(treeseobject, top=100) {
-  dec.Tree_SE <- modelGeneVar(assays(treeseobject)$counts)
-  top_n <- getTopHVGs(dec.Tree_SE, n = top)
-  treeseobject@metadata[['top_variable']] <- top_n
-  treeseobject
+find_top_variable_genes <- function(treeviz, top=100) {
+  dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
+  top_n <- getTopHVGs(dec.treeviz, n = top)
+  metadata(treeviz)$top_variable <- top_n
+  
+  treeviz
 }

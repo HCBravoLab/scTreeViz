@@ -46,8 +46,9 @@ for(i in seq(1,5)){
   df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
 }
 counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
+
 treeViz <- createTreeViz(df, counts)
-treeViz
+plot(treeViz)
 ```
 
 
@@ -55,7 +56,7 @@ treeViz
 
 We use the dataset `pbmc_small` available through Seurat to create a `TreeViz` object. We then preprocess the data and find clusters at different resolutions. 
 
-```{r}
+```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 pbmc <- pbmc_small
 pbmc
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
@@ -98,16 +99,10 @@ sce <- runPCA(sce)
 
 We create clusters at different resolutions using the `SC3` package.
 
-```{r, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 counts(sce) <- as.matrix(counts(sce))
 logcounts(sce) <- as.matrix(logcounts(sce))
 sce <- sc3(sce, ks = 1:10)
-
-for(i in  seq(10)){
-  clust.kmeans <- kmeans(reducedDim(sce, "PCA"), centers=i)
-  sce[[paste0("cluster",i)]] <- factor(clust.kmeans$cluster)
-  
-}
 
 sce
 ```

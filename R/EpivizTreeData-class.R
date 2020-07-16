@@ -543,26 +543,31 @@ EpivizTreeData$methods(
     }
     "
     if (!("tsne"  %in% names(metadata(.self$.object)))) {
-      tsne <- Rtsne(t(as.matrix(assays(.self$.object)$counts)))
+      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
+      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
       metadata(.self$.object)$tsne <- tsne
+      rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
     }
     
-    # data_rows = .self$getRows(measurements = measurements, selectedLevels = .self$.levelSelected, 
-    #                           selections = .self$.nodeSelections)
-    
-    
     measurements <-  metadata(.self$.object)$tsne
+    
     data <- list()
+    level<- .self$.levelSelected
+    i<- 1
     for (col in rownames(metadata(.self$.object)$tsne)) {
       temp    <-
         list(
           sample_id = col,
-          PC1 = unname(measurements[col, 1]),
-          PC2 = unname(measurements[col, 2])
+          dim1 = unname(measurements[col, 1]),
+          dim2 = unname(measurements[col, 2]),
+          name = unname(.self$.object@colData@listData[[level]][i])
+          
         )
       data[[col]] <- temp
+      i<- i+1
     }
     result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    
     return(result)
   },
 
