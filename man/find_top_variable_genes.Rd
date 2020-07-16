@@ -9,7 +9,7 @@ find_top_variable_genes(treeviz, top = 100)
 \arguments{
 \item{top}{number of top genes to be calculated}
 
-\item{treeseobject}{TreeViz object}
+\item{treeViz}{TreeViz object}
 }
 \value{
 `TreeViz` Object with added top_variable_gene information in metadata

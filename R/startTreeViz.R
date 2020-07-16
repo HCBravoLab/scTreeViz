@@ -120,19 +120,13 @@
   
   app$server$register_action("getPCA", function(request_data) {
 
-    measurementsList <- request_data$measurements
-    result <- lapply(names(measurementsList), function(m) {
-      seqName <- request_data$seqName
-      measurements <- measurementsList[[m]]
-
-      obj <- app$data_mgr$.find_datasource(m)
-      if (is.null(obj)) {
-        stop("cannot find datasource", m)
-      }
-      obj$getPCA(measurements)
-    
-    })
-    names(result) <- names(measurementsList)
+    obj <- app$data_mgr$.find_datasource(request_data$measurements)
+    if (is.null(obj)) {
+      stop("cannot find datasource", request_data$measurements)
+    }
+    result <- obj$getPCA()
+    result <- list(data = result)
+    names(result) <- request_data$measurements
     result
     
   })
@@ -278,8 +272,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
       .delay_requests(mApp$server)
 
       # TSNE
-      mApp$server$wait_to_clear_requests()
-      mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
+      mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
       mApp$server$wait_to_clear_requests()
 
     }
@@ -319,7 +312,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
 #'
 #'
 #' @export
-startTreevizStandalone <- function(data = NULL, register_function = .register_all_treeviz_things, delay=10L,
+startTreevizStandalone <- function(data = NULL, register_function = .register_all_treeviz_things,
                                    use_viewer_option=FALSE, ...) {
   chr="treevizr"
   start=1
@@ -330,7 +323,6 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
                  genome="treevizr")
   
   path <- system.file("www", package="epivizrStandalone")
-  
   app <- startStandalone(seqinfo=seq,
                          register_function=register_function,
                          use_viewer_option = use_viewer_option,
@@ -339,51 +331,46 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
   mApp <- TreeVizApp$new(.url_parms=app$.url_parms, .browser_fun=app$.browser_fun,
                          server=app$server, data_mgr=app$data_mgr, chart_mgr=app$chart_mgr)
   tryCatch({
-    
     send_request <- mApp$server$is_interactive()
     
     if (mApp$server$is_interactive()) {
       .wait_until_connected(mApp$server)
     }
-    
+
     if (!is.null(data)) {
-      
+
       data <- find_top_variable_genes(data, 100)
-      if (!("reduced_dim"  %in% names(metadata(data)))) {
-        data <- calculate_tsne(data)
-        
-      }
+      
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, delay)
-      
+      .delay_requests(mApp$server)
+
       # facetZoom
       facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, delay)
-      
+      .delay_requests(mApp$server)
+
       mApp$chart_mgr$plot(facetZoom, send_request=send_request)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, delay)
-      
+      .delay_requests(mApp$server)
+
       # Heatmap
       ms_list <- facetZoom$get_measurements()
       subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
       
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server, delay)
-      
+      .delay_requests(mApp$server)
+
       # TSNE
       mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
       mApp$server$wait_to_clear_requests()
-      
+
     }
   }, error=function(e) {
     mApp$stop_app()
     stop(e)
   })
-  
   mApp
 }
 

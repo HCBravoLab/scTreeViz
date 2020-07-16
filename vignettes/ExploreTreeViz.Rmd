@@ -143,7 +143,7 @@ plot(treeViz)
 
 ## Visualize gene expression across clusters
 
-## The `TreeViz` session manager
+## Start the TreeViz App (using hosted app)
 
 Start the App from the `treeViz` object we created. This adds a `facetZoom` to navigate the cluster hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE dimensions. 
  
@@ -160,3 +160,23 @@ After exploring the dataset, this command the websocket connection.
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
+
+
+## Start TreeViz with app running locally
+
+```{r}
+setTreevizStandalone()
+app <- startTreevizStandalone(treeViz)
+
+```
+
+
+## Stop App
+
+```{r}
+app$stop_app()
+```
+
+
+
+
