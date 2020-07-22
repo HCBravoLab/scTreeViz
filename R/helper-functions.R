@@ -109,11 +109,18 @@ prune_tree <- function(graph, cluster_df) {
     
     graph <- graph[!duplicated(names(graph))]
     
-    # See number of core edges at each ites
-    # print(nrow(graph_Df[graph_Df$is_core == FALSE,]))
+    # See number of core edges at each iter
     # No False edges acyclic tree
-    if (nrow(graph[graph$is_core == FALSE,]) == 0)
+    if (nrow(graph[graph$is_core == FALSE,]) == 0){
+      ngraph <-
+        clustree(
+          cluster_df ,
+          prefix = "cluster",
+          prop_filter = 0,
+          return = "graph"
+        )
       break
+    }
     
     # Apply function
     assign_df <-
@@ -170,8 +177,10 @@ collapse_tree <- function(original_graph) {
     }
     i <- i - 1
   }
-  
-  ver_list <- ver_list[-delete_set_vertices,]
+
+  if(length(delete_set_vertices)!=0){
+    ver_list <- ver_list[-delete_set_vertices,]
+  }
   ver_list
 }
 
@@ -261,8 +270,11 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   
   # collapses tree if the levels are the same at different resolutions
   collapsed_graph <- collapse_tree(modified_graph)
+  
   cluster_names <-
     unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))
+  
+  
   clusters_new <- clusters_new[, cluster_names]
   
   for (clusnames in names(clusters_new)) {
