@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-[`TreeViz`](https://github.com/HCBravoLab/TreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `TreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in metagenomic datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for TSNE.
+[`TreeViz`](https://github.com/HCBravoLab/TreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `TreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for TSNE.
 
 ## loading required packages
 
@@ -58,16 +58,6 @@ We use the dataset `pbmc_small` available through Seurat to create a `TreeViz` o
 
 ```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 pbmc <- pbmc_small
-pbmc
-pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
-pbmc <- NormalizeData(pbmc)
-all.genes <- rownames(pbmc)
-pbmc <- ScaleData(pbmc, vars.to.regress = "percent.mt")
-pbmc <- FindVariableFeatures(object = pbmc)
-pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
-pbmc <- FindNeighbors(pbmc, dims = 1:10)
-pbmc <- FindClusters(pbmc, resolution = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0), print.output = 0, save.SNN = TRUE)
-pbmc
 ```
 
 We use the helper function to create a TreeViz object from Seurat
@@ -97,12 +87,27 @@ sce <- sce[!duplicated(rowData(sce)$feature_symbol), ]
 sce <- runPCA(sce)
 ```
 
-We create clusters at different resolutions using the `SC3` package.
+We create clusters at different resolutions using the `WalkTrap` algorithm
 
 ```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-counts(sce) <- as.matrix(counts(sce))
-logcounts(sce) <- as.matrix(logcounts(sce))
-sce <- sc3(sce, ks = 1:10)
+data_matrix <- as.matrix(logcounts(sce))
+
+SNN_igraph = scran::buildKNNGraph(
+  data_matrix, 
+  transposed = FALSE)
+
+snn.matrix = similarity(
+      SNN_igraph, 
+      method = "jaccard")
+    
+snn.graph <- graph_from_adjacency_matrix(snn.matrix, weighted = TRUE, mode = "undirected")
+
+walktrapClusters = igraph::cluster_walktrap(snn.graph)
+for (i in 1:10){
+  sce[[paste0("cluster",i)]] <-  factor(igraph::cut_at(walktrapClusters, n = i))
+}
+
+treeviz<- createFromSCE(sce)
 
 sce
 ```
@@ -116,7 +121,7 @@ plot(treeViz)
 
 # Interactively explore `TreeViz` object
 
-## The metavizr session manager
+## The `TreeViz` session manager
 
 Start the App from the `treeViz` object we created. This adds a `facetZoom` to navigate the cluster hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE dimensions. 
  
