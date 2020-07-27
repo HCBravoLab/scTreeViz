@@ -55,6 +55,7 @@ change_assignment <- function(graph, cluster_obj) {
     for (j in 1:nrow(cluster_obj)) {
       if (as.numeric(as.character(cluster_obj[[j, sink_res]])) == as.numeric(graph$Sink_node_clust[i])  &&
           as.numeric(as.character(cluster_obj[[j, source_res]])) == as.numeric(graph$Assign_from_clust[i])) {
+        
         cluster_obj[[j, source_res]] <-
           as.factor(graph$`Assign_to_clust`[i])
       }
@@ -155,16 +156,15 @@ prune_tree <- function(graph, cluster_df) {
 #'
 collapse_tree <- function(original_graph) {
   #find all roots
-  root_list <- which(sapply(sapply(V(original_graph),
-                                   function(x)
-                                     neighbors(original_graph, x, mode = "in")), length) == 0)
+  root_list<-which(sapply(sapply(V(original_graph), 
+                      function(x) neighbors(original_graph,x, mode="in")), length) == 0)
   
   delete_set_vertices <- vector('numeric')
-  for (roots in root_list) {
+  for(roots in root_list){
     node_dists <- distances(original_graph, to = roots)
     layered_dist <- unique(distances(original_graph, to = roots))
     
-    layered_dist <- layered_dist[is.finite(layered_dist) == TRUE]
+    layered_dist<- layered_dist[is.finite(layered_dist)==TRUE]
     # Vertex and edge lists of the graph from which we will construct the collapsed graph
     
     ver_list <-
@@ -286,6 +286,7 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   
   # collapses tree if the levels are the same at different resolutions
   collapsed_graph <- collapse_tree(modified_graph)
+  
   
   cluster_names <-
     unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))

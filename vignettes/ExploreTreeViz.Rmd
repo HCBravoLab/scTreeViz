@@ -64,15 +64,21 @@ data(pbmc_small)
 pbmc <- pbmc_small
 ```
 
-The measurements for dimensionality reduction methods we want to visualize are also added to the object via native functions in `Seurat`. Since `PCA` is already available, we calculate `TSNE` and `UMAP`
+We then preprocess the data and find clusters at different resolutions.
 
 ```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-pbmc<- RunTSNE(pbmc)
-pbmc<- RunUMAP(pbmc, dims=1:3)
-Reductions(pbmc)
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+pbmc <- NormalizeData(pbmc)
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, vars.to.regress = "percent.mt")
+pbmc <- FindVariableFeatures(object = pbmc)
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0), print.output = 0, save.SNN = TRUE)
+pbmc
 ```
 
-We provide the `createFromSeurat` function to create a `TreeViz` object from `Seurat` object. In addition, we can also provide the name of dimensionality reductions present in the object as a parameter to indicate these dimensions also be wrapped in the `treeviz` object for visualization. 
+We use the helper function to create a TreeViz object from Seurat
 
 Note: If the reduced dimension is not present it would be ignored.
 
