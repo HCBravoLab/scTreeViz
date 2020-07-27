@@ -51,15 +51,18 @@ change_assignment <- function(graph, cluster_obj) {
                        colnames(cluster_obj))
     
     
+    
     for (j in 1:nrow(cluster_obj)) {
       if (as.numeric(as.character(cluster_obj[[j, sink_res]])) == as.numeric(graph$Sink_node_clust[i])  &&
           as.numeric(as.character(cluster_obj[[j, source_res]])) == as.numeric(graph$Assign_from_clust[i])) {
+        
         cluster_obj[[j, source_res]] <-
           as.factor(graph$`Assign_to_clust`[i])
       }
       
     }
   }
+  
   return (cluster_obj)
 }
 
@@ -104,6 +107,7 @@ check_cycle <- function(pruned_graph) {
 #'
 prune_tree <- function(graph, cluster_df) {
   # Prune the tree so only core edges remain
+  
   repeat {
     # drop duplicated columns (Throws error otherwise)
     
@@ -151,31 +155,39 @@ prune_tree <- function(graph, cluster_df) {
 #' @return Dataframe containing cluster information at different resolutions
 #'
 collapse_tree <- function(original_graph) {
-  node_dists <- distances(original_graph, to = 1)
-  layered_dist <- unique(distances(original_graph, to = 1))
+  #find all roots
+  root_list<-which(sapply(sapply(V(original_graph), 
+                      function(x) neighbors(original_graph,x, mode="in")), length) == 0)
   
   delete_set_vertices <- vector('numeric')
-  
-  # Vertex and edge lists of the graph from which we will construct the collapsed graph
-  ver_list <-
-    igraph::as_data_frame(original_graph, what = "vertices")
-  
-  i <- length(layered_dist)
-  while (i >= 2) {
-    prev_layer <- which(node_dists == layered_dist[i - 1])
-    current_layer <- which(node_dists == layered_dist[i])
+  for(roots in root_list){
+    node_dists <- distances(original_graph, to = roots)
+    layered_dist <- unique(distances(original_graph, to = roots))
     
-    if (length(prev_layer) == length(current_layer)) {
-      while (length(prev_layer) == length(current_layer)) {
-        delete_set_vertices <- c(delete_set_vertices, prev_layer)
-        i <- i - 1
-        
-        prev_layer <-
-          which(node_dists == layered_dist[i - 1])
-        
+    layered_dist<- layered_dist[is.finite(layered_dist)==TRUE]
+    # Vertex and edge lists of the graph from which we will construct the collapsed graph
+    
+    ver_list <-
+      igraph::as_data_frame(original_graph, what = "vertices")
+    
+    
+    i <- length(layered_dist)
+    while (i >= 2) {
+      prev_layer <- which(node_dists == layered_dist[i - 1])
+      current_layer <- which(node_dists == layered_dist[i])
+      
+      if (length(prev_layer) == length(current_layer)) {
+        while (length(prev_layer) == length(current_layer)) {
+          delete_set_vertices <- c(delete_set_vertices, prev_layer)
+          i <- i - 1
+          
+          prev_layer <-
+            which(node_dists == layered_dist[i - 1])
+          
+        }
       }
+      i <- i - 1
     }
-    i <- i - 1
   }
 
   if(length(delete_set_vertices)!=0){
@@ -264,12 +276,14 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   # prune the graph with only core edges (this makes it a ~tree)
   modified_obj <- prune_tree(graph_df, clusters)
   
+  
   # modified graph and seurat object
   modified_graph = modified_obj$Clustree_obj
   clusters_new <-  modified_obj$Cluster_obj
   
   # collapses tree if the levels are the same at different resolutions
   collapsed_graph <- collapse_tree(modified_graph)
+  
   
   cluster_names <-
     unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))
