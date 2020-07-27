@@ -268,11 +268,13 @@ startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
       ms_list <- facetZoom$get_measurements()
       subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
       
+      mApp$server$wait_to_clear_requests()
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
 
       # TSNE
+      mApp$server$wait_to_clear_requests()
       mApp$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
       mApp$server$wait_to_clear_requests()
 
