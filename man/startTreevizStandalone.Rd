@@ -5,6 +5,7 @@
 \title{Start treeviz app in standalone (locally) and create \code{\link[treeviz]{TreevizApp}} object to manage connection.}
 \usage{
 startTreevizStandalone(
+  data = NULL,
   register_function = .register_all_treeviz_things,
   use_viewer_option = FALSE,
   ...
