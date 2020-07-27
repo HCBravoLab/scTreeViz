@@ -555,11 +555,16 @@ EpivizTreeData$methods(
     \\item{end}{End of feature range to query}
     }
     "
+    print("abc")
     if (!("tsne"  %in% names(metadata(.self$.object)))) {
       tsne_data<-t(as.matrix(assays(.self$.object)$counts))
       tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
+      print("fgh")
       metadata(.self$.object)$tsne <- tsne
+      print("efg")
       rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
+      print(metadata(.self$.object)$tsne)
+      print("def")
     }
     
     measurements <-  metadata(.self$.object)$tsne
@@ -579,6 +584,7 @@ EpivizTreeData$methods(
       data[[col]] <- temp
       i<- i+1
     }
+    print(.self$.nodeSelections)
     result <- list(data = unname(data), pca_variance_explained = c(1,1))
     
     return(result)
