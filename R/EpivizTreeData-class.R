@@ -567,6 +567,15 @@ EpivizTreeData$methods(
       print("def")
     }
     
+    removed_cells <- c()
+    if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
+      removed_selections <- names(which(.self$.nodeSelections == 0))
+      
+      removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
+        .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
+      })))
+    }
+    
     measurements <-  metadata(.self$.object)$tsne
     print(measurements)
     data <- list()
@@ -574,13 +583,18 @@ EpivizTreeData$methods(
     print(level)
     i<- 1
     for (col in rownames(metadata(.self$.object)$tsne)) {
+      
+      name <- unname(colData(.self$.object)[[level]][i])
+      if (name %in% removed_cells) {
+        name <- "removed"
+      }
+      
       temp    <-
         list(
           sample_id = col,
           dim1 = unname(measurements[col, 1]),
           dim2 = unname(measurements[col, 2]),
-          name = unname(.self$.object@colData@listData[[level]][i])
-          
+          name = name
         )
       data[[col]] <- temp
       i<- i+1
