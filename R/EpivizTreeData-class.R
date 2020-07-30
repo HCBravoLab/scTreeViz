@@ -568,9 +568,10 @@ EpivizTreeData$methods(
     }
     
     measurements <-  metadata(.self$.object)$tsne
-    
+    print(measurements)
     data <- list()
     level<- .self$.levelSelected
+    print(level)
     i<- 1
     for (col in rownames(metadata(.self$.object)$tsne)) {
       temp    <-
@@ -585,8 +586,32 @@ EpivizTreeData$methods(
       i<- i+1
     }
     print(.self$.nodeSelections)
-    result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    if(!is.null(.self$.nodeSelections)){
+      ids<- sapply(names(.self$.nodeSelections), function(n){
+        strsplit(n, " = ")
+      })
+      selections<- c()
+      for(i in 1:length(ids)){
+        if(ids[[i]][2]=="0"){
+          selections<- c(selections,ids[[i]][1])
+        }
+      }
+      #for (nodes in .self$.nodeSelections){
+      node_ids <- sapply(selections, function(n) {
+          as.character(colData(object)$nodes_table[id==n,node_label])
+        
+      for(values in data){
+        if(data[[values]]['sample_id'] %in% node_ids){
+          data[[values]]['name']= "removed"
+        }
+      }
+        
+      })
+    }
     
+    result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    print("result")
+    print(result)
     return(result)
   },
 
