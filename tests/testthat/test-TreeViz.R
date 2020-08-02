@@ -53,6 +53,19 @@ test_that("check multiple_parent", {
   #expect_equal("ClusterAllClusters", unique(treeviz@colData@hierarchy_tree[[1]]))
 })
 
+test_that("check aggregate_tree", {
+  sums<- list()
+  sums[[1]]<- list(rowSums(counts[,c(1:10)]))
+  sums[[2]]<- list(rowSums(counts[,c(11:15)]))
+  sums[[3]]<- list(rowSums(counts[,c(16:25)]))
+  sums[[4]]<- list(rowSums(counts[,c((26:32))]))
+  sum_df<-as.data.frame(sums)
+  aggtree<- TreeViz:::aggregateTree(treeviz, by="col", selectedLevel=3)
+  
+  agg_df<- as.data.frame(assays(aggtree)$counts)
+  result<- all.equal(agg_df, sum_df, check.attributes= FALSE)
+  expect_equal(result, TRUE)
+})
 
 # test_that("getHierarchy", {
 #   res <- treeviz$getHierarchy(nodeId = NULL)
