@@ -574,8 +574,7 @@ EpivizTreeData$methods(
     measurements <-  metadata(.self$.object)$tsne
     
     data <- list()
-    level<- .self$.levelSelected
-    
+    level<- .self$.levelSelected + 1
     i<- 1
     for (col in rownames(metadata(.self$.object)$tsne)) {
       
