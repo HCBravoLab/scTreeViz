@@ -37,7 +37,7 @@ setMethod("aggregateTree", "TreeViz",
           function(x,
                    selectedLevel = 3,
                    selectedNodes = NULL,
-                   aggFun = colSums,
+                   aggFun = NULL,
                    start = 1,
                    end = NULL,
                    by = "row",
@@ -57,6 +57,65 @@ setMethod("aggregateTree", "TreeViz",
               selectedNodes <- snodes
             }
             
+            if(!is.null(aggFun)){
+              if (by == "row") {
+                groups <-
+                  splitAt(
+                    rowData(x),
+                    selectedLevel = selectedLevel,
+                    selectedNodes = selectedNodes,
+                    start = start,
+                    end = end,
+                    format = "list"
+                  )
+                counts <-  assays(x)$counts
+                
+                newMat <- array(NA, dim = c(length(groups), ncol(x)))
+                for (i in seq_along(groups)) {
+                  indices <- groups[[i]]
+                  if (length(indices) == 1) {
+                    newMat[i, ] = counts[indices, ]
+                  }
+                  else {
+                    newMat[i, ] = aggFun(counts[indices, ])
+                  }
+                }
+                
+                rownames(newMat) <- names(groups)
+                colnames(newMat) <- colnames(x)
+                
+              }
+              else if (by == "col") {
+                groups <-
+                  splitAt(
+                    colData(x),
+                    selectedLevel = selectedLevel,
+                    selectedNodes = selectedNodes,
+                    start = start,
+                    end = end,
+                    format = "list"
+                  )
+                counts <-  assays(x)$counts
+                
+                newMat <- array(NA, dim = c(nrow(x), length(groups)))
+                for (i in seq_along(groups)) {
+                  indices <- groups[[i]]
+                  if (length(indices) == 1) {
+                    newMat[, i] = counts[, indices]
+                  }
+                  else {
+                    newMat[, i] = aggFun(counts[, indices])
+                  }
+                }
+                
+                colnames(newMat) <- names(groups)
+                rownames(newMat) <- rownames(x)
+              }
+              
+            }
+            
+            if(is.null(aggFun)){
+
             if (by == "row") {
               aggFun <- colSums
               groups <-
@@ -112,7 +171,8 @@ setMethod("aggregateTree", "TreeViz",
               colnames(newMat) <- names(groups)
               rownames(newMat) <- rownames(x)
             }
-            
+            }
+
             if(!is.null(selectedNodes)) {
               return(newMat)
             }

@@ -555,16 +555,11 @@ EpivizTreeData$methods(
     \\item{end}{End of feature range to query}
     }
     "
-    print("abc")
     if (!("tsne"  %in% names(metadata(.self$.object)))) {
       tsne_data<-t(as.matrix(assays(.self$.object)$counts))
       tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
-      print("fgh")
-      metadata(.self$.object)$tsne <- tsne
-      print("efg")
+      metadata(.self$.object)$tsne <- tsne$Y
       rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
-      print(metadata(.self$.object)$tsne)
-      print("def")
     }
     
     removed_cells <- c()
@@ -577,10 +572,10 @@ EpivizTreeData$methods(
     }
     
     measurements <-  metadata(.self$.object)$tsne
-    print(measurements)
+    
     data <- list()
     level<- .self$.levelSelected
-    print(level)
+    
     i<- 1
     for (col in rownames(metadata(.self$.object)$tsne)) {
       
@@ -599,33 +594,9 @@ EpivizTreeData$methods(
       data[[col]] <- temp
       i<- i+1
     }
-    print(.self$.nodeSelections)
-    if(!is.null(.self$.nodeSelections)){
-      ids<- sapply(names(.self$.nodeSelections), function(n){
-        strsplit(n, " = ")
-      })
-      selections<- c()
-      for(i in 1:length(ids)){
-        if(ids[[i]][2]=="0"){
-          selections<- c(selections,ids[[i]][1])
-        }
-      }
-      #for (nodes in .self$.nodeSelections){
-      node_ids <- sapply(selections, function(n) {
-          as.character(colData(object)$nodes_table[id==n,node_label])
-        
-      for(values in data){
-        if(data[[values]]['sample_id'] %in% node_ids){
-          data[[values]]['name']= "removed"
-        }
-      }
-        
-      })
-    }
     
     result <- list(data = unname(data), pca_variance_explained = c(1,1))
-    print("result")
-    print(result)
+    
     return(result)
   },
 
