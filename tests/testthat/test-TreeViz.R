@@ -46,11 +46,10 @@ test_that("check multiple_parent", {
     if (parent > 1) {
       flag=FALSE
     }
-    expect_equal(flag, TRUE)
+    
   }
-  
-  
-  #expect_equal("ClusterAllClusters", unique(treeviz@colData@hierarchy_tree[[1]]))
+  expect_equal(flag, TRUE)
+
 })
 
 test_that("check aggregate_tree", {
