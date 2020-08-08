@@ -30,14 +30,17 @@ setGeneric("aggregateTree", signature = "x",
 #' @param start,end indices to filter nodes
 #' @param by "row" to aggregate the TreeIndex on rowData, "col" to aggregate TreeIndex on colData
 #' @param aggFun aggregate function to use, by default colSums if by="row", rowSums if by="col"
+#' @param aggFunType Type of aggregate function, can be "sd" (standard deviation), or "mean"
 #' @param format return format can be one of "counts" or "TreeViz"
 #' @importFrom Matrix rowSums colSums
 #' @export
+
 setMethod("aggregateTree", "TreeViz",
           function(x,
                    selectedLevel = 3,
                    selectedNodes = NULL,
-                   aggFun = NULL,
+                   aggFun = colSums,
+                   aggFunType = NULL,
                    start = 1,
                    end = NULL,
                    by = "row",
@@ -45,79 +48,30 @@ setMethod("aggregateTree", "TreeViz",
             if (is.null(end) || missing(end)) {
               end <- nrow(x)
             }
-
-            if(is(selectedNodes, "data.table")) {
+            
+            if (is(selectedNodes, "data.table")) {
               node_ids <- selectedNodes$id
               snodes <- rep(1, length(node_ids))
-
-              if("state" %in% colnames(selectedNodes)) {
-               snodes <- selectedNodes$state
+              
+              if ("state" %in% colnames(selectedNodes)) {
+                snodes <- selectedNodes$state
               }
               names(snodes) <- node_ids
               selectedNodes <- snodes
             }
             
-            if(!is.null(aggFun)){
-              if (by == "row") {
-                groups <-
-                  splitAt(
-                    rowData(x),
-                    selectedLevel = selectedLevel,
-                    selectedNodes = selectedNodes,
-                    start = start,
-                    end = end,
-                    format = "list"
-                  )
-                counts <-  assays(x)$counts
-                
-                newMat <- array(NA, dim = c(length(groups), ncol(x)))
-                for (i in seq_along(groups)) {
-                  indices <- groups[[i]]
-                  if (length(indices) == 1) {
-                    newMat[i, ] = counts[indices, ]
-                  }
-                  else {
-                    newMat[i, ] = aggFun(counts[indices, ])
-                  }
-                }
-                
-                rownames(newMat) <- names(groups)
-                colnames(newMat) <- colnames(x)
-                
-              }
-              else if (by == "col") {
-                groups <-
-                  splitAt(
-                    colData(x),
-                    selectedLevel = selectedLevel,
-                    selectedNodes = selectedNodes,
-                    start = start,
-                    end = end,
-                    format = "list"
-                  )
-                counts <-  assays(x)$counts
-                
-                newMat <- array(NA, dim = c(nrow(x), length(groups)))
-                for (i in seq_along(groups)) {
-                  indices <- groups[[i]]
-                  if (length(indices) == 1) {
-                    newMat[, i] = counts[, indices]
-                  }
-                  else {
-                    newMat[, i] = aggFun(counts[, indices])
-                  }
-                }
-                
-                colnames(newMat) <- names(groups)
-                rownames(newMat) <- rownames(x)
-              }
-              
-            }
-            
-            if(is.null(aggFun)){
-
             if (by == "row") {
-              aggFun <- colSums
+              if (is.null(aggFunType)) {
+                aggFun <- colSums
+              }
+              else{
+                if (aggFunType == "mean") {
+                  aggFun <- colMeans
+                }
+                else if (aggFunType == "sd") {
+                  aggFun <- colSds
+                }
+              }
               groups <-
                 splitAt(
                   rowData(x),
@@ -128,24 +82,34 @@ setMethod("aggregateTree", "TreeViz",
                   format = "list"
                 )
               counts <-  assays(x)$counts
-
+              
               newMat <- array(NA, dim = c(length(groups), ncol(x)))
               for (i in seq_along(groups)) {
                 indices <- groups[[i]]
                 if (length(indices) == 1) {
-                  newMat[i, ] = counts[indices, ]
+                  newMat[i,] = counts[indices,]
                 }
                 else {
-                  newMat[i, ] = aggFun(counts[indices, ])
+                  newMat[i,] = aggFun(counts[indices,])
                 }
               }
-
+              
               rownames(newMat) <- names(groups)
               colnames(newMat) <- colnames(x)
-
             }
+            
             else if (by == "col") {
-              aggFun <- rowSums
+              if (is.null(aggFunType)) {
+                aggFun <- rowSums
+              }
+              else{
+                if (aggFunType == "mean") {
+                  aggFun <- rowMeans
+                }
+                else if (aggFunType == "sd") {
+                  aggFun <- rowSds
+                }
+              }
               groups <-
                 splitAt(
                   colData(x),
@@ -156,7 +120,7 @@ setMethod("aggregateTree", "TreeViz",
                   format = "list"
                 )
               counts <-  assays(x)$counts
-
+              
               newMat <- array(NA, dim = c(nrow(x), length(groups)))
               for (i in seq_along(groups)) {
                 indices <- groups[[i]]
@@ -167,16 +131,15 @@ setMethod("aggregateTree", "TreeViz",
                   newMat[, i] = aggFun(counts[, indices])
                 }
               }
-
+              
               colnames(newMat) <- names(groups)
               rownames(newMat) <- rownames(x)
             }
-            }
-
-            if(!is.null(selectedNodes)) {
+            
+            if (!is.null(selectedNodes)) {
               return(newMat)
             }
-
+            
             if (format == "TreeViz") {
               if (by == "row") {
                 newRowData <-
@@ -188,7 +151,7 @@ setMethod("aggregateTree", "TreeViz",
                     end = end,
                     format = "TreeIndex"
                   )
-
+                
                 newColData <- colData(x)
               }
               else if (by == "col") {
@@ -203,18 +166,22 @@ setMethod("aggregateTree", "TreeViz",
                     format = "TreeIndex"
                   )
               }
-
+              
               newSumExp <-
-                SummarizedExperiment(SimpleList(counts = newMat), rowData = newRowData, colData = newColData)
-
+                SummarizedExperiment(SimpleList(counts = newMat),
+                                     rowData = newRowData,
+                                     colData = newColData)
+              
               newTreeSE <- new("TreeViz", newSumExp)
-
+              
               return(newTreeSE)
             }
             else if (format == "counts") {
               return(newMat)
             }
           })
+
+
 
 #' Generic method to register data to the epiviz data server
 #'
@@ -224,8 +191,16 @@ setMethod("aggregateTree", "TreeViz",
 #' @return An \code{\link{EpivizMetagenomicsData-class}} object
 #' @importMethodsFrom epivizrData register
 #'
-setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...) {
-  return(EpivizTreeData$new(object=object, tree=tree, columns=columns, ...))
+setMethod("register", "TreeViz", function(object,
+                                          tree = "row",
+                                          columns = NULL,
+                                          ...) {
+  return(EpivizTreeData$new(
+    object = object,
+    tree = tree,
+    columns = columns,
+    ...
+  ))
 })
 
 #' plot tree from TreeViz
@@ -233,31 +208,33 @@ setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...)
 #' @param x treeviz object
 #' @param y none
 #' @return Dataframe containing cluster information at different resolutions
-#' 
+#'
 #' @import dplyr
 #' @import ggraph
+#' @import ggplot2
 #' @import igraph
 #' @export
-#' 
+#'
 setMethod("plot", "TreeViz", function(x, y, ...) {
   object <- x
   
-  if(is(colData(object), "TreeIndex")) {
+  if (is(colData(object), "TreeIndex")) {
     hierarchydf <- colData(object)@hierarchy_tree
   }
   else {
     hierarchydf <- rowData(object)@hierarchy_tree
   }
-    
   
-  hierarchydf <- hierarchydf[, !colnames(hierarchydf) %in% c("samples", "otu_index")]
+  
+  hierarchydf <-
+    hierarchydf[,!colnames(hierarchydf) %in% c("samples", "otu_index")]
   
   df <- data.frame(from = numeric(), to = numeric())
   
   for (i in seq(ncol(hierarchydf) - 1)) {
-    edges<- hierarchydf[,c(i,i+1)]
-    edges<-unique(edges)
-    colnames(edges)<- c("from","to")
+    edges <- hierarchydf[, c(i, i + 1)]
+    edges <- unique(edges)
+    colnames(edges) <- c("from", "to")
     df <- rbind(df, edges)
   }
   
@@ -269,7 +246,5 @@ setMethod("plot", "TreeViz", function(x, y, ...) {
     ggraph::geom_node_label(aes(label = substring(V(mygraph)$name, 8))) +
     theme_void()
   show(fig)
-
+  
 })
-
-

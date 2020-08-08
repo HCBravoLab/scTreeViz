@@ -585,6 +585,25 @@ EpivizTreeData$methods(
     
     return(result)
   },
+  
+  getGeneBoxPlot=function(measurements = NULL,selectedgene=NULL, selectedLevels = NULL){
+    
+
+    if(is.null(selectedLevels)) {
+      selectedLevels = .self$.levelSelected
+    }
+    #.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, by=.self$.treeIn, format="counts"
+    aggtree_mean<- aggregateTree(.self$.object, selectedLevel=selectedLevels,   aggFunType = "mean", by= "col", format="counts")
+    aggtree_sds<- aggregateTree(.self$.object, selectedLevel=selectedLevels,   aggFun = "sd", by= "col", format="counts")
+    result <- list(
+      gene= selectedgene,
+      mean = aggtree_mean[selectedgene,],
+      sds = aggtree_sds[selectedgene,]
+      
+    )
+    
+    return(result)
+  },
 
   getCombined=function(measurements = NULL,
                        seqName, start = 1, end = 1000,
