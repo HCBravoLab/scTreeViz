@@ -6,7 +6,6 @@
 \usage{
 startTreeviz(
   data = NULL,
-  top_genes = 100,
   host = "http://epiviz.cbcb.umd.edu/treeviz",
   register_function = .register_all_treeviz_things,
   delay = 2L,
