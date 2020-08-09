@@ -2,9 +2,7 @@
 % Please edit documentation in R/helper-functions.R
 \name{generate_walktrap_hierarchy}
 \alias{generate_walktrap_hierarchy}
-\title{Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
-walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
-Intermediate cluster assignments are created based on monotonically increasing level of modularity}
+\title{Creates hierarchical clustering on `Single Cell Experiment` object}
 \usage{
 generate_walktrap_hierarchy(object, nsteps = 7)
 }
@@ -15,7 +13,5 @@ generate_walktrap_hierarchy(object, nsteps = 7)
 `Single Cell Experiment` Object with hierarchy information in metadata slot
 }
 \description{
-Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
-walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
-Intermediate cluster assignments are created based on monotonically increasing level of modularity
+Creates hierarchical clustering on `Single Cell Experiment` object
 }

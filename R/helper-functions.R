@@ -311,30 +311,28 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   treeviz
 }
 
-#' Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
-#' walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
-#' Intermediate cluster assignments are created based on monotonically increasing level of modularity
+#' Creates hierarchical clustering on `Single Cell Experiment` object
+#'
 #' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
 #' @return `Single Cell Experiment` Object with hierarchy information in metadata slot
 #' @export
 #'
-generate_walktrap_hierarchy <- function(object, nsteps = 7) {
+generate_walktrap_hierarchy <- function(object, nsteps=7) {
   SNN_Graph <- scran::buildSNNGraph(object)
   clusters <- igraph::cluster_walktrap(SNN_Graph, steps = nsteps)
   modularity <- c()
-  for (i in 1:length(clusters)) {
-    modularity[i] <-
-      igraph::modularity(SNN_Graph, igraph::cut_at(clusters, n = i))
+  for (i in 1:length(clusters)){
+    modularity[i] <-  igraph::modularity(SNN_Graph, igraph::cut_at(clusters, n = i))
   }
   
-  monotonic_index <- match(unique(cummax(modularity)), modularity)
+  monotonic_index<- match(unique(cummax(modularity)),modularity)
   cluster_data =  list()
-  for (i in 1:length(monotonic_index)) {
+  for (i in 1:length(monotonic_index)){
     cluster_data[[i]] =  list(igraph::cut_at(clusters, n = monotonic_index[i]))
   }
   
-  cluster_data <- as.data.frame(cluster_data)
-  colnames(cluster_data) <- paste0("cluster", monotonic_index)
+  cluster_data<-as.data.frame(cluster_data)
+  colnames(cluster_data)<-paste0("cluster",monotonic_index)
   metadata(object)$treeviz_clusters <- cluster_data
   object
 }
@@ -363,17 +361,17 @@ createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
 }
 
 
-#' Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
-#' clusters based on Walktrap algorithm if no default is provided
+#' Creates a `TreeViz`` object from `SingleCellExperiment`
+#'
 #' @param object `SingleCellExperiment` object to be visualized
-#' @param prefix common prefix that identifies the cluster columns
-#' @param check_colData whether to colData of `SingeCellExperiment` object for cluster information or not
-#' @param reduced_dim Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
 #' @export
 #'
 createFromSCE <- function(object) {
-  clusterdata <- colData(object)
+  if(is.null(metadata(object)$treeviz_clusters)){
+    object <- generate_walktrap_hierarchy(object)
+  }
+  clusterdata <- metadata(object)$treeviz_clusters
   clusterdata <-
     clusterdata[, grep("(cluster|sc3_)", colnames(clusterdata), ignore.case = TRUE)]
   
@@ -383,8 +381,8 @@ createFromSCE <- function(object) {
   treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
   
   if ("TSNE" %in% reducedDimNames(object)) {
-      metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
-      rownames(metadata(treeviz)$tsne)<- colnames(object)
+    metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
+    rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
 
 #' Creates `TreeViz` object from hierarchy and count matrix

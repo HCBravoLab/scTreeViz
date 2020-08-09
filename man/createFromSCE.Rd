@@ -14,12 +14,6 @@ createFromSCE(
 }
 \arguments{
 \item{object}{`SingleCellExperiment` object to be visualized}
-
-\item{prefix}{common prefix that identifies the cluster columns}
-
-\item{check_colData}{whether to colData of `SingeCellExperiment` object for cluster information or not}
-
-\item{reduced_dim}{Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)}
 }
 \value{
 `TreeViz` Object

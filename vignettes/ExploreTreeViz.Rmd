@@ -97,18 +97,19 @@ Similar to the `Seurat` methods, we provide `createFromSCE` function to create a
 
 1. If no cluster information is available in the `colData` of the `SingleCellExperiment` object, we create clusters at different resolutions using the `WalkTrap` algorithm by calling an internal function `generate_walktrap_hierarchy` and use this cluster information for visualization.
 
-2. If cluster information is provided in the `colData` of the object, then the user should set the flag parameter `check_colData` to `TRUE` and provide prefix for the columns where cluster information is stored.
+# define feature names in feature_symbol column
+#rowData(sce)$feature_symbol <- rownames(sce)
+# remove features with duplicated names
+#sce <- sce[!duplicated(rowData(sce)$feature_symbol), ]
 
-Note: In both cases the user needs to provide the name of dimensionality reductions present in the object as a parameter.
-
-```{r, eval=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
-plot(treeViz)
+# Dimensionality reduction.
+#sce <- runPCA(sce)
+sce<- runTSNE(sce)
 ```
 
 We create clusters at different resolutions using the `WalkTrap` algorithm
 
-```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 data_matrix <- as.matrix(logcounts(sce))
 
 SNN_igraph = scran::buildKNNGraph(
@@ -128,10 +129,8 @@ for (i in 1:10){
 
 treeviz<- createFromSCE(sce)
 
-We provide `startTreeViz` method to initialize interactive exploration of data from the `treeViz` object we created before. 
-
-```{r, eval=FALSE, echo=TRUE}
-app <- startTreeviz(treeViz, top_genes = 500)
+sce
+sce<- generate_walktrap_hierarchy(sce)
 ```
 
 This process
@@ -164,7 +163,7 @@ app$stop_app()
 
 ## Start TreeViz with app running locally
 
-```{r}
+```{r, eval=FALSE, echo=TRUE}
 setTreevizStandalone()
 app <- startTreevizStandalone(treeViz)
 
@@ -173,7 +172,7 @@ app <- startTreevizStandalone(treeViz)
 
 ## Stop App
 
-```{r}
+```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
 
