@@ -217,8 +217,8 @@
 #' app$stop_app()
 #'
 #' @export
-startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://epiviz.cbcb.umd.edu/treeviz",
-                         register_function = .register_all_treeviz_things, delay=2L,
+startTreeviz <- function(data = NULL, host="http://epiviz.cbcb.umd.edu/treeviz",
+                         register_function = .register_all_treeviz_things,
                          ...) {
   chr="treevizr"
   start <- 0
