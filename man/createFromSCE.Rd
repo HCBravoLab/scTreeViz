@@ -7,7 +7,7 @@
 createFromSCE(object)
 }
 \arguments{
-\item{object}{`SingleCellExperiment` class containing cluster information at different resolutions}
+\item{object}{`SingleCellExperiment` object to be visualized}
 }
 \value{
 `TreeViz` Object

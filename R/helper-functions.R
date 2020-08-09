@@ -308,6 +308,31 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   treeviz
 }
 
+#' Creates hierarchical clustering on `Single Cell Experiment` object
+#'
+#' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
+#' @return `Single Cell Experiment` Object with hierarchy information in metadata slot
+#' @export
+#'
+generate_walktrap_hierarchy <- function(object, nsteps=7) {
+  SNN_Graph <- scran::buildSNNGraph(object)
+  clusters <- igraph::cluster_walktrap(SNN_Graph, steps = nsteps)
+  modularity <- c()
+  for (i in 1:length(clusters)){
+    modularity[i] <-  igraph::modularity(SNN_Graph, igraph::cut_at(clusters, n = i))
+  }
+  
+  monotonic_index<- match(unique(cummax(modularity)),modularity)
+  cluster_data =  list()
+  for (i in 1:length(monotonic_index)){
+    cluster_data[[i]] =  list(igraph::cut_at(clusters, n = monotonic_index[i]))
+  }
+  
+  cluster_data<-as.data.frame(cluster_data)
+  colnames(cluster_data)<-paste0("cluster",monotonic_index)
+  metadata(object)$treeviz_clusters <- cluster_data
+  object
+}
 
 #' Creates a `TreeViz` object from `Seurat`
 #'
@@ -334,12 +359,15 @@ createFromSeurat <- function(object) {
 
 #' Creates a `TreeViz`` object from `SingleCellExperiment`
 #'
-#' @param object `SingleCellExperiment` class containing cluster information at different resolutions
+#' @param object `SingleCellExperiment` object to be visualized
 #' @return `TreeViz` Object
 #' @export
 #'
 createFromSCE <- function(object) {
-  clusterdata <- colData(object)
+  if(is.null(metadata(object)$treeviz_clusters)){
+    object <- generate_walktrap_hierarchy(object)
+  }
+  clusterdata <- metadata(object)$treeviz_clusters
   clusterdata <-
     clusterdata[, grep("(cluster|sc3_)", colnames(clusterdata), ignore.case = TRUE)]
   
@@ -349,8 +377,8 @@ createFromSCE <- function(object) {
   treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
   
   if ("TSNE" %in% reducedDimNames(object)) {
-      metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
-      rownames(metadata(treeviz)$tsne)<- colnames(object)
+    metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
+    rownames(metadata(treeviz)$tsne)<- colnames(object)
   }
   treeviz
 }
