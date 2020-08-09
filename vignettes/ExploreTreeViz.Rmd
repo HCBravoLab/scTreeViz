@@ -93,17 +93,18 @@ sce<- mockSCE()
 sce <- logNormCounts(sce)
 
 # define feature names in feature_symbol column
-rowData(sce)$feature_symbol <- rownames(sce)
+#rowData(sce)$feature_symbol <- rownames(sce)
 # remove features with duplicated names
-sce <- sce[!duplicated(rowData(sce)$feature_symbol), ]
+#sce <- sce[!duplicated(rowData(sce)$feature_symbol), ]
 
 # Dimensionality reduction.
-sce <- runPCA(sce)
+#sce <- runPCA(sce)
+sce<- runTSNE(sce)
 ```
 
 We create clusters at different resolutions using the `WalkTrap` algorithm
 
-```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 data_matrix <- as.matrix(logcounts(sce))
 
 SNN_igraph = scran::buildKNNGraph(
@@ -124,6 +125,7 @@ for (i in 1:10){
 treeviz<- createFromSCE(sce)
 
 sce
+sce<- generate_walktrap_hierarchy(sce)
 ```
 
 We use the helper function to create a `TreeViz` object from SCE
@@ -156,7 +158,7 @@ app$stop_app()
 
 ## Start TreeViz with app running locally
 
-```{r}
+```{r, eval=FALSE, echo=TRUE}
 setTreevizStandalone()
 app <- startTreevizStandalone(treeViz)
 
@@ -165,7 +167,7 @@ app <- startTreevizStandalone(treeViz)
 
 ## Stop App
 
-```{r}
+```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
 
