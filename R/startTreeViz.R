@@ -161,6 +161,10 @@
 
     list(nodes = obj$searchTaxonomy(query, max_results))
   })
+  
+  app$server$register_action("setChartSettings", function(request_data) {
+    app$chart_mgr$.update_chart_settings(request_data)
+  })
 }
 
 .wait_until_connected <- function(server, timeout=60L) {

@@ -135,11 +135,12 @@ EpivizTreeData$methods(
     toRet['parentId'] = row['parentId']
     toRet['order'] = row['order']
     toRet['id'] = row['id']
-    if(toRet['id'] %in% names(.self$.nodeSelections)){
-      toRet['selectionType'] = .self$.nodeSelections[[as.character(toRet['id'])]]
-    } else{
-      toRet['selectionType'] = 1
-    }
+    # if(toRet['id'] %in% names(.self$.nodeSelections)){
+    #   toRet['selectionType'] = .self$.nodeSelections[[as.character(toRet['id'])]]
+    # } else{
+    #   toRet['selectionType'] = 1
+    # }
+    toRet['selectionType'] = 1
     toRet['taxonomy'] = row['taxonomy']
     toRet['size'] = 1
     toRet['children'] = NULL
@@ -395,7 +396,7 @@ EpivizTreeData$methods(
 
       result[["lineageLabel"]] = paste(lineageLabel, sep=", ")
 
-      resultResp = list(nodeSelectionTypes = list(),
+      resultResp = list(nodeSelectionTypes = .self$.nodeSelections,
                         selectionLevel = .self$.levelSelected,
                         tree = result)
 
