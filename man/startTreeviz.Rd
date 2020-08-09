@@ -6,7 +6,7 @@
 \usage{
 startTreeviz(
   data = NULL,
-  host = "http://metaviz.cbcb.umd.edu",
+  host = "http://epiviz.cbcb.umd.edu/treeviz",
   register_function = .register_all_treeviz_things,
   ...
 )
