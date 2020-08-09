@@ -213,7 +213,7 @@
 #' app$stop_app()
 #'
 #' @export
-startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
+startTreeviz <- function(data = NULL, host="http://epiviz.cbcb.umd.edu/treeviz",
                          register_function = .register_all_treeviz_things,
                          ...) {
   chr="treevizr"
