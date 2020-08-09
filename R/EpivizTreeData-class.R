@@ -532,58 +532,6 @@ EpivizTreeData$methods(
     return(list())
   },
 
-  getPCA=function(measurements = NULL) {
-    " Compute PCA over all features for given samples
-
-    \\describe{
-    \\item{measurements}{Samples to compute PCA over}
-    \\item{start}{Start of feature range to query }
-    \\item{end}{End of feature range to query}
-    }
-    "
-    if (!("tsne"  %in% names(metadata(.self$.object)))) {
-      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
-      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
-      metadata(.self$.object)$tsne <- tsne
-      rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
-    }
-    
-    removed_cells <- c()
-    if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
-      removed_selections <- names(which(.self$.nodeSelections == 0))
-      
-      removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
-        .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
-      })))
-    }
-    
-    measurements <-  metadata(.self$.object)$tsne
-    
-    data <- list()
-    level<- .self$.levelSelected + 1
-    i<- 1
-    for (col in rownames(metadata(.self$.object)$tsne)) {
-      
-      name <- unname(colData(.self$.object)[[level]][i])
-      if (name %in% removed_cells) {
-        name <- "removed"
-      }
-      
-      temp    <-
-        list(
-          sample_id = col,
-          dim1 = unname(measurements[col, 1]),
-          dim2 = unname(measurements[col, 2]),
-          name = name
-        )
-      data[[col]] <- temp
-      i<- i+1
-    }
-    result <- list(data = unname(data), pca_variance_explained = c(1,1))
-    
-    return(result)
-  },
-
   getCombined=function(measurements = NULL,
                        seqName, start = 1, end = 1000,
                        order = NULL, nodeSelection = NULL, selectedLevels = NULL) {
@@ -649,6 +597,101 @@ EpivizTreeData$methods(
       globalStartIndex = data_rows$start[[1]]
     )
 
+    return(result)
+  },
+  
+  getPCA=function(measurements = NULL) {
+    " Compute PCA over all features for given samples
+
+    \\describe{
+    \\item{measurements}{Samples to compute PCA over}
+    \\item{start}{Start of feature range to query }
+    \\item{end}{End of feature range to query}
+    }
+    "
+    if (!("tsne"  %in% names(metadata(.self$.object)))) {
+      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
+      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
+      metadata(.self$.object)$tsne <- tsne
+      rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
+    }
+    
+    removed_cells <- c()
+    if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
+      removed_selections <- names(which(.self$.nodeSelections == 0))
+      
+      removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
+        .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
+      })))
+    }
+    
+    measurements <-  metadata(.self$.object)$tsne
+    
+    data <- list()
+    level<- .self$.levelSelected + 1
+    i<- 1
+    for (col in rownames(metadata(.self$.object)$tsne)) {
+      
+      name <- unname(colData(.self$.object)[[level]][i])
+      if (name %in% removed_cells) {
+        name <- "removed"
+      }
+      
+      # TODO: need to add sample attributes
+      temp    <-
+        list(
+          sample_id = col,
+          dim1 = unname(measurements[col, 1]),
+          dim2 = unname(measurements[col, 2]),
+          name = name
+        )
+      data[[col]] <- temp
+      i<- i+1
+    }
+    result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    
+    return(result)
+  },
+  
+  getAlphaDiversity=function(measurements=NULL){
+    
+    if (!is.null(measurements)) {
+      gene <- measurements[1]
+    }
+    
+    level<- .self$.levelSelected + 1
+    selectedNodes <- .self$.nodeSelections
+    
+    #.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, by=.self$.treeIn, format="counts"
+    # aggtree_mean<- aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selectedNodes, aggFunType = "mean", by= "col", format="counts")
+    # aggtree_sds<- aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selectedNodes, aggFunType = "sd", by= "col", format="counts")
+    
+    counts <- assays(.self$.object)$counts
+    
+    # Assuming single cell datasets for now
+    # TODO: fix later
+    # if(.self$.treeIn == "col") {
+      gene_col <- counts[gene, ]
+    # }
+    # else if (.self.treeIn == "row") {
+    #   gene_col <- counts[, gene]
+    # }
+    # 
+      
+    data <- list()
+    i <- 1
+    for (col in names(gene_col)) {
+      
+      # TODO: need to add sample attributes
+      data[[col]] <- list(
+        alphaDiversity = gene_col[[col]],
+        sample_id = col,
+        name = unname(colData(.self$.object)[[level]][i])
+      )
+      i <- i+1
+    }
+    
+    result <- list(data = unname(data))
     return(result)
   }
 )
