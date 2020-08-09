@@ -413,7 +413,6 @@ EpivizTreeData$methods(
       })
       
       result[["lineageLabel"]] = paste(lineageLabel, sep=", ")
-      
       resultResp = list(nodeSelectionTypes = .self$.nodeSelections,
                         selectionLevel = .self$.levelSelected,
                         tree = result)
