@@ -649,8 +649,50 @@ EpivizTreeData$methods(
       data[[col]] <- temp
       i<- i+1
     }
-    result <- list(data = unname(data), pca_variance_explained = c(1,1))
     
+    df <- do.call(rbind.data.frame, data)
+    nodeSelections <- .self$.nodeSelections
+    
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 2) {
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          df[indices, "name"] <- node_irow$node_label
+        }
+      }
+    }
+    
+    indices_to_remove <- c()
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 0) {
+        # removed node
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          indices_to_remove <- c(indices_to_remove, indices)
+        }
+      }
+    }
+    
+    df[unique(indices_to_remove), "name"] <- "removed"
+    
+    data <- list()
+    # TODO: need to add sample attributes
+    for (i in 1:nrow(df)) {
+      data[[df[i, "sample_id"]]] <- list(
+        dim1 = df$dim1[i],
+        dim2 = df$dim2[i],
+        sample_id = df$sample_id[i],
+        name = df$name[i]
+      )
+    }
+
+    result <- list(data = unname(data), pca_variance_explained = c(1,1))
     return(result)
   },
   
@@ -662,10 +704,6 @@ EpivizTreeData$methods(
     
     level<- .self$.levelSelected + 1
     selectedNodes <- .self$.nodeSelections
-    
-    #.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, by=.self$.treeIn, format="counts"
-    # aggtree_mean<- aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selectedNodes, aggFunType = "mean", by= "col", format="counts")
-    # aggtree_sds<- aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selectedNodes, aggFunType = "sd", by= "col", format="counts")
     
     counts <- assays(.self$.object)$counts
     
@@ -682,14 +720,53 @@ EpivizTreeData$methods(
     data <- list()
     i <- 1
     for (col in names(gene_col)) {
-      
-      # TODO: need to add sample attributes
       data[[col]] <- list(
         alphaDiversity = gene_col[[col]],
         sample_id = col,
         name = unname(colData(.self$.object)[[level]][i])
       )
       i <- i+1
+    }
+    
+    df <- do.call(rbind.data.frame, data)
+    nodeSelections <- selectedNodes
+    
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 2) {
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          df[indices, "name"] <- node_irow$node_label
+        }
+      }
+    }
+    
+    indices_to_remove <- c()
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 0) {
+        # removed node
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          indices_to_remove <- c(indices_to_remove, indices)
+        }
+      }
+    }
+    
+    df[unique(indices_to_remove), "name"] <- "removed"
+    
+    data <- list()
+    # TODO: need to add sample attributes
+    for (i in 1:nrow(df)) {
+      data[[df[i, "sample_id"]]] <- list(
+        alphaDiversity = df$alphaDiversity[i],
+        sample_id = df$sample_id[i],
+        name = df$name[i]
+      )
     }
     
     result <- list(data = unname(data))
