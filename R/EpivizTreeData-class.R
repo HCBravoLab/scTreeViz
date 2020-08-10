@@ -135,11 +135,12 @@ EpivizTreeData$methods(
     toRet['parentId'] = row['parentId']
     toRet['order'] = row['order']
     toRet['id'] = row['id']
-    if(toRet['id'] %in% names(.self$.nodeSelections)){
-      toRet['selectionType'] = .self$.nodeSelections[[as.character(toRet['id'])]]
-    } else{
-      toRet['selectionType'] = 1
-    }
+    # if(toRet['id'] %in% names(.self$.nodeSelections)){
+    #   toRet['selectionType'] = .self$.nodeSelections[[as.character(toRet['id'])]]
+    # } else{
+    #   toRet['selectionType'] = 1
+    # }
+    toRet['selectionType'] = 1
     toRet['taxonomy'] = row['taxonomy']
     toRet['size'] = 1
     toRet['children'] = NULL
@@ -395,7 +396,7 @@ EpivizTreeData$methods(
 
       result[["lineageLabel"]] = paste(lineageLabel, sep=", ")
 
-      resultResp = list(nodeSelectionTypes = list(),
+      resultResp = list(nodeSelectionTypes = .self$.nodeSelections,
                         selectionLevel = .self$.levelSelected,
                         tree = result)
 
@@ -532,60 +533,7 @@ EpivizTreeData$methods(
     return(list())
   },
 
-  getPCA=function(measurements = NULL) {
-    " Compute PCA over all features for given samples
 
-    \\describe{
-    \\item{measurements}{Samples to compute PCA over}
-    \\item{start}{Start of feature range to query }
-    \\item{end}{End of feature range to query}
-    }
-    "
-    if (!("tsne"  %in% names(metadata(.self$.object)))) {
-      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
-      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
-      metadata(.self$.object)$tsne <- tsne$Y
-      rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
-    }
-    
-    removed_cells <- c()
-    if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
-      removed_selections <- names(which(.self$.nodeSelections == 0))
-      
-      removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
-        .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
-      })))
-    }
-    
-    measurements <-  metadata(.self$.object)$tsne
-    
-    data <- list()
-    level<- .self$.levelSelected
-    
-    i<- 1
-    for (col in rownames(metadata(.self$.object)$tsne)) {
-      
-      name <- unname(colData(.self$.object)[[level]][i])
-      if (name %in% removed_cells) {
-        name <- "removed"
-      }
-      
-      temp    <-
-        list(
-          sample_id = col,
-          dim1 = unname(measurements[col, 1]),
-          dim2 = unname(measurements[col, 2]),
-          name = name
-        )
-      data[[col]] <- temp
-      i<- i+1
-    }
-    
-    result <- list(data = unname(data), pca_variance_explained = c(1,1))
-    
-    return(result)
-  },
-  
   getGeneBoxPlot=function(measurements = NULL,selectedgene=NULL, selectedLevels = NULL){
     
 
@@ -605,7 +553,60 @@ EpivizTreeData$methods(
     return(result)
   },
 
-  getCombined=function(measurements = NULL,
+
+  getPCA=function(measurements = NULL) {
+    " Compute PCA over all features for given samples
+
+    \\describe{
+    \\item{measurements}{Samples to compute PCA over}
+    \\item{start}{Start of feature range to query }
+    \\item{end}{End of feature range to query}
+    }
+    "
+    if (!("tsne"  %in% names(metadata(.self$.object)))) {
+      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
+      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
+      metadata(.self$.object)$tsne <- tsne
+      rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
+    }
+    
+    removed_cells <- c()
+    if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
+      removed_selections <- names(which(.self$.nodeSelections == 0))
+      
+      removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
+        .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
+      })))
+    }
+    
+    measurements <-  metadata(.self$.object)$tsne
+    
+    data <- list()
+    level<- .self$.levelSelected
+    i<- 1
+    for (col in rownames(metadata(.self$.object)$tsne)) {
+      
+      name <- unname(colData(.self$.object)[[level]][i])
+      if (name %in% removed_cells) {
+        name <- "removed"
+      }
+      
+      temp    <-
+        list(
+          sample_id = col,
+          dim1 = unname(measurements[col, 1]),
+          dim2 = unname(measurements[col, 2]),
+          name = name
+        )
+      data[[col]] <- temp
+      i<- i+1
+    }
+    result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    
+    return(result)
+  },
+
+getCombined=function(measurements = NULL,
                        seqName, start = 1, end = 1000,
                        order = NULL, nodeSelection = NULL, selectedLevels = NULL) {
     "Return the counts aggregated to selected nodes for the given samples
@@ -630,7 +631,7 @@ EpivizTreeData$methods(
     }
 
     if(is.null(selectedLevels)) {
-      selectedLevels = .self$.levelSelected
+      selectedLevels = .self$.levelSelected + 1
     }
     
     selections = .self$.nodeSelections
@@ -670,6 +671,178 @@ EpivizTreeData$methods(
       globalStartIndex = data_rows$start[[1]]
     )
 
+    return(result)
+  },
+  
+  getPCA=function(measurements = NULL) {
+    " Compute PCA over all features for given samples
+
+    \\describe{
+    \\item{measurements}{Samples to compute PCA over}
+    \\item{start}{Start of feature range to query }
+    \\item{end}{End of feature range to query}
+    }
+    "
+    if (!("tsne"  %in% names(metadata(.self$.object)))) {
+      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
+      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
+      metadata(.self$.object)$tsne <- tsne
+      rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
+    }
+    
+    removed_cells <- c()
+    if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
+      removed_selections <- names(which(.self$.nodeSelections == 0))
+      
+      removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
+        .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
+      })))
+    }
+    
+    measurements <-  metadata(.self$.object)$tsne
+    
+    data <- list()
+    level<- .self$.levelSelected + 1
+    i<- 1
+    for (col in rownames(metadata(.self$.object)$tsne)) {
+      
+      name <- unname(colData(.self$.object)[[level]][i])
+      if (name %in% removed_cells) {
+        name <- "removed"
+      }
+      
+      # TODO: need to add sample attributes
+      temp    <-
+        list(
+          sample_id = col,
+          dim1 = unname(measurements[col, 1]),
+          dim2 = unname(measurements[col, 2]),
+          name = name
+        )
+      data[[col]] <- temp
+      i<- i+1
+    }
+    
+    df <- do.call(rbind.data.frame, data)
+    nodeSelections <- .self$.nodeSelections
+    
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 2) {
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          df[indices, "name"] <- node_irow$node_label
+        }
+      }
+    }
+    
+    indices_to_remove <- c()
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 0) {
+        # removed node
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          indices_to_remove <- c(indices_to_remove, indices)
+        }
+      }
+    }
+    
+    df[unique(indices_to_remove), "name"] <- "removed"
+    
+    data <- list()
+    # TODO: need to add sample attributes
+    for (i in 1:nrow(df)) {
+      data[[df[i, "sample_id"]]] <- list(
+        dim1 = df$dim1[i],
+        dim2 = df$dim2[i],
+        sample_id = df$sample_id[i],
+        name = df$name[i]
+      )
+    }
+
+    result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    return(result)
+  },
+  
+  getAlphaDiversity=function(measurements=NULL){
+    
+    if (!is.null(measurements)) {
+      gene <- measurements[1]
+    }
+    
+    level<- .self$.levelSelected + 1
+    selectedNodes <- .self$.nodeSelections
+    
+    counts <- assays(.self$.object)$counts
+    
+    # Assuming single cell datasets for now
+    # TODO: fix later
+    # if(.self$.treeIn == "col") {
+      gene_col <- counts[gene, ]
+    # }
+    # else if (.self.treeIn == "row") {
+    #   gene_col <- counts[, gene]
+    # }
+    # 
+      
+    data <- list()
+    i <- 1
+    for (col in names(gene_col)) {
+      data[[col]] <- list(
+        alphaDiversity = gene_col[[col]],
+        sample_id = col,
+        name = unname(colData(.self$.object)[[level]][i])
+      )
+      i <- i+1
+    }
+    
+    df <- do.call(rbind.data.frame, data)
+    nodeSelections <- selectedNodes
+    
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 2) {
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          df[indices, "name"] <- node_irow$node_label
+        }
+      }
+    }
+    
+    indices_to_remove <- c()
+    for (node in names(nodeSelections)) {
+      if (nodeSelections[[node]] == 0) {
+        # removed node
+        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+        for( i in 1:nrow(node_row) ) {
+          node_irow <- node_row[i, ]
+          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+          indices_to_remove <- c(indices_to_remove, indices)
+        }
+      }
+    }
+    
+    df[unique(indices_to_remove), "name"] <- "removed"
+    
+    data <- list()
+    # TODO: need to add sample attributes
+    for (i in 1:nrow(df)) {
+      data[[df[i, "sample_id"]]] <- list(
+        alphaDiversity = df$alphaDiversity[i],
+        sample_id = df$sample_id[i],
+        name = df$name[i]
+      )
+    }
+    
+    result <- list(data = unname(data))
     return(result)
   }
 )

@@ -161,6 +161,10 @@
 
     list(nodes = obj$searchTaxonomy(query, max_results))
   })
+  
+  app$server$register_action("setChartSettings", function(request_data) {
+    app$chart_mgr$.update_chart_settings(request_data)
+  })
 }
 
 .wait_until_connected <- function(server, timeout=60L) {
@@ -213,7 +217,7 @@
 #' app$stop_app()
 #'
 #' @export
-startTreeviz <- function(data = NULL, host="http://metaviz.cbcb.umd.edu",
+startTreeviz <- function(data = NULL, host="http://epiviz.cbcb.umd.edu/treeviz",
                          register_function = .register_all_treeviz_things,
                          ...) {
   chr="treevizr"
