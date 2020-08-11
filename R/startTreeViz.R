@@ -70,10 +70,10 @@
       measurements <- measurementsList[[m]]
 
       if(is.null(start)) {
-        start <- 1
+        start <- 0
       }
       else {
-        start <- start - 1
+        start <- start
       }
 
       if(is.null(end)) {
@@ -108,13 +108,13 @@
 
   app$server$register_action("getSeqInfos", function(request_data) {
     return(list(
-      "treevizr" = c(1, 100000)
+      "treevizr" = c(0, 100000)
     ))
   })
 
   app$server$register_action("partitions", function(request_data) {
     return(list(
-      "treevizr" = c(1, 100000)
+      "treevizr" = c(0, 100000)
     ))
   })
 
@@ -221,7 +221,7 @@ startTreeviz <- function(data = NULL, host="http://epiviz.cbcb.umd.edu/treeviz",
                          register_function = .register_all_treeviz_things,
                          ...) {
   chr="treevizr"
-  start <- 1
+  start <- 0
   end <- 100000
   app <- startEpiviz(host = host, register_function = register_function,
                      chr=chr, start=start, end=end, ...)
