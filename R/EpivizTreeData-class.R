@@ -638,7 +638,7 @@ getCombined=function(measurements = NULL,
     
     data_rows = .self$getRows(measurements = measurements, start = start, end = end, selectedLevels = selectedLevels, selections = selections)
     row_order = unlist(data_rows$metadata$label)
-    aggcounts = aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, by=.self$.treeIn, format="counts")
+    aggcounts = aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, start = start, end = end, by=.self$.treeIn, format="counts")
     
     data_columns = list()
     
