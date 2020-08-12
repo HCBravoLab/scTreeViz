@@ -308,8 +308,9 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   treeviz
 }
 
-#' Creates hierarchical clustering on `Single Cell Experiment` object
-#'
+#' Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
+#' walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division. 
+#' Intermediate cluster assignments are created based on monotonically increasing level of modularity 
 #' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
 #' @return `Single Cell Experiment` Object with hierarchy information in metadata slot
 #' @export
@@ -373,9 +374,9 @@ createFromSCE <- function(object, prefix="cluster", check_colData=FALSE) {
     }
   }
   else{
-    
+    message("No default clusters provided")
     if(is.null(metadata(object)$treeviz_clusters)){
-      print("calculating walktrap clusters")
+      message("calculating walktrap clusters")
       object <- generate_walktrap_hierarchy(object)
     }
     clusterdata <- metadata(object)$treeviz_clusters
