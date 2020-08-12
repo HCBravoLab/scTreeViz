@@ -119,7 +119,7 @@
   })
   
   app$server$register_action("getPCA", function(request_data) {
-
+    
     obj <- app$data_mgr$.find_datasource(request_data$measurements)
     if (is.null(obj)) {
       stop("cannot find datasource", request_data$measurements)
@@ -217,71 +217,110 @@
 #' app$stop_app()
 #'
 #' @export
-startTreeviz <- function(data = NULL, host="http://epiviz.cbcb.umd.edu/treeviz",
-                         register_function = .register_all_treeviz_things,
-                         ...) {
-  chr="treevizr"
-  start <- 0
-  end <- 100000
-  app <- startEpiviz(host = host, register_function = register_function,
-                     chr=chr, start=start, end=end, ...)
-  mApp <- TreeVizApp$new(.url_parms=app$.url_parms, .browser_fun=app$.browser_fun,
-                         server=app$server, data_mgr=app$data_mgr, chart_mgr=app$chart_mgr)
-
-
-  # if (is(data, "Seurat")) {
-  #   treeViz <- createFromSeurat(data)
-  # }
-  # else if (is(data, "SingleCellExperiment")) {
-  #   treeViz <- createFromSCE(data)
-  # }
-
+startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.umd.edu/treeviz",
+                         http_port=NULL, path=NULL, use_devel=FALSE, 
+                         chr="treevizr", start=0, end=100000, 
+                         debug=FALSE, workspace=NULL, scripts=NULL, gists=NULL, use_cookie=TRUE,
+                         register_function=.register_all_treeviz_things,
+                         open_browser=TRUE, server=NULL, browser_fun=utils::browseURL, 
+                         ws_host="localhost", ...) {
+  
+  if(is.null(server) || !is(server, "EpivizServer") ) {
+    server <- epivizrServer::createServer(...)
+  }
+  
+  data_mgr <- TreeVizDataMgr$new(server = server)
+  chart_mgr <- TreeVizChartMgr$new(server=server)
+  
+  url_parms <- list(host=host,
+                    http_port=http_port,
+                    path=path,
+                    ws_port=server$.port,
+                    use_devel=use_devel,
+                    debug=debug,
+                    chr=chr,
+                    start=start,
+                    end=end,
+                    workspace=workspace,
+                    scripts=scripts,
+                    gists=gists,
+                    use_cookie=use_cookie,
+                    ws_host=ws_host)
+  
+  app <- TreeVizApp$new(.url_parms=url_parms,
+                        .browser_fun=browser_fun,
+                        server=server,
+                        data_mgr=data_mgr,
+                        chart_mgr=chart_mgr)
+  
+  if (app$server$.verbose) {
+    cat("Starting TreeViz!\n")
+  }
+  
+  register_function(app)
+  
+  if (!app$server$is_interactive()) {
+    return(app)
+  }
+  
+  if (app$server$.verbose) {
+    cat("Initializing session manager...\n")
+  }
   tryCatch({
-
-    send_request <- mApp$server$is_interactive()
-    
-    if (mApp$server$is_interactive()) {
-      .wait_until_connected(mApp$server)
+    if (app$server$.verbose) {
+      cat("Opening connections...\n")
     }
-
+    
+    if (open_browser) {
+      app$.open_browser()
+    }
+    
+    if (app$server$.verbose) {
+      cat("Done starting Epivizr!\n")
+    }
+    
+    send_request <- app$server$is_interactive()
+    
+    if (app$server$is_interactive()) {
+      .wait_until_connected(app$server)
+    }
+    
     if (!is.null(data)) {
-
-      data <- find_top_variable_genes(data, 100)
+      
+      data <- find_top_variable_genes(data, top_genes)
       
       
-      mApp$navigate(chr, start, end)
-      mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
-
+      app$navigate(chr, start, end)
+      app$server$wait_to_clear_requests()
+      .delay_requests(app$server)
+      
       # facetZoom
-      facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
-      mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
-
-      mApp$chart_mgr$plot(facetZoom, send_request=send_request)
-      mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
-
+      facetZoom <- app$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
+      app$server$wait_to_clear_requests()
+      .delay_requests(app$server)
+      
+      app$chart_mgr$plot(facetZoom, send_request=send_request)
+      app$server$wait_to_clear_requests()
+      .delay_requests(app$server)
+      
       # Heatmap
       ms_list <- facetZoom$get_measurements()
       subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
       
-      mApp$server$wait_to_clear_requests()
-      mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
-      mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
-
+      app$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+      app$server$wait_to_clear_requests()
+      .delay_requests(app$server)
+      
       # TSNE
-      mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
-      mApp$server$wait_to_clear_requests()
-
+      app$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom, mFlag=FALSE)
+      app$server$wait_to_clear_requests()
     }
+    
+    app
   }, error=function(e) {
-    mApp$stop_app()
-    stop(e)
-  })
-
-  mApp
+    app$stop_app()
+    stop("Error starting Epiviz: ", e)
+  }, interrupt=function(e) {NULL})  
 }
 
 
@@ -323,6 +362,7 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
                  genome="treevizr")
   
   path <- system.file("www", package="epivizrStandalone")
+  
   app <- startStandalone(seqinfo=seq,
                          register_function=register_function,
                          use_viewer_option = use_viewer_option,
@@ -331,29 +371,30 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
   mApp <- TreeVizApp$new(.url_parms=app$.url_parms, .browser_fun=app$.browser_fun,
                          server=app$server, data_mgr=app$data_mgr, chart_mgr=app$chart_mgr)
   tryCatch({
+    
     send_request <- mApp$server$is_interactive()
     
     if (mApp$server$is_interactive()) {
       .wait_until_connected(mApp$server)
     }
-
+    
     if (!is.null(data)) {
-
+      
       data <- find_top_variable_genes(data, 100)
       
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
-
+      
       # facetZoom
       facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
-
+      
       mApp$chart_mgr$plot(facetZoom, send_request=send_request)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
-
+      
       # Heatmap
       ms_list <- facetZoom$get_measurements()
       subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
@@ -361,16 +402,17 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
-
+      
       # TSNE
       mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
       mApp$server$wait_to_clear_requests()
-
+      
     }
   }, error=function(e) {
     mApp$stop_app()
     stop(e)
   })
+  
   mApp
 }
 
