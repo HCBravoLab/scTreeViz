@@ -4,7 +4,7 @@
 \alias{createFromSCE}
 \title{Creates a `TreeViz`` object from `SingleCellExperiment`}
 \usage{
-createFromSCE(object)
+createFromSCE(object, prefix = "cluster", check_colData = FALSE)
 }
 \arguments{
 \item{object}{`SingleCellExperiment` object to be visualized}
