@@ -23,7 +23,8 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
                                 .lastRootId = "character",
                                 .json_query = "ANY",
                                 .graph = "ANY",
-                                .treeIn = "character"
+                                .treeIn = "character",
+                                .measurements = "ANY"
                               ),
 
                               methods=list(
@@ -43,6 +44,7 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
                                   .self$.lastRootId <- "0-0"
                                   .self$.nodeSelections <- list()
                                   .self$.treeIn <- tree
+                                  .self$.measurements <- NULL
 
                                   if(tree == "row") {
                                     .self$.graph <- rowData(object)
@@ -97,19 +99,27 @@ EpivizTreeData$methods(
       sample_table <- as.data.frame(rowData(.self$.object))
       # .sampleAnnotation <- rowData(.self$.object)
     }
-
-    out <- lapply(rownames(sample_table), function(sample) {
-      epivizrData:::EpivizMeasurement(id=sample,
-                                      name=sample,
-                                      type="feature",
-                                      datasourceId=.self$.id,
-                                      datasourceGroup=.self$.id,
-                                      defaultChartType="heatmap",
-                                      annotation=as.list(sample_table[sample,]),
-                                      minValue=.self$.minValue,
-                                      maxValue=.self$.maxValue,
-                                      metadata=c("colLabel", "ancestors", "lineage", "label"))
-    })
+    
+    if (!is.null(.self$.measurements)) {
+      out <- .self$.measurements
+    }
+    else {
+      out <- lapply(rownames(sample_table), function(sample) {
+        epivizrData:::EpivizMeasurement(id=sample,
+                                        name=sample,
+                                        type="feature",
+                                        datasourceId=.self$.id,
+                                        datasourceGroup=.self$.id,
+                                        defaultChartType="heatmap",
+                                        annotation=as.list(sample_table[sample,]),
+                                        minValue=.self$.minValue,
+                                        maxValue=.self$.maxValue,
+                                        metadata=c("colLabel", "ancestors", "lineage", "label"))
+      })
+      
+      .self$.measurements <- out 
+    }
+    
     return(out)
   },
 
