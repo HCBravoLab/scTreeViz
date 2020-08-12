@@ -83,8 +83,8 @@ EpivizTreeData$methods(
   get_default_chart_type=function() {
     "epiviz.ui.charts.tree.Icicle"
   },
-  
-  get_measurements=function(top_genes=TRUE) {
+
+  get_measurements=function(top=TRUE) {
     "Get all annotation info for all samples
     \\describe{
     \\item{chart_id_or_object}{An object of class \\code{EpivizChart} or an id for
@@ -92,7 +92,7 @@ EpivizTreeData$methods(
     }
     "
     
-    if(top_genes) {
+    if(top) {
       
       if (!is.null(.self$.measurements)) {
         out <- .self$.measurements
@@ -101,15 +101,22 @@ EpivizTreeData$methods(
         genes <- metadata(.self$.object)$top_variable
         
         out <- lapply(genes, function(gene) {
-          epivizrData:::SparseEpivizMeasurement(id=gene,
-                                                datasourceId=.self$.id)
+          epivizrData:::EpivizMeasurement(id=gene,
+                                          name=gene,
+                                          type="feature",
+                                          datasourceId=.self$.id,
+                                          datasourceGroup=.self$.id,
+                                          defaultChartType="heatmap",
+                                          annotation=list(),
+                                          minValue=.self$.minValue,
+                                          maxValue=.self$.maxValue,
+                                          metadata=c("colLabel", "ancestors", "lineage", "label"))
         })
         
         .self$.measurements <- out  
       }
       return(out)
     }
-    
     if (.self$.treeIn == "row") {
       sample_table <- as.data.frame(colData(.self$.object))
       # .sampleAnnotation <- colData(.self$.object)
