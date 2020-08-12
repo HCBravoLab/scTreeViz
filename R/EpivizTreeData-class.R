@@ -23,7 +23,8 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
                                 .lastRootId = "character",
                                 .json_query = "ANY",
                                 .graph = "ANY",
-                                .treeIn = "character"
+                                .treeIn = "character",
+                                .measurements = "ANY"
                               ),
 
                               methods=list(
@@ -43,6 +44,7 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
                                   .self$.lastRootId <- "0-0"
                                   .self$.nodeSelections <- list()
                                   .self$.treeIn <- tree
+                                  .self$.measurements <- NULL
 
                                   if(tree == "row") {
                                     .self$.graph <- rowData(object)
@@ -82,7 +84,7 @@ EpivizTreeData$methods(
     "epiviz.ui.charts.tree.Icicle"
   },
 
-  get_measurements=function() {
+  get_measurements=function(top=TRUE) {
     "Get all annotation info for all samples
 
     \\describe{
@@ -90,6 +92,33 @@ EpivizTreeData$methods(
     a chart loaded to the epiviz app.}
     }
     "
+    
+    if(top) {
+      
+      if (!is.null(.self$.measurements)) {
+        out <- .self$.measurements
+      }
+      else {
+        genes <- metadata(.self$.object)$top_variable
+        
+        out <- lapply(genes, function(gene) {
+          epivizrData:::EpivizMeasurement(id=gene,
+                                          name=gene,
+                                          type="feature",
+                                          datasourceId=.self$.id,
+                                          datasourceGroup=.self$.id,
+                                          defaultChartType="heatmap",
+                                          annotation=list(),
+                                          minValue=.self$.minValue,
+                                          maxValue=.self$.maxValue,
+                                          metadata=c("colLabel", "ancestors", "lineage", "label"))
+        })
+        
+        .self$.measurements <- out  
+      }
+      return(out)
+    }
+
     if (.self$.treeIn == "row") {
       sample_table <- as.data.frame(colData(.self$.object))
       # .sampleAnnotation <- colData(.self$.object)
@@ -97,19 +126,27 @@ EpivizTreeData$methods(
       sample_table <- as.data.frame(rowData(.self$.object))
       # .sampleAnnotation <- rowData(.self$.object)
     }
-
-    out <- lapply(rownames(sample_table), function(sample) {
-      epivizrData:::EpivizMeasurement(id=sample,
-                                      name=sample,
-                                      type="feature",
-                                      datasourceId=.self$.id,
-                                      datasourceGroup=.self$.id,
-                                      defaultChartType="heatmap",
-                                      annotation=as.list(sample_table[sample,]),
-                                      minValue=.self$.minValue,
-                                      maxValue=.self$.maxValue,
-                                      metadata=c("colLabel", "ancestors", "lineage", "label"))
-    })
+    
+    if (!is.null(.self$.measurements)) {
+      out <- .self$.measurements
+    }
+    else {
+      out <- lapply(rownames(sample_table), function(sample) {
+        epivizrData:::EpivizMeasurement(id=sample,
+                                        name=sample,
+                                        type="feature",
+                                        datasourceId=.self$.id,
+                                        datasourceGroup=.self$.id,
+                                        defaultChartType="heatmap",
+                                        annotation=as.list(sample_table[sample,]),
+                                        minValue=.self$.minValue,
+                                        maxValue=.self$.maxValue,
+                                        metadata=c("colLabel", "ancestors", "lineage", "label"))
+      })
+      
+      .self$.measurements <- out 
+    }
+    
     return(out)
   },
 
@@ -639,7 +676,7 @@ getCombined=function(measurements = NULL,
     
     data_rows = .self$getRows(measurements = measurements, start = start, end = end, selectedLevels = selectedLevels, selections = selections)
     row_order = unlist(data_rows$metadata$label)
-    aggcounts = aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, by=.self$.treeIn, format="counts")
+    aggcounts = aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, start = start, end = end, by=.self$.treeIn, format="counts")
     
     data_columns = list()
     
