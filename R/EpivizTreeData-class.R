@@ -46,7 +46,6 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
                                   .self$.nodeSelections <- list()
                                   .self$.treeIn <- tree
                                   .self$.measurements <- NULL
-                                  
                                   if(tree == "row") {
                                     .self$.graph <- rowData(object)
                                   } else {
@@ -124,8 +123,16 @@ EpivizTreeData$methods(
     }
     else {
       out <- lapply(rownames(sample_table), function(sample) {
-        epivizrData:::SparseEpivizMeasurement(id=sample,
-                                              datasourceId=.self$.id)
+        epivizrData:::EpivizMeasurement(id=sample,
+                                        name=sample,
+                                        type="feature",
+                                        datasourceId=.self$.id,
+                                        datasourceGroup=.self$.id,
+                                        defaultChartType="heatmap",
+                                        annotation=as.list(sample_table[sample,]),
+                                        minValue=.self$.minValue,
+                                        maxValue=.self$.maxValue,
+                                        metadata=c("colLabel", "ancestors", "lineage", "label"))
       })
       
       .self$.measurements <- out 
