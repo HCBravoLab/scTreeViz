@@ -248,7 +248,6 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
       
       data <- find_top_variable_genes(data, top_genes)
       
-      
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
@@ -258,23 +257,21 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
       
-      mApp$chart_mgr$plot(facetZoom, send_request=send_request)
+      ms_list <- facetZoom$get_measurements()
+      mea <- ms_list[[1]]
+      mea@id <- "all"
+      
+      mApp$chart_mgr$visualize(chart_type = "epiviz.ui.charts.tree.Icicle",  measurements = list(mea))
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
       
-      # Heatmap
-      ms_list <- facetZoom$get_measurements()
-      subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
-      
-      mApp$server$wait_to_clear_requests()
-      mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+      mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = list(mea))
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
       
       # TSNE
-      mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
+      mApp$chart_mgr$visualize(chart_type = "TSNEPlot", measurements = list(mea))
       mApp$server$wait_to_clear_requests()
-      
     }
   }, error=function(e) {
     mApp$stop_app()
