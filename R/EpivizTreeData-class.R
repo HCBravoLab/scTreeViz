@@ -2,6 +2,7 @@
 #'
 #' Used to serve hierarchical data (used in e.g., icicle plots and heatmaps).
 #' @importClassesFrom epivizrData EpivizData
+#' @importClassesFrom epivizrData SparseEpivizMeasurement
 #' @import data.table
 #' @import digest
 #' @import methods
@@ -84,7 +85,7 @@ EpivizTreeData$methods(
     "epiviz.ui.charts.tree.Icicle"
   },
 
-  get_measurements=function(top=TRUE) {
+  get_measurements=function(top_genes=TRUE) {
     "Get all annotation info for all samples
 
     \\describe{
@@ -93,7 +94,7 @@ EpivizTreeData$methods(
     }
     "
     
-    if(top) {
+    if(top_genes) {
       
       if (!is.null(.self$.measurements)) {
         out <- .self$.measurements
@@ -102,16 +103,8 @@ EpivizTreeData$methods(
         genes <- metadata(.self$.object)$top_variable
         
         out <- lapply(genes, function(gene) {
-          epivizrData:::EpivizMeasurement(id=gene,
-                                          name=gene,
-                                          type="feature",
-                                          datasourceId=.self$.id,
-                                          datasourceGroup=.self$.id,
-                                          defaultChartType="heatmap",
-                                          annotation=list(),
-                                          minValue=.self$.minValue,
-                                          maxValue=.self$.maxValue,
-                                          metadata=c("colLabel", "ancestors", "lineage", "label"))
+          epivizrData:::SparseEpivizMeasurement(id=gene,
+                                                datasourceId=.self$.id)
         })
         
         .self$.measurements <- out  
@@ -132,16 +125,8 @@ EpivizTreeData$methods(
     }
     else {
       out <- lapply(rownames(sample_table), function(sample) {
-        epivizrData:::EpivizMeasurement(id=sample,
-                                        name=sample,
-                                        type="feature",
-                                        datasourceId=.self$.id,
-                                        datasourceGroup=.self$.id,
-                                        defaultChartType="heatmap",
-                                        annotation=as.list(sample_table[sample,]),
-                                        minValue=.self$.minValue,
-                                        maxValue=.self$.maxValue,
-                                        metadata=c("colLabel", "ancestors", "lineage", "label"))
+        epivizrData:::SparseEpivizMeasurement(id=sample,
+                                              datasourceId=.self$.id)
       })
       
       .self$.measurements <- out 
