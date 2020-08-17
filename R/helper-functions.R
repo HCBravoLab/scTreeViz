@@ -341,34 +341,37 @@ generate_walktrap_hierarchy <- function(object, nsteps=7) {
 #' Creates a `TreeViz` object from `Seurat`
 #'
 #' @param object `Seurat` class containing cluster information at different resolutions
-#' @param reduced_dim Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists) 
+#' @param reduced_dim (if exists) Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz`
 #' @return `TreeViz` Object
 #' @export
 #'
-createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
+createFromSeurat <- function(object, reduced_dim="tsne") {
   clusterdata <- object@meta.data
   clusterdata <- clusterdata[, grep("*snn*", colnames(clusterdata))]
   
   treeviz <-
     preprocessAndCreateTreeViz(clusterdata, GetAssayData(object))
   
-  if ("tsne" %in% Reductions(object)) {
-    reducdim <- Reductions(object, slot = "tsne")
+  if (reduced_dim %in% Reductions(object)) {
+    reducdim <- Reductions(object, slot = reduced_dim)
     
-    metadata(treeviz)$tsne <- reducdim@cell.embeddings
-    rownames(metadata(treeviz)$tsne)<- colnames(object)
+    metadata(treeviz)$reduced_dim <- reducdim@cell.embeddings[,1:2]
+    rownames(metadata(treeviz)$reduced_dim)<- colnames(object)
   }
   treeviz
 }
 
 
-#' Creates a `TreeViz`` object from `SingleCellExperiment`
-#'
+#' Creates a `TreeViz`` object from `SingleCellExperiment`. Generates 
+#' clusters based on Walktrap algorithm if no default is provided 
 #' @param object `SingleCellExperiment` object to be visualized
+#' @param prefix common prefix that identifies the cluster columns
+#' @param check_colData whether to colData of `SingeCellExperiment` object for cluster information or not
+#' @param reduced_dim (if exists) Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz`
 #' @return `TreeViz` Object
 #' @export
 #'
-createFromSCE <- function(object, prefix="cluster", check_colData=FALSE) {
+createFromSCE <- function(object, prefix="cluster", check_colData=FALSE, reduced_dim="TSNE") {
   if(check_colData==TRUE){
     clusterdata <- colData(object)
     clusterdata <-
@@ -391,9 +394,11 @@ createFromSCE <- function(object, prefix="cluster", check_colData=FALSE) {
   
   treeviz <- createTreeViz(as.data.frame(clusterdata), count)
   
-  if ("TSNE" %in% reducedDimNames(object)) {
-    metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
-    rownames(metadata(treeviz)$tsne)<- colnames(object)
+  if (reduced_dim %in% reducedDimNames(object)) {
+    
+    metadata(treeviz)$reduced_dim <- reducedDims(object)[[reduced_dim]][,1:2]
+    
+    rownames(metadata(treeviz)$reduced_dim)<- colnames(object)
   }
 
 #' Creates `TreeViz` object from hierarchy and count matrix
