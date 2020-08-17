@@ -707,7 +707,7 @@ getCombined=function(measurements = NULL,
     if (!("tsne"  %in% names(metadata(.self$.object)))) {
       tsne_data<-t(as.matrix(assays(.self$.object)$counts))
       tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
-      metadata(.self$.object)$tsne <- tsne
+      metadata(.self$.object)$tsne <- tsne$Y
       rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
     }
     
