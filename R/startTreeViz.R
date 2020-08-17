@@ -179,7 +179,7 @@
   invisible()
 }
 
-.delay_requests <- function(server, timeout=2L) {
+.delay_requests <- function(server, timeout=10L) {
   ptm <- proc.time()
   while ((proc.time() - ptm < timeout)["elapsed"]) {
     Sys.sleep(0.001)
