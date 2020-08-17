@@ -247,7 +247,11 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
     if (!is.null(data)) {
       
       data <- find_top_variable_genes(data, top_genes)
-      
+      if (!("reduced_dim"  %in% names(metadata(data)))) {
+        
+        data <- calculate_tsne(data)
+        
+      }
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)
@@ -339,7 +343,10 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
     if (!is.null(data)) {
       
       data <- find_top_variable_genes(data, 100)
-      
+      if (!("reduced_dim"  %in% names(metadata(data)))) {
+        data <- calculate_tsne(data)
+        
+      }
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server)

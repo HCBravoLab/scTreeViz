@@ -459,3 +459,22 @@ find_top_variable_genes <- function(treeviz, top = 100) {
   
   treeviz
 }
+
+#' Calculates `tsne` Dimensionality Reduction on `TreeViz` object. The result is added to reduced_dim slot in metadata
+#'
+#' @param treeViz TreeViz object
+#' @return `TreeViz` Object with added 'TSNE'tnse`information in reduced_dim slot of metadata
+#'
+#' @import Rtsne
+#' @export
+#'
+calculate_tsne <- function(treeviz) {
+  message("No defaults dimensionality reductions provided")
+  message("Calculating TSNE")
+  tsne_data<-t(as.matrix(assays(treeviz)$counts))
+  tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
+  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne$Y[,1:2]
+  rownames(metadata(treeviz)$reduced_dim[['TSNE']]) <- colnames(treeviz)
+  message("adding tsne to reduced dim slots")
+  treeviz
+}
