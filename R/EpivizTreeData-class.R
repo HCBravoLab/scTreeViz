@@ -809,13 +809,6 @@ getCombined=function(measurements = NULL,
     \\item{end}{End of feature range to query}
     }
     "
-    if (!("reduced_dim"  %in% names(metadata(.self$.object)))) {
-      
-      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
-      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
-      metadata(.self$.object)$reduced_dim[['TSNE']] <- tsne$Y[,1:2]
-      rownames(metadata(.self$.object)$reduced_dim[['TSNE']]) <- colnames(.self$.object)
-    }
     
     removed_cells <- c()
     if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {

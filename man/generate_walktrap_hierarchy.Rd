@@ -3,7 +3,7 @@
 \name{generate_walktrap_hierarchy}
 \alias{generate_walktrap_hierarchy}
 \title{Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
-walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division. 
+walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
 Intermediate cluster assignments are created based on monotonically increasing level of modularity}
 \usage{
 generate_walktrap_hierarchy(object, nsteps = 7)
@@ -16,6 +16,6 @@ generate_walktrap_hierarchy(object, nsteps = 7)
 }
 \description{
 Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
-walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division. 
+walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
 Intermediate cluster assignments are created based on monotonically increasing level of modularity
 }
