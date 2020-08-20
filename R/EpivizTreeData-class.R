@@ -46,6 +46,7 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
                                   .self$.nodeSelections <- list()
                                   .self$.treeIn <- tree
                                   .self$.measurements <- NULL
+                                  
                                   if(tree == "row") {
                                     .self$.graph <- rowData(object)
                                   } else {
@@ -83,7 +84,7 @@ EpivizTreeData$methods(
   get_default_chart_type=function() {
     "epiviz.ui.charts.tree.Icicle"
   },
-
+  
   get_measurements=function(top_genes=TRUE) {
     "Get all annotation info for all samples
     \\describe{
@@ -109,6 +110,7 @@ EpivizTreeData$methods(
       }
       return(out)
     }
+    
     if (.self$.treeIn == "row") {
       sample_table <- as.data.frame(colData(.self$.object))
       # .sampleAnnotation <- colData(.self$.object)
@@ -411,6 +413,7 @@ EpivizTreeData$methods(
       })
       
       result[["lineageLabel"]] = paste(lineageLabel, sep=", ")
+      
       resultResp = list(nodeSelectionTypes = .self$.nodeSelections,
                         selectionLevel = .self$.levelSelected,
                         tree = result)
@@ -542,81 +545,8 @@ EpivizTreeData$methods(
     "
     return(list())
   },
-
-
-  getGeneBoxPlot=function(measurements = NULL,selectedgene=NULL, selectedLevels = NULL){
-    
-
-    if(is.null(selectedLevels)) {
-      selectedLevels = .self$.levelSelected
-    }
-    #.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, by=.self$.treeIn, format="counts"
-    aggtree_mean<- aggregateTree(.self$.object, selectedLevel=selectedLevels,   aggFunType = "mean", by= "col", format="counts")
-    aggtree_sds<- aggregateTree(.self$.object, selectedLevel=selectedLevels,   aggFunType = "sd", by= "col", format="counts")
-    result <- list(
-      gene= selectedgene,
-      mean = aggtree_mean[selectedgene,],
-      sds = aggtree_sds[selectedgene,]
-      
-    )
-    
-    return(result)
-  },
-
-
-  # getPCA=function(measurements = NULL) {
-  #   " Compute PCA over all features for given samples
-  # 
-  #   \\describe{
-  #   \\item{measurements}{Samples to compute PCA over}
-  #   \\item{start}{Start of feature range to query }
-  #   \\item{end}{End of feature range to query}
-  #   }
-  #   "
-  #   if (!("tsne"  %in% names(metadata(.self$.object)))) {
-  #     tsne_data<-t(as.matrix(assays(.self$.object)$counts))
-  #     tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
-  #     metadata(.self$.object)$tsne <- tsne
-  #     rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
-  #   }
-  #   
-  #   removed_cells <- c()
-  #   if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
-  #     removed_selections <- names(which(.self$.nodeSelections == 0))
-  #     
-  #     removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
-  #       .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
-  #     })))
-  #   }
-  #   
-  #   measurements <-  metadata(.self$.object)$tsne
-  #   
-  #   data <- list()
-  #   level<- .self$.levelSelected
-  #   i<- 1
-  #   for (col in rownames(metadata(.self$.object)$tsne)) {
-  #     
-  #     name <- unname(colData(.self$.object)[[level]][i])
-  #     if (name %in% removed_cells) {
-  #       name <- "removed"
-  #     }
-  #     
-  #     temp    <-
-  #       list(
-  #         sample_id = col,
-  #         dim1 = unname(measurements[col, 1]),
-  #         dim2 = unname(measurements[col, 2]),
-  #         name = name
-  #       )
-  #     data[[col]] <- temp
-  #     i<- i+1
-  #   }
-  #   result <- list(data = unname(data), pca_variance_explained = c(1,1))
-  #   
-  #   return(result)
-  # },
-
-getCombined=function(measurements = NULL,
+  
+  getCombined=function(measurements = NULL,
                        seqName, start = 1, end = 1000,
                        order = NULL, nodeSelection = NULL, selectedLevels = NULL) {
     "Return the counts aggregated to selected nodes for the given samples
@@ -682,133 +612,20 @@ getCombined=function(measurements = NULL,
     return(result)
   },
   
-  getReducedDim=function(method = NULL, gene = NULL) {
-    " Compute PCA over all features for given samples
-    \\describe{
-    \\item{measurements}{Samples to compute PCA over}
-    \\item{start}{Start of feature range to query }
-    \\item{end}{End of feature range to query}
-    }
-    "
-    
-    if (is.null(method)) {
-      method <- "TSNE"
-    }
-    
-    # removed_cells <- c()
-    # if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
-    #   removed_selections <- names(which(.self$.nodeSelections == 0))
-    # 
-    #   removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
-    #     .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
-    #   })))
-    # }
-    
-    data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
-                              selectedLevels = .self$.levelSelected + 1,
-                              selections = .self$.nodeSelections)
-    
-    max_length <- ncol(.self$.object)
-    # max(data_rows$end)
-    
-    cluster_names <- rep("removed", max_length)
-    for (i in 1:length(data_rows$metadata$label)) {
-      start <- data_rows$start[i]
-      end <- data_rows$end[i]
-      cluster_names[start:end] <- data_rows$metadata$label[i]
-    }
-    
-    measurements <-  metadata(.self$.object)$reduced_dim[[method]]
-    
-    genes <- rep(100, length(measurements))
-    if (!(is.null(gene)) && gene != "") {
-      genes <- assays(.self$.object)$counts[gene, ]
-    }
-    
-    data <- list()
-    level <- .self$.levelSelected + 1
-    i <- 1
-    for (col in rownames(measurements)) {
-      
-      # name <- unname(colData(.self$.object)[[level]][i])
-      # if (name %in% removed_cells) {
-      #   name <- "removed"
-      # }
-      
-      row_index = which(colData(.self$.object)$samples == col)
-      
-      # TODO: need to add sample attributes
-      temp    <-
-        list(
-          sample_id = col,
-          dim1 = unname(measurements[col, 1]),
-          dim2 = unname(measurements[col, 2]),
-          name = unlist(cluster_names[[row_index]]),
-          gene = unname(genes[row_index])
-          # name = name
-        )
-      data[[col]] <- temp
-      i <- i+1
-    }
-    
-    # df <- do.call(rbind.data.frame, data)
-    # nodeSelections <- .self$.nodeSelections
-    # 
-    # for (node in names(nodeSelections)) {
-    #   if (nodeSelections[[node]] == 2) {
-    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-    #     for( i in 1:nrow(node_row) ) {
-    #       node_irow <- node_row[i, ]
-    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-    #       df[indices, "name"] <- node_irow$node_label
-    #     }
-    #   }
-    # }
-    # 
-    # indices_to_remove <- c()
-    # for (node in names(nodeSelections)) {
-    #   if (nodeSelections[[node]] == 0) {
-    #     # removed node
-    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-    #     for( i in 1:nrow(node_row) ) {
-    #       node_irow <- node_row[i, ]
-    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-    #       indices_to_remove <- c(indices_to_remove, indices)
-    #     }
-    #   }
-    # }
-    # 
-    # df[unique(indices_to_remove), "name"] <- "removed"
-    # data <- list()
-    # # TODO: need to add sample attributes
-    # for (i in 1:nrow(df)) {
-    #   data[[df[i, "sample_id"]]] <- list(
-    #     dim1 = df$dim1[i],
-    #     dim2 = df$dim2[i],
-    #     sample_id = df$sample_id[i],
-    #     name = df$name[i]
-    #   )
-    # }
-    # , 
-    # "cluster_order" = data_rows$metadata$label
-    
-    result <- list("data" = unname(data), "pca_variance_explained" = c(1,1),
-                   "cluster_order" = data_rows$metadata$label,
-                   "gene_min_max" = c(min(genes), max(genes)))
-    return(result)
-  },
-  
   getPCA=function(measurements = NULL) {
     " Compute PCA over all features for given samples
-
     \\describe{
     \\item{measurements}{Samples to compute PCA over}
     \\item{start}{Start of feature range to query }
     \\item{end}{End of feature range to query}
     }
     "
+    if (!("tsne"  %in% names(metadata(.self$.object)))) {
+      tsne_data<-t(as.matrix(assays(.self$.object)$counts))
+      tsne <- Rtsne(tsne_data, perplexity= nrow(tsne_data)/6)
+      metadata(.self$.object)$tsne <- tsne
+      rownames(metadata(.self$.object)$tsne) <- colnames(.self$.object)
+    }
     
     removed_cells <- c()
     if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
@@ -819,12 +636,12 @@ getCombined=function(measurements = NULL,
       })))
     }
     
-    measurements <-  metadata(.self$.object)$reduced_dim[[1]]
+    measurements <-  metadata(.self$.object)$tsne
     
     data <- list()
     level<- .self$.levelSelected + 1
     i<- 1
-    for (col in rownames(metadata(.self$.object)$reduced_dim[[1]])) {
+    for (col in rownames(metadata(.self$.object)$tsne)) {
       
       name <- unname(colData(.self$.object)[[level]][i])
       if (name %in% removed_cells) {
@@ -884,7 +701,7 @@ getCombined=function(measurements = NULL,
         name = df$name[i]
       )
     }
-
+    
     result <- list(data = unname(data), pca_variance_explained = c(1,1))
     return(result)
   },
@@ -903,13 +720,13 @@ getCombined=function(measurements = NULL,
     # Assuming single cell datasets for now
     # TODO: fix later
     # if(.self$.treeIn == "col") {
-      gene_col <- counts[gene, ]
+    gene_col <- counts[gene, ]
     # }
     # else if (.self.treeIn == "row") {
     #   gene_col <- counts[, gene]
     # }
     # 
-      
+    
     data <- list()
     i <- 1
     for (col in names(gene_col)) {
