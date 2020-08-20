@@ -465,7 +465,7 @@ find_top_variable_genes <- function(treeviz, top = 100) {
 #' @param treeViz TreeViz object
 #' @return `TreeViz` Object with added 'TSNE'tnse`information in reduced_dim slot of metadata
 #'
-#' @import scran
+#' @import scater
 #' @export
 #'
 calculate_tsne <- function(treeviz) {

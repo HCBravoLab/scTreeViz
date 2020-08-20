@@ -9,7 +9,6 @@
   selectedLevel = 3,
   selectedNodes = NULL,
   aggFun = colSums,
-  aggFunType = NULL,
   start = 1,
   end = NULL,
   by = "row",
@@ -24,8 +23,6 @@
 \item{selectedNodes}{used to set states on individual nodes to define a cut on the tree}
 
 \item{aggFun}{aggregate function to use, by default colSums if by="row", rowSums if by="col"}
-
-\item{aggFunType}{Type of aggregate function, can be "sd" (standard deviation), or "mean"}
 
 \item{start, end}{indices to filter nodes}
 
