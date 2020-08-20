@@ -7,6 +7,7 @@
 startTreevizStandalone(
   data = NULL,
   register_function = .register_all_treeviz_things,
+  delay = 10L,
   use_viewer_option = FALSE,
   ...
 )
