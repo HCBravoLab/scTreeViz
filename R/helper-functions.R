@@ -347,7 +347,7 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
 #' @return `TreeViz` Object
 #' @export
 #'
-createFromSeurat <- function(object, reduced_dim = c("tsne")) {
+createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
   clusterdata <- object@meta.data
   clusterdata <- clusterdata[, grep("*snn*", colnames(clusterdata))]
   
