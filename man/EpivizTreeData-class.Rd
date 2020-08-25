@@ -45,7 +45,7 @@ Used to serve hierarchical data (used in e.g., icicle plots and heatmaps).
 \item{nodeId}{Feature identifier with level info}
 }}
 
-\item{\code{getPCA(measurements = NULL)}}{Compute PCA over all features for given samples
+\item{\code{getReducedDim(method = NULL)}}{Compute PCA over all features for given samples
 \describe{
 \item{measurements}{Samples to compute PCA over}
 \item{start}{Start of feature range to query }

@@ -4,7 +4,7 @@
 \alias{createFromSeurat}
 \title{Creates a `TreeViz` object from `Seurat`}
 \usage{
-createFromSeurat(object, reduced_dim = c("tsne"))
+createFromSeurat(object, reduced_dim = c("TSNE"))
 }
 \arguments{
 \item{object}{`Seurat` class containing cluster information at different resolutions}
