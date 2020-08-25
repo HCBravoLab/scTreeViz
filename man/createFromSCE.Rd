@@ -2,16 +2,29 @@
 % Please edit documentation in R/helper-functions.R
 \name{createFromSCE}
 \alias{createFromSCE}
-\title{Creates a `TreeViz`` object from `SingleCellExperiment`}
+\title{Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
+clusters based on Walktrap algorithm if no default is provided}
 \usage{
-createFromSCE(object)
+createFromSCE(
+  object,
+  prefix = "cluster",
+  check_colData = FALSE,
+  reduced_dim = c("TSNE")
+)
 }
 \arguments{
-\item{object}{`SingleCellExperiment` class containing cluster information at different resolutions}
+\item{object}{`SingleCellExperiment` object to be visualized}
+
+\item{prefix}{common prefix that identifies the cluster columns}
+
+\item{check_colData}{whether to colData of `SingeCellExperiment` object for cluster information or not}
+
+\item{reduced_dim}{Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)}
 }
 \value{
 `TreeViz` Object
 }
 \description{
-Creates a `TreeViz`` object from `SingleCellExperiment`
+Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
+clusters based on Walktrap algorithm if no default is provided
 }

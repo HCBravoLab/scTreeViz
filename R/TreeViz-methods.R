@@ -45,18 +45,18 @@ setMethod("aggregateTree", "TreeViz",
             if (is.null(end) || missing(end)) {
               end <- nrow(x)
             }
-
+            
             if(is(selectedNodes, "data.table")) {
               node_ids <- selectedNodes$id
               snodes <- rep(1, length(node_ids))
-
+              
               if("state" %in% colnames(selectedNodes)) {
-               snodes <- selectedNodes$state
+                snodes <- selectedNodes$state
               }
               names(snodes) <- node_ids
               selectedNodes <- snodes
             }
-
+            
             if (by == "row") {
               aggFun <- colSums
               groups <-
@@ -69,7 +69,7 @@ setMethod("aggregateTree", "TreeViz",
                   format = "list"
                 )
               counts <-  assays(x)$counts
-
+              
               newMat <- array(NA, dim = c(length(groups), ncol(x)))
               for (i in seq_along(groups)) {
                 indices <- groups[[i]]
@@ -80,10 +80,10 @@ setMethod("aggregateTree", "TreeViz",
                   newMat[i, ] = aggFun(counts[indices, ])
                 }
               }
-
+              
               rownames(newMat) <- names(groups)
               colnames(newMat) <- colnames(x)
-
+              
             }
             else if (by == "col") {
               aggFun <- rowSums
@@ -97,7 +97,7 @@ setMethod("aggregateTree", "TreeViz",
                   format = "list"
                 )
               counts <-  assays(x)$counts
-
+              
               newMat <- array(NA, dim = c(nrow(x), length(groups)))
               for (i in seq_along(groups)) {
                 indices <- groups[[i]]
@@ -108,15 +108,15 @@ setMethod("aggregateTree", "TreeViz",
                   newMat[, i] = aggFun(counts[, indices])
                 }
               }
-
+              
               colnames(newMat) <- names(groups)
               rownames(newMat) <- rownames(x)
             }
-
+            
             if(!is.null(selectedNodes)) {
               return(newMat)
             }
-
+            
             if (format == "TreeViz") {
               if (by == "row") {
                 newRowData <-
@@ -128,7 +128,7 @@ setMethod("aggregateTree", "TreeViz",
                     end = end,
                     format = "TreeIndex"
                   )
-
+                
                 newColData <- colData(x)
               }
               else if (by == "col") {
@@ -143,12 +143,12 @@ setMethod("aggregateTree", "TreeViz",
                     format = "TreeIndex"
                   )
               }
-
+              
               newSumExp <-
                 SummarizedExperiment(SimpleList(counts = newMat), rowData = newRowData, colData = newColData)
-
+              
               newTreeSE <- new("TreeViz", newSumExp)
-
+              
               return(newTreeSE)
             }
             else if (format == "counts") {
@@ -188,7 +188,7 @@ setMethod("plot", "TreeViz", function(x, y, ...) {
   else {
     hierarchydf <- rowData(object)@hierarchy_tree
   }
-    
+  
   
   hierarchydf <- hierarchydf[, !colnames(hierarchydf) %in% c("samples", "otu_index")]
   
@@ -209,7 +209,5 @@ setMethod("plot", "TreeViz", function(x, y, ...) {
     ggraph::geom_node_label(aes(label = substring(V(mygraph)$name, 8))) +
     theme_void()
   show(fig)
-
+  
 })
-
-

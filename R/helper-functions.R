@@ -18,7 +18,7 @@ check_alternate <- function(sub_df, all_df)
   for (i in seq(1, nrow(sub_df))) {
     for (j in seq(1, nrow(all_df))) {
       if (sub_df$to_node[i] == all_df$to_node[j]) {
-        assign_df[nrow(assign_df) + 1, ] <-
+        assign_df[nrow(assign_df) + 1,] <-
           c(
             sub_df$to_cluster[i],
             sub_df$to_clust[i],
@@ -51,6 +51,7 @@ change_assignment <- function(graph, cluster_obj) {
                        colnames(cluster_obj))
     
     
+    
     for (j in 1:nrow(cluster_obj)) {
       if (as.numeric(as.character(cluster_obj[[j, sink_res]])) == as.numeric(graph$Sink_node_clust[i])  &&
           as.numeric(as.character(cluster_obj[[j, source_res]])) == as.numeric(graph$Assign_from_clust[i])) {
@@ -60,6 +61,7 @@ change_assignment <- function(graph, cluster_obj) {
       
     }
   }
+  
   return (cluster_obj)
 }
 
@@ -104,20 +106,28 @@ check_cycle <- function(pruned_graph) {
 #'
 prune_tree <- function(graph, cluster_df) {
   # Prune the tree so only core edges remain
+  
   repeat {
     # drop duplicated columns (Throws error otherwise)
     
     graph <- graph[!duplicated(names(graph))]
     
-    # See number of core edges at each ites
-    # print(nrow(graph_Df[graph_Df$is_core == FALSE,]))
+    # See number of core edges at each iter
     # No False edges acyclic tree
-    if (nrow(graph[graph$is_core == FALSE,]) == 0)
+    if (nrow(graph[graph$is_core == FALSE, ]) == 0) {
+      ngraph <-
+        clustree(
+          cluster_df ,
+          prefix = "cluster",
+          prop_filter = 0,
+          return = "graph"
+        )
       break
+    }
     
     # Apply function
     assign_df <-
-      check_alternate(graph[graph$is_core == FALSE,], graph[graph$is_core == TRUE,])
+      check_alternate(graph[graph$is_core == FALSE, ], graph[graph$is_core == TRUE, ])
     
     cluster_df <- change_assignment(assign_df, cluster_df)
     ngraph <-
@@ -144,34 +154,45 @@ prune_tree <- function(graph, cluster_df) {
 #' @return Dataframe containing cluster information at different resolutions
 #'
 collapse_tree <- function(original_graph) {
-  node_dists <- distances(original_graph, to = 1)
-  layered_dist <- unique(distances(original_graph, to = 1))
+  #find all roots
+  root_list <- which(sapply(sapply(V(original_graph),
+                                   function(x)
+                                     neighbors(original_graph, x, mode = "in")), length) == 0)
   
   delete_set_vertices <- vector('numeric')
-  
-  # Vertex and edge lists of the graph from which we will construct the collapsed graph
-  ver_list <-
-    igraph::as_data_frame(original_graph, what = "vertices")
-  
-  i <- length(layered_dist)
-  while (i >= 2) {
-    prev_layer <- which(node_dists == layered_dist[i - 1])
-    current_layer <- which(node_dists == layered_dist[i])
+  for (roots in root_list) {
+    node_dists <- distances(original_graph, to = roots)
+    layered_dist <- unique(distances(original_graph, to = roots))
     
-    if (length(prev_layer) == length(current_layer)) {
-      while (length(prev_layer) == length(current_layer)) {
-        delete_set_vertices <- c(delete_set_vertices, prev_layer)
-        i <- i - 1
-        
-        prev_layer <-
-          which(node_dists == layered_dist[i - 1])
-        
+    layered_dist <- layered_dist[is.finite(layered_dist) == TRUE]
+    # Vertex and edge lists of the graph from which we will construct the collapsed graph
+    
+    ver_list <-
+      igraph::as_data_frame(original_graph, what = "vertices")
+    
+    
+    i <- length(layered_dist)
+    while (i >= 2) {
+      prev_layer <- which(node_dists == layered_dist[i - 1])
+      current_layer <- which(node_dists == layered_dist[i])
+      
+      if (length(prev_layer) == length(current_layer)) {
+        while (length(prev_layer) == length(current_layer)) {
+          delete_set_vertices <- c(delete_set_vertices, prev_layer)
+          i <- i - 1
+          
+          prev_layer <-
+            which(node_dists == layered_dist[i - 1])
+          
+        }
       }
+      i <- i - 1
     }
-    i <- i - 1
   }
   
-  ver_list <- ver_list[-delete_set_vertices,]
+  if (length(delete_set_vertices) != 0) {
+    ver_list <- ver_list[-delete_set_vertices, ]
+  }
   ver_list
 }
 
@@ -201,7 +222,8 @@ check_unique_parent <- function(clusterdata) {
   for (i in seq(2, ncol(clusterdata))) {
     childs <- unique(clusterdata[[i]])
     for (values in childs) {
-      subsetted_list <- clusterdata[clusterdata[[colnames(clusterdata)[[i]]]] == values,]
+      subsetted_list <-
+        clusterdata[clusterdata[[colnames(clusterdata)[[i]]]] == values, ]
       
       
       parent <- length(unique(subsetted_list[[i - 1]]))
@@ -255,14 +277,19 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   # prune the graph with only core edges (this makes it a ~tree)
   modified_obj <- prune_tree(graph_df, clusters)
   
+  
   # modified graph and seurat object
   modified_graph = modified_obj$Clustree_obj
   clusters_new <-  modified_obj$Cluster_obj
   
   # collapses tree if the levels are the same at different resolutions
   collapsed_graph <- collapse_tree(modified_graph)
+  
+  
   cluster_names <-
     unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))
+  
+  
   clusters_new <- clusters_new[, cluster_names]
   
   for (clusnames in names(clusters_new)) {
@@ -282,52 +309,105 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   treeviz
 }
 
+#' Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
+#' walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
+#' Intermediate cluster assignments are created based on monotonically increasing level of modularity
+#' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
+#' @return `Single Cell Experiment` Object with hierarchy information in metadata slot
+#' @export
+#'
+generate_walktrap_hierarchy <- function(object, nsteps = 7) {
+  SNN_Graph <- scran::buildSNNGraph(object)
+  clusters <- igraph::cluster_walktrap(SNN_Graph, steps = nsteps)
+  modularity <- c()
+  for (i in 1:length(clusters)) {
+    modularity[i] <-
+      igraph::modularity(SNN_Graph, igraph::cut_at(clusters, n = i))
+  }
+  
+  monotonic_index <- match(unique(cummax(modularity)), modularity)
+  cluster_data =  list()
+  for (i in 1:length(monotonic_index)) {
+    cluster_data[[i]] =  list(igraph::cut_at(clusters, n = monotonic_index[i]))
+  }
+  
+  cluster_data <- as.data.frame(cluster_data)
+  colnames(cluster_data) <- paste0("cluster", monotonic_index)
+  metadata(object)$treeviz_clusters <- cluster_data
+  object
+}
 
 #' Creates a `TreeViz` object from `Seurat`
 #'
 #' @param object `Seurat` class containing cluster information at different resolutions
+#' @param reduced_dim Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists) 
 #' @return `TreeViz` Object
 #' @export
 #'
-createFromSeurat <- function(object) {
+createFromSeurat <- function(object, reduced_dim = c("tsne")) {
   clusterdata <- object@meta.data
   clusterdata <- clusterdata[, grep("*snn*", colnames(clusterdata))]
   
   treeviz <-
     preprocessAndCreateTreeViz(clusterdata, GetAssayData(object))
   
-  if ("tsne" %in% Reductions(object)) {
-    reducdim <- Reductions(object, slot = "tsne")
-    
-    metadata(treeviz)$tsne <- reducdim@cell.embeddings
-    rownames(metadata(treeviz)$tsne)<- colnames(object)
+  for(dim_names in reduced_dim){
+    if (dim_names %in% Reductions(object)) {
+      reducdim <- Reductions(object, slot = dim_names)
+      
+      metadata(treeviz)$reduced_dim[[dim_names]] <- reducdim@cell.embeddings[, 1:2]
+      rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
+    }
   }
   treeviz
 }
 
 
-#' Creates a `TreeViz`` object from `SingleCellExperiment`
-#'
-#' @param object `SingleCellExperiment` class containing cluster information at different resolutions
+#' Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
+#' clusters based on Walktrap algorithm if no default is provided
+#' @param object `SingleCellExperiment` object to be visualized
+#' @param prefix common prefix that identifies the cluster columns
+#' @param check_colData whether to colData of `SingeCellExperiment` object for cluster information or not
+#' @param reduced_dim Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
 #' @export
 #'
-createFromSCE <- function(object) {
-  clusterdata <- colData(object)
-  clusterdata <-
-    clusterdata[, grep("(cluster|sc3_)", colnames(clusterdata), ignore.case = TRUE)]
-  
-  count <- counts(object)
-  rownames(count) <- rownames(counts(object))
-  
-  treeviz <- preprocessAndCreateTreeViz(as.data.frame(clusterdata), count)
-  
-  if ("TSNE" %in% reducedDimNames(object)) {
-      metadata(treeviz)$tsne <- reducedDims(object)$"TSNE"
-      rownames(metadata(treeviz)$tsne)<- colnames(object)
+createFromSCE <-
+  function(object,
+           prefix = "cluster",
+           check_colData = FALSE,
+           reduced_dim = c("TSNE")) {
+    if (check_colData == TRUE) {
+      clusterdata <- colData(object)
+      clusterdata <-
+        clusterdata[, startsWith(colnames(clusterdata), prefix)]
+      if (length(colnames(clusterdata)) == 0) {
+        stop("No cluster information found")
+      }
+    }
+    else{
+      message("No default clusters provided")
+      if (is.null(metadata(object)$treeviz_clusters)) {
+        message("calculating walktrap clusters")
+        object <- generate_walktrap_hierarchy(object)
+      }
+      clusterdata <- metadata(object)$treeviz_clusters
+    }
+    rownames(clusterdata) <- colnames(object)
+    count <- counts(object)
+    rownames(count) <- rownames(counts(object))
+    
+    treeviz <- createTreeViz(as.data.frame(clusterdata), count)
+    for(dim_names in reduced_dim){
+      if (dim_names %in% reducedDimNames(object)) {
+        metadata(treeviz)$reduced_dim[[dim_names]] <-
+          reducedDims(object)[[dim_names]][, 1:2]
+        
+        rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
+      }
+    }
+    treeviz
   }
-  treeviz
-}
 
 #' Creates `TreeViz` object from hierarchy and count matrix
 #'
@@ -368,14 +448,32 @@ createTreeViz <- function(clusters, counts) {
 #' @param treeViz TreeViz object
 #' @param top number of top genes to be calculated
 #' @return `TreeViz` Object with added top_variable_gene information in metadata
-#' 
+#'
 #' @import scran
 #' @export
 #'
-find_top_variable_genes <- function(treeviz, top=100) {
+find_top_variable_genes <- function(treeviz, top = 100) {
   dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
   top_n <- getTopHVGs(dec.treeviz, n = top)
   metadata(treeviz)$top_variable <- top_n
   
+  treeviz
+}
+
+#' Calculates `tsne` Dimensionality Reduction on `TreeViz` object. The result is added to reduced_dim slot in metadata
+#'
+#' @param treeViz TreeViz object
+#' @return `TreeViz` Object with added 'TSNE'tnse`information in reduced_dim slot of metadata
+#'
+#' @import scater
+#' @export
+#'
+calculate_tsne <- function(treeviz) {
+  message("No defaults dimensionality reductions provided")
+  message("Calculating TSNE")
+  tsne<- calculateTSNE(assays(treeviz)$counts)
+  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne[,1:2]
+  rownames(metadata(treeviz)$reduced_dim[['TSNE']]) <- colnames(treeviz)
+  message("adding tsne to reduced dim slots")
   treeviz
 }

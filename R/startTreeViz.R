@@ -179,8 +179,9 @@
   invisible()
 }
 
-.delay_requests <- function(server, timeout=2L) {
+.delay_requests <- function(server, timeout=10L) {
   ptm <- proc.time()
+  
   while ((proc.time() - ptm < timeout)["elapsed"]) {
     Sys.sleep(0.001)
     server$service()
@@ -218,7 +219,7 @@
 #'
 #' @export
 startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.umd.edu/treeviz",
-                         register_function = .register_all_treeviz_things,
+                         register_function = .register_all_treeviz_things, delay=10L,
                          ...) {
   chr="treevizr"
   start <- 0
@@ -247,15 +248,19 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
     if (!is.null(data)) {
       
       data <- find_top_variable_genes(data, top_genes)
-      
+      if (!("reduced_dim"  %in% names(metadata(data)))) {
+        
+        data <- calculate_tsne(data)
+        
+      }
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, timeout =  delay)
       
       # facetZoom
       facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, timeout = delay)
       
       ms_list <- facetZoom$get_measurements()
       mea <- ms_list[[1]]
@@ -263,11 +268,11 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
       
       mApp$chart_mgr$visualize(chart_type = "epiviz.ui.charts.tree.Icicle",  measurements = list(mea))
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, timeout = delay)
       
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = list(mea))
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, timeout=delay)
       
       # TSNE
       mApp$chart_mgr$visualize(chart_type = "TSNEPlot", measurements = list(mea))
@@ -309,7 +314,7 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
 #'
 #'
 #' @export
-startTreevizStandalone <- function(data = NULL, register_function = .register_all_treeviz_things,
+startTreevizStandalone <- function(data = NULL, register_function = .register_all_treeviz_things, delay=10L,
                                    use_viewer_option=FALSE, ...) {
   chr="treevizr"
   start=1
@@ -339,19 +344,22 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
     if (!is.null(data)) {
       
       data <- find_top_variable_genes(data, 100)
-      
+      if (!("reduced_dim"  %in% names(metadata(data)))) {
+        data <- calculate_tsne(data)
+        
+      }
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, delay)
       
       # facetZoom
       facetZoom <- mApp$data_mgr$add_measurements(data, datasource_name = "SCRNA", tree = "col", datasource_origin_name="scrna", send_request=send_request)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, delay)
       
       mApp$chart_mgr$plot(facetZoom, send_request=send_request)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, delay)
       
       # Heatmap
       ms_list <- facetZoom$get_measurements()
@@ -359,7 +367,7 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
       
       mApp$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
       mApp$server$wait_to_clear_requests()
-      .delay_requests(mApp$server)
+      .delay_requests(mApp$server, delay)
       
       # TSNE
       mApp$chart_mgr$revisualize(chart_type = "TSNEPlot", chart= facetZoom)
