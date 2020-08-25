@@ -612,7 +612,7 @@ EpivizTreeData$methods(
     return(result)
   },
   
-  getPCA=function(measurements = NULL) {
+  getReducedDim=function(method = NULL) {
     " Compute PCA over all features for given samples
     \\describe{
     \\item{measurements}{Samples to compute PCA over}
@@ -620,7 +620,11 @@ EpivizTreeData$methods(
     \\item{end}{End of feature range to query}
     }
     "
-
+    
+    if (is.null(method)) {
+      method <- "TSNE"
+    }
+    
     removed_cells <- c()
     if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
       removed_selections <- names(which(.self$.nodeSelections == 0))
@@ -630,8 +634,8 @@ EpivizTreeData$methods(
       })))
     }
     
-    measurements <-  metadata(.self$.object)$reduced_dim[[1]]
-    
+    measurements <-  metadata(.self$.object)$reduced_dim[[method]]
+
     data <- list()
     level<- .self$.levelSelected + 1
     i<- 1

@@ -120,13 +120,15 @@
   
   app$server$register_action("getPCA", function(request_data) {
     
-    obj <- app$data_mgr$.find_datasource(request_data$measurements)
+    obj <- app$data_mgr$.find_datasource(request_data$datasource)
     if (is.null(obj)) {
       stop("cannot find datasource", request_data$measurements)
     }
-    result <- obj$getPCA()
+    
+    cat(request_data$measurements[[request_data$datasource]][1])
+    result <- obj$getReducedDim(request_data$measurements[[request_data$datasource]][1])
     result <- list(data = result)
-    names(result) <- request_data$measurements
+    names(result) <- request_data$datasource
     result
     
   })
@@ -179,7 +181,7 @@
   invisible()
 }
 
-.delay_requests <- function(server, timeout=10L) {
+.delay_requests <- function(server, timeout=2L) {
   ptm <- proc.time()
   
   while ((proc.time() - ptm < timeout)["elapsed"]) {
@@ -219,7 +221,7 @@
 #'
 #' @export
 startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.umd.edu/treeviz",
-                         register_function = .register_all_treeviz_things, delay=10L,
+                         register_function = .register_all_treeviz_things, delay=2L,
                          ...) {
   chr="treevizr"
   start <- 0
@@ -274,9 +276,18 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server, timeout=delay)
       
-      # TSNE
-      mApp$chart_mgr$visualize(chart_type = "TSNEPlot", measurements = list(mea))
-      mApp$server$wait_to_clear_requests()
+      if ("reduced_dim" %in% names(metadata(data))) {
+        for (dim in names(metadata(data)$reduced_dim)) {
+          ms_list <- facetZoom$get_measurements()
+          mea <- ms_list[[1]]
+          mea@id <- dim
+          
+          # TSNE
+          mApp$chart_mgr$visualize(chart_type = "TSNEPlot", measurements = list(mea))
+          mApp$server$wait_to_clear_requests()
+          .delay_requests(mApp$server, timeout=delay)
+        }        
+      }
     }
   }, error=function(e) {
     mApp$stop_app()
