@@ -1,6 +1,6 @@
 ---
 title: "Interactively explore and visualize Single Cell RNA seq data"
-author: "Kazi Tasnim Zinat, Jayaram Kancherla, Héctor Corrada Bravo"
+author: "Jayaram Kancherla, Kazi Tasnim Zinat, Héctor Corrada Bravo"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-[`TreeViz`](https://github.com/HCBravoLab/TreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `TreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for TSNE.
+[`TreeViz`](https://github.com/HCBravoLab/TreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `TreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for dimensionality reductions like UMAP or TSNE.
 
 ## loading required packages
 
@@ -31,6 +31,7 @@ library(scran)
 library(scater)
 library(clustree)
 library(igraph)
+library(scRNAseq)
 ```
 
 # Preparing Datasets
@@ -74,64 +75,42 @@ pbmc <- FindClusters(pbmc, resolution = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 
 pbmc
 ```
 
-We use the helper function to create a TreeViz object from Seurat
+The measurements for dimensionality reduction methods we want to visualize are also added to the object via native functions in `Seurat`. Since `PCA` is already added, we calculate `TSNE` and `UMAP`
+```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+pbmc<- RunTSNE(pbmc)
+pbmc<- RunUMAP(pbmc, dims=1:3)
+Reductions(pbmc)
+```
 
+We use the `createFromSeurat` function to create a `TreeViz` object from `Seurat` object. In addition the object, we pass the name of dimensionality reductions present in the object as a paramter in vector format to indicate these measurements should be added to `treeviz` for visualization. If the mentioned reduced dimension is not present it would simply be ignored.
 ```{r, eval=TRUE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
-treeViz <- createFromSeurat(pbmc)
+treeViz<- createFromSeurat(pbmc, reduced_dim = c("umap","pca","tsne"))
 plot(treeViz)
 ```
 
 ## From `SingleCellExperiment`
 
-We create a `mock SingleCellExperiment` object
+We create a `SingleCellExperiment` object, from one of the datasets provided in the `scRNAseq` package. We also calculate the dimensionality reductions; UMAP, TSNE and PCA from the functions provided in `scater` package and add it to the `SingleCellExperiment` object. 
 
 ```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-
-sce<- mockSCE()
-
+sce<- LunSpikeInData('416b')
 # Normalization.
 sce <- logNormCounts(sce)
-
-# define feature names in feature_symbol column
-#rowData(sce)$feature_symbol <- rownames(sce)
-# remove features with duplicated names
-#sce <- sce[!duplicated(rowData(sce)$feature_symbol), ]
-
-# Dimensionality reduction.
-#sce <- runPCA(sce)
+sce <- runUMAP(sce)
 sce<- runTSNE(sce)
+sce<- runPCA(sce)
 ```
 
-We create clusters at different resolutions using the `WalkTrap` algorithm
+We use the `createFromSCE` function to create a `TreeViz` object from `SingleCellExperiment` object. Here, the pipeline works in two ways:
 
-```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-data_matrix <- as.matrix(logcounts(sce))
+1. If no cluster information is provided in the `colData` of the object, we create clusters at different resolutions using the `WalkTrap` algorithm by calling an internal function `generate_walktrap_hierarchy` on the `SingleCellExperiment` object. And use that cluster information for visualization
 
-SNN_igraph = scran::buildKNNGraph(
-  data_matrix, 
-  transposed = FALSE)
+2. If cluster information is provided in the `colData` of the object, then the user should set the flag parameter `check_colData` to `TRUE` and provide prefix for the columns where cluster information is stored.
 
-snn.matrix = similarity(
-      SNN_igraph, 
-      method = "jaccard")
-    
-snn.graph <- graph_from_adjacency_matrix(snn.matrix, weighted = TRUE, mode = "undirected")
-
-walktrapClusters = igraph::cluster_walktrap(snn.graph)
-for (i in 1:10){
-  sce[[paste0("cluster",i)]] <-  factor(igraph::cut_at(walktrapClusters, n = i))
-}
-
-treeviz<- createFromSCE(sce)
-
-sce
-sce<- generate_walktrap_hierarchy(sce)
-```
-
-We use the helper function to create a `TreeViz` object from SCE
+In both cases the user needs to privide the name of dimensionality reductions present in the object as a paramter in vector format
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-treeViz <- createFromSCE(sce)
+treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
 plot(treeViz)
 ```
 
@@ -139,13 +118,19 @@ plot(treeViz)
 
 ## Start the TreeViz App (using hosted app)
 
-Start the App from the `treeViz` object we created. This adds a `facetZoom` to navigate the cluster hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE dimensions. 
+Start the App from the `treeViz` object we created. This adds a `facetZoom` to navigate the cluster hierarchy, a heatmap of the top `n` most variable genes from the dataset, where 'n' is selected by the user and one scatter plot for each of the reduced dimensions. 
  
 ```{r, eval=FALSE, echo=TRUE}
-app <- startTreeviz(treeViz)
+app <- startTreeviz(treeViz, top_genes = 500)
 ```
 
 Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
+![Treeviz](images/Treeviz.png)
+
+## Adding Gene Box Plots
+
+The users can also add Gene Box plots via the `Add Visualization` option in frontend, or from R session. In the following example, we visualize the 5th, 50th and 500th most variable gene as Box plot 
+![BoxPlot](images/Boxplot.png)
 
 ## Stop App
 
@@ -154,23 +139,14 @@ After exploring the dataset, this command the websocket connection.
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
-
-
 ## Start TreeViz with app running locally
 
 ```{r, eval=FALSE, echo=TRUE}
 setTreevizStandalone()
 app <- startTreevizStandalone(treeViz)
-
 ```
-
-
 ## Stop App
 
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
-
-
-
-
