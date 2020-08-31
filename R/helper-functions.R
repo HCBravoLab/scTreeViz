@@ -258,15 +258,18 @@ rename_clusters <- function(clusdata) {
 #' @param count matrix Dense or sparse matrix containing the count matrix
 #' @return TreeSummarizedExperiment Object that can be visualized with metavizr
 #' @import clustree
+#' @importFrom data.table setorder
 #' @importFrom igraph as_long_data_frame
 #'
 preprocessAndCreateTreeViz <- function(clusters, counts) {
   clusters <- rename_clusters(clusters)
+  setorder(clusters)
+  counts <- counts[, rownames(clusters)]
   
   # Create clustree object
   clustree_graph <-
     clustree(
-      clusters ,
+      clusters,
       prefix = "cluster",
       prop_filter = 0,
       return = "graph"
