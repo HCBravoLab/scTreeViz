@@ -1,6 +1,6 @@
 ---
 title: "Interactively explore and visualize Single Cell RNA seq data"
-author: "Kazi Tasnim Zinat, Jayaram Kancherla, Héctor Corrada Bravo"
+author: "Jayaram Kancherla, Kazi Tasnim Zinat, Héctor Corrada Bravo"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-[`TreeViz`](https://github.com/HCBravoLab/TreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `TreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for TSNE.
+[`TreeViz`](https://github.com/HCBravoLab/TreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `TreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in metagenomic datasets), while supporting useful data visualization charts like heatmaps for expression or count matrices and scatter plots for dimensionality reductions like UMAP or TSNE.
 
 ## loading required packages
 
@@ -31,36 +31,41 @@ library(scran)
 library(scater)
 library(clustree)
 library(igraph)
+library(scRNAseq)
 ```
 
 # Preparing Datasets
 
-In this section, we show ways to generate a `TreeViz` object from existing Single Cell packages (SingleCellExperiment or Seurat) or from a raw count matrix and cluster hierarchy
+The first step in using the `Treeviz` package is to wrap datasets into `TreeViz` objects. The `TreeViz` class extends `SummarizedExperiment` and provides various methods to interactively perform various operations on the underlying hierarchy and count or expression matrices. In this section, we show various ways to generate a `TreeViz` object either from existing Single Cell packages (SingleCellExperiment or Seurat) or from a raw count matrix and cluster hierarchy.
 
 ## Create TreeViz from count matrix and Cluster hierarchy
 
 ```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 n=64
+# create a hierarchy
 df<- data.frame(cluster0=rep(1,n))
 for(i in seq(1,5)){
   df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
 }
+
+# generate a count matrix
 counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
 
+# create a `TreeViz` object
 treeViz <- createTreeViz(df, counts)
 plot(treeViz)
 ```
-
 
 ## From `Seurat`
 
 We use the dataset `pbmc_small` available through Seurat to create a `TreeViz` object.  
 
 ```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+data(pbmc_small)
 pbmc <- pbmc_small
 ```
 
-We then preprocess the data and find clusters at different resolutions.
+Optionally depending on the dataset, users can preprocess data, perform normalization and find clusters at different resolutions to generate a hierarchy from `Seurat` objects. 
 
 ```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
@@ -74,64 +79,48 @@ pbmc <- FindClusters(pbmc, resolution = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 
 pbmc
 ```
 
-We use the helper function to create a TreeViz object from Seurat
+The measurements for dimensionality reduction methods we want to visualize are also added to the object via native functions in `Seurat`. Since `PCA` is already available, we calculate `TSNE` and `UMAP`
+
+```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+pbmc<- RunTSNE(pbmc)
+pbmc<- RunUMAP(pbmc, dims=1:3)
+Reductions(pbmc)
+```
+
+We provide the `createFromSeurat` function to create a `TreeViz` object from `Seurat` object. In addition, we can also provide the name of dimensionality reductions present in the object as a parameter to indicate these dimensions also be wrapped in the `treeviz` object for visualization. 
+
+Note: If the reduced dimension is not present it would be ignored.
 
 ```{r, eval=TRUE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
-treeViz <- createFromSeurat(pbmc)
+treeViz<- createFromSeurat(pbmc, reduced_dim = c("umap","pca","tsne"))
 plot(treeViz)
 ```
 
 ## From `SingleCellExperiment`
 
-We create a `mock SingleCellExperiment` object
+A number of Single cell datasets are available as `SingleCellExperiment` objects through the `scRNAseq` package, for this usecase, we use `LunSpikeInData` dataset. In addition, we calculate the dimensionality reductions; UMAP, TSNE and PCA from the functions provided in `scater` package. 
 
 ```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-
-sce<- mockSCE()
-
-# Normalization.
+# load dataset
+sce<- LunSpikeInData('416b')
+# Normalization
 sce <- logNormCounts(sce)
-
-# define feature names in feature_symbol column
-#rowData(sce)$feature_symbol <- rownames(sce)
-# remove features with duplicated names
-#sce <- sce[!duplicated(rowData(sce)$feature_symbol), ]
-
-# Dimensionality reduction.
-#sce <- runPCA(sce)
+# calculate umap and tsne
+sce <- runUMAP(sce)
 sce<- runTSNE(sce)
+sce<- runPCA(sce)
 ```
 
-We create clusters at different resolutions using the `WalkTrap` algorithm
+Similar to the `Seurat` methods, we provide `createFromSCE` function to create a `TreeViz` object from `SingleCellExperiment` object. Here, the workflow works in two ways:
 
-```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-data_matrix <- as.matrix(logcounts(sce))
+1. If no cluster information is available in the `colData` of the `SingleCellExperiment` object, we create clusters at different resolutions using the `WalkTrap` algorithm by calling an internal function `generate_walktrap_hierarchy` and use this cluster information for visualization.
 
-SNN_igraph = scran::buildKNNGraph(
-  data_matrix, 
-  transposed = FALSE)
+2. If cluster information is provided in the `colData` of the object, then the user should set the flag parameter `check_colData` to `TRUE` and provide prefix for the columns where cluster information is stored.
 
-snn.matrix = similarity(
-      SNN_igraph, 
-      method = "jaccard")
-    
-snn.graph <- graph_from_adjacency_matrix(snn.matrix, weighted = TRUE, mode = "undirected")
-
-walktrapClusters = igraph::cluster_walktrap(snn.graph)
-for (i in 1:10){
-  sce[[paste0("cluster",i)]] <-  factor(igraph::cut_at(walktrapClusters, n = i))
-}
-
-treeviz<- createFromSCE(sce)
-
-sce
-sce<- generate_walktrap_hierarchy(sce)
-```
-
-We use the helper function to create a `TreeViz` object from SCE
+Note: In both cases the user needs to provide the name of dimensionality reductions present in the object as a parameter.
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-treeViz <- createFromSCE(sce)
+treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
 plot(treeViz)
 ```
 
@@ -139,38 +128,52 @@ plot(treeViz)
 
 ## Start the TreeViz App (using hosted app)
 
-Start the App from the `treeViz` object we created. This adds a `facetZoom` to navigate the cluster hierarchy, a heatmap of the top 100 most variable genes from the dataset and a scatter plot with TSNE dimensions. 
- 
+We provide `startTreeViz` method to initialize interactive exploration of data from the `treeViz` object we created before. 
+
 ```{r, eval=FALSE, echo=TRUE}
-app <- startTreeviz(treeViz)
+app <- startTreeviz(treeViz, top_genes = 500)
 ```
 
-Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
+This process
+
+1. Opens the browser (http://epiviz.cbcb.umd.edu/treeviz) 
+2. Adds a `facetZoom` visualization to navigate the cluster hierarchy
+3. Heatmap of the top `n` (default to 100) most variable genes from the dataset
+4. Scatter plots for each of the reduced dimensions available in the object.  
+ 
+![Treeviz](images/Treeviz.png)
+ 
+In addition, users can also use the application UI to explore the same dataset using different visualizations available through TreeViz.
+
+## Visualize gene expression across clusters
+
+Users can add Box plots per gene through either the `Add Visualization` button in frontend, or from the R session using the `plot_gene` function. 
+
+```{r, eval=FALSE, echo=TRUE}
+# to add a box plot of expression for a gene
+app$plot_gene(gene="TYROBP")
+```
+
+Here, we visualize the 5th, 50th and 500th most variable gene as Box plot,
+
+![BoxPlot](images/Boxplot.png)
 
 ## Stop App
 
-After exploring the dataset, this command the websocket connection. 
+After exploring the dataset, this command closes the app and the websocket connection. 
 
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
-
 
 ## Start TreeViz with app running locally
 
 ```{r, eval=FALSE, echo=TRUE}
 setTreevizStandalone()
 app <- startTreevizStandalone(treeViz)
-
 ```
-
-
 ## Stop App
 
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
-
-
-
-
