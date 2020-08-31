@@ -1,8 +1,19 @@
-# TreeSE
-R package to manage hierarchies (single cell and microbiome datasets)
+# TreeViz
+This package provides methods to interactively explore and visualize datasets with hierarchies. eg. microbiome datasets where features are mapped to a taxonomic hierarchy and single cells datasets with hierarchy over cells at different resolutions. 
 
+## Installation and requiremenets
 
-This package provides two R classes - 
+To install TreeViz, 
 
-1. `TreeIndex` class to manage hierarchies
-2. `TreeSE` a SummarizedExperiment style class with atleast row or column data as `TreeIndex`
+```{r}
+BiocManager::install("HCBravoLab/TreeViz")
+```
+
+## Usage
+
+To try out and explore the various features of the package, checkout the vignettes
+
+```{r}
+library(TreeViz)
+browseVignettes("TreeViz")
+```

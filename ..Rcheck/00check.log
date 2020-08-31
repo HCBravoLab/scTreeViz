@@ -1,9 +1,0 @@
-* using log directory ‘/home/jayaram/Desktop/projects/treeViz/treese/..Rcheck’
-* using R version 4.0.1 (2020-06-06)
-* using platform: x86_64-pc-linux-gnu (64-bit)
-* using session charset: UTF-8
-* checking for file ‘./DESCRIPTION’ ... ERROR
-Required field missing or empty:
-  ‘Author’
-* DONE
-Status: 1 ERROR
