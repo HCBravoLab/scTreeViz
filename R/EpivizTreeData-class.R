@@ -638,7 +638,8 @@ EpivizTreeData$methods(
                               selectedLevels = .self$.levelSelected + 1,
                               selections = .self$.nodeSelections)
 
-    max_length <- max(data_rows$end)
+    max_length <- ncol(.self$.object)
+      # max(data_rows$end)
 
     cluster_names <- rep("removed", max_length)
     for (i in 1:length(data_rows$metadata$label)) {
@@ -732,7 +733,8 @@ EpivizTreeData$methods(
                               selectedLevels = .self$.levelSelected + 1,
                               selections = .self$.nodeSelections)
     
-    max_length <- max(data_rows$end)
+    max_length <- ncol(.self$.object)
+    # max(data_rows$end)
     
     cluster_names <- rep("removed", max_length)
     for (i in 1:length(data_rows$metadata$label)) {
