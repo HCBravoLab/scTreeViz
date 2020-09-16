@@ -38,23 +38,34 @@ library(scRNAseq)
 
 The first step in using the `Treeviz` package is to wrap datasets into `TreeViz` objects. The `TreeViz` class extends `SummarizedExperiment` and provides various methods to interactively perform various operations on the underlying hierarchy and count or expression matrices. In this section, we show various ways to generate a `TreeViz` object either from existing Single Cell packages (SingleCellExperiment or Seurat) or from a raw count matrix and cluster hierarchy.
 
-## Create TreeViz from count matrix and Cluster hierarchy
+## From `SingleCellExperiment`
+
+A number of Single cell datasets are available as `SingleCellExperiment` objects through the `scRNAseq` package, for this usecase, we use `LunSpikeInData` dataset. In addition, we calculate the dimensionality reductions; UMAP, TSNE and PCA from the functions provided in `scater` package. 
 
 ```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-n=64
-# create a hierarchy
-df<- data.frame(cluster0=rep(1,n))
-for(i in seq(1,5)){
-  df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
-}
+# load dataset
+sce<- LunSpikeInData('416b')
+# Normalization
+sce <- logNormCounts(sce)
+# calculate umap and tsne
+sce <- runUMAP(sce)
+sce<- runTSNE(sce)
+sce<- runPCA(sce)
+```
 
-# generate a count matrix
-counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
+Similar to the `Seurat` methods, we provide `createFromSCE` function to create a `TreeViz` object from `SingleCellExperiment` object. Here, the workflow works in two ways:
 
-# create a `TreeViz` object
-treeViz <- createTreeViz(df, counts)
+1. If no cluster information is available in the `colData` of the `SingleCellExperiment` object, we create clusters at different resolutions using the `WalkTrap` algorithm by calling an internal function `generate_walktrap_hierarchy` and use this cluster information for visualization.
+
+2. If cluster information is provided in the `colData` of the object, then the user should set the flag parameter `check_colData` to `TRUE` and provide prefix for the columns where cluster information is stored.
+
+Note: In both cases the user needs to provide the name of dimensionality reductions present in the object as a parameter.
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
 plot(treeViz)
 ```
+
 
 ## From `Seurat`
 
@@ -97,31 +108,22 @@ treeViz<- createFromSeurat(pbmc, reduced_dim = c("umap","pca","tsne"))
 plot(treeViz)
 ```
 
-## From `SingleCellExperiment`
 
-A number of Single cell datasets are available as `SingleCellExperiment` objects through the `scRNAseq` package, for this usecase, we use `LunSpikeInData` dataset. In addition, we calculate the dimensionality reductions; UMAP, TSNE and PCA from the functions provided in `scater` package. 
+## Create TreeViz from count matrix and Cluster hierarchy
 
 ```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
-# load dataset
-sce<- LunSpikeInData('416b')
-# Normalization
-sce <- logNormCounts(sce)
-# calculate umap and tsne
-sce <- runUMAP(sce)
-sce<- runTSNE(sce)
-sce<- runPCA(sce)
-```
+n=64
+# create a hierarchy
+df<- data.frame(cluster0=rep(1,n))
+for(i in seq(1,5)){
+  df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+}
 
-Similar to the `Seurat` methods, we provide `createFromSCE` function to create a `TreeViz` object from `SingleCellExperiment` object. Here, the workflow works in two ways:
+# generate a count matrix
+counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
 
-1. If no cluster information is available in the `colData` of the `SingleCellExperiment` object, we create clusters at different resolutions using the `WalkTrap` algorithm by calling an internal function `generate_walktrap_hierarchy` and use this cluster information for visualization.
-
-2. If cluster information is provided in the `colData` of the object, then the user should set the flag parameter `check_colData` to `TRUE` and provide prefix for the columns where cluster information is stored.
-
-Note: In both cases the user needs to provide the name of dimensionality reductions present in the object as a parameter.
-
-```{r, warning=FALSE, error=FALSE, message=FALSE}
-treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
+# create a `TreeViz` object
+treeViz <- createTreeViz(df, counts)
 plot(treeViz)
 ```
 
