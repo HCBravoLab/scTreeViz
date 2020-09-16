@@ -57,14 +57,27 @@ Similar to the `Seurat` methods, we provide `createFromSCE` function to create a
 
 1. If no cluster information is available in the `colData` of the `SingleCellExperiment` object, we create clusters at different resolutions using the `WalkTrap` algorithm by calling an internal function `generate_walktrap_hierarchy` and use this cluster information for visualization.
 
-2. If cluster information is provided in the `colData` of the object, then the user should set the flag parameter `check_colData` to `TRUE` and provide prefix for the columns where cluster information is stored.
-
-Note: In both cases the user needs to provide the name of dimensionality reductions present in the object as a parameter.
-
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
 plot(treeViz)
 ```
+
+2. If cluster information is provided in the `colData` of the object, then the user should set the flag parameter `check_colData` to `TRUE` and provide prefix for the columns where cluster information is stored.
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+# Forming clusters
+hc<- hclust(dist(t(counts(sce))))
+for(i in  seq(5)){
+  clust <-cutree(hc,k=i)
+  sce[[paste0("clust",i)]] <- factor(clust)
+}
+treeViz<- createFromSCE(sce, prefix = "clust",  check_colData = TRUE)
+plot(treeViz)
+```
+
+Note: In both cases the user needs to provide the name of dimensionality reductions present in the object as a parameter.
+
+
 
 
 ## From `Seurat`
