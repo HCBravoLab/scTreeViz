@@ -128,7 +128,6 @@ prune_tree <- function(graph, cluster_df) {
     # Apply function
     assign_df <-
       check_alternate(graph[graph$is_core == FALSE, ], graph[graph$is_core == TRUE, ])
-    
     cluster_df <- change_assignment(assign_df, cluster_df)
     ngraph <-
       clustree(
@@ -229,11 +228,17 @@ check_unique_parent <- function(clusterdata) {
       parent <- length(unique(subsetted_list[[i - 1]]))
       
       if (parent > 1) {
-        stop("Not a tree, some nodes with multiple parents in level", i)
+        message(
+          "Not a tree, some nodes with multiple parents in level",
+          i,
+          "\n Opting for Cluster reassignment "
+        )
+        return (FALSE)
       }
       #cat(nrow(subsetted_list)," ",parent, "\n")
     }
   }
+  return(TRUE)
 }
 
 
@@ -343,7 +348,7 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
 #' Creates a `TreeViz` object from `Seurat`
 #'
 #' @param object `Seurat` class containing cluster information at different resolutions
-#' @param reduced_dim Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists) 
+#' @param reduced_dim Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
 #' @export
 #'
@@ -354,12 +359,14 @@ createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
   treeviz <-
     preprocessAndCreateTreeViz(clusterdata, GetAssayData(object))
   
-  for(dim_names in reduced_dim){
+  for (dim_names in reduced_dim) {
     if (dim_names %in% Reductions(object)) {
       reducdim <- Reductions(object, slot = dim_names)
       
-      metadata(treeviz)$reduced_dim[[dim_names]] <- reducdim@cell.embeddings[, 1:2]
-      rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
+      metadata(treeviz)$reduced_dim[[dim_names]] <-
+        reducdim@cell.embeddings[, 1:2]
+      rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <-
+        colnames(object)
     }
   }
   treeviz
@@ -378,12 +385,20 @@ createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
 createFromSCE <-
   function(object,
            prefix = "cluster",
+           suffix = NULL,
            check_colData = FALSE,
            reduced_dim = c("TSNE")) {
     if (check_colData == TRUE) {
       clusterdata <- colData(object)
-      clusterdata <-
-        clusterdata[, startsWith(colnames(clusterdata), prefix)]
+      if (!is.null(suffix)) {
+        clusterdata <-
+          clusterdata[, endsWith(colnames(clusterdata), suffix)]
+      }
+      else{
+        clusterdata <-
+          clusterdata[, startsWith(colnames(clusterdata), prefix)]  
+      }
+      
       if (length(colnames(clusterdata)) == 0) {
         stop("No cluster information found")
       }
@@ -401,12 +416,13 @@ createFromSCE <-
     rownames(count) <- rownames(counts(object))
     
     treeviz <- createTreeViz(as.data.frame(clusterdata), count)
-    for(dim_names in reduced_dim){
+    for (dim_names in reduced_dim) {
       if (dim_names %in% reducedDimNames(object)) {
         metadata(treeviz)$reduced_dim[[dim_names]] <-
           reducedDims(object)[[dim_names]][, 1:2]
         
-        rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
+        rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <-
+          colnames(object)
       }
     }
     treeviz
@@ -422,23 +438,27 @@ createFromSCE <-
 #' @export
 #'
 createTreeViz <- function(clusters, counts) {
-  clusters <- rename_clusters(clusters)
-  
-  for (clusnames in names(clusters)) {
-    clusters[[clusnames]] <-
-      paste(clusnames, clusters[[clusnames]], sep = 'C')
+  chk_unique <- check_unique_parent(clusters)
+  if (chk_unique == FALSE) {
+    treeviz <- preprocessAndCreateTreeViz(clusters, counts)
   }
-  
-  check_unique_parent(clusters)
-  samples <- rownames(clusters)
-  clusters <- cbind(clusters, samples)
-  
-  clusters <- checkRoot(clusters)
-  
-  tree <- TreeIndex(clusters)
-  rownames(tree) <- rownames(clusters)
-  
-  treeviz <- TreeViz(SimpleList(counts = counts), colData = tree)
+  else{
+    clusters <- rename_clusters(clusters)
+    
+    for (clusnames in names(clusters)) {
+      clusters[[clusnames]] <-
+        paste(clusnames, clusters[[clusnames]], sep = 'C')
+    }
+    samples <- rownames(clusters)
+    clusters <- cbind(clusters, samples)
+    
+    clusters <- checkRoot(clusters)
+    
+    tree <- TreeIndex(clusters)
+    rownames(tree) <- rownames(clusters)
+    
+    treeviz <- TreeViz(SimpleList(counts = counts), colData = tree)
+  }
   # plot_tree(TreeSE_obj@colData@hierarchy_tree)
   treeviz
 }
@@ -474,9 +494,10 @@ find_top_variable_genes <- function(treeviz, top = 100) {
 calculate_tsne <- function(treeviz) {
   message("No defaults dimensionality reductions provided")
   message("Calculating TSNE")
-  tsne<- calculateTSNE(assays(treeviz)$counts)
-  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne[,1:2]
-  rownames(metadata(treeviz)$reduced_dim[['TSNE']]) <- colnames(treeviz)
+  tsne <- calculateTSNE(assays(treeviz)$counts)
+  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne[, 1:2]
+  rownames(metadata(treeviz)$reduced_dim[['TSNE']]) <-
+    colnames(treeviz)
   message("adding tsne to reduced dim slots")
   treeviz
 }

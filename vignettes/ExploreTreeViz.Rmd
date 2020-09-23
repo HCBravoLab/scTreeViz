@@ -66,12 +66,12 @@ plot(treeViz)
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 # Forming clusters
-hc<- hclust(dist(t(counts(sce))))
-for(i in  seq(5)){
-  clust <-cutree(hc,k=i)
-  sce[[paste0("clust",i)]] <- factor(clust)
+for (i in  seq(10)) {
+  clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
+  sce[[paste0("cluster", i)]] <- factor(clust.kmeans$cluster)
 }
-treeViz<- createFromSCE(sce, prefix = "clust",  check_colData = TRUE)
+
+treeViz<- createFromSCE(sce, prefix = "cluster",  check_colData = TRUE)
 plot(treeViz)
 ```
 
