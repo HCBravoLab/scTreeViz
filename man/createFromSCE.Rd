@@ -8,6 +8,15 @@ clusters based on Walktrap algorithm if no default is provided}
 createFromSCE(
   object,
   prefix = "cluster",
+  suffix = NULL,
+  check_colData = FALSE,
+  reduced_dim = c("TSNE")
+)
+
+createFromSCE(
+  object,
+  prefix = "cluster",
+  suffix = NULL,
   check_colData = FALSE,
   reduced_dim = c("TSNE")
 )
@@ -23,8 +32,13 @@ createFromSCE(
 }
 \value{
 `TreeViz` Object
+
+`TreeViz` Object
 }
 \description{
+Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
+clusters based on Walktrap algorithm if no default is provided
+
 Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
 clusters based on Walktrap algorithm if no default is provided
 }

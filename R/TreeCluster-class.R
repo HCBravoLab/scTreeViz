@@ -30,6 +30,7 @@ TreeCluster <- function(hierarchy = NULL, filter=NULL, keyword="cluster", orderi
     # }
     # 
 
+  #Filter key words
   if(!is.null(filter)){
     if (is.null(keyword)) {
       stop("No Keyword giver for Filter")
@@ -46,6 +47,8 @@ TreeCluster <- function(hierarchy = NULL, filter=NULL, keyword="cluster", orderi
     }
     
   }
+  
+  #ordering
   #print(colnames(hierarchy))
   #column name, not indices
   if(!is.null(ordering)){
@@ -53,32 +56,73 @@ TreeCluster <- function(hierarchy = NULL, filter=NULL, keyword="cluster", orderi
     #print(hierarchy)
     #reorder(hierarchy,ordering)
   }
+  for(cols in colnames(hierarchy)){
+    hierarchy[[cols]]<- as.factor(hierarchy[[cols]])
+  }
+  hierarchy <- rename_clusters(hierarchy)
+  
   uniqeness <-
     check_unique_parent(hierarchy)
+  
+  # Create clustree object
+  hierarchy_graph <-
+    clustree(
+      hierarchy ,
+      prefix = "cluster",
+      prop_filter = 0,
+      return = "graph"
+    )
+  
+  
+  
   if(uniqeness==FALSE){
-    clusters <- rename_clusters(hierarchy)
-    
-    # Create clustree object
-    clustree_graph <-
-      clustree(
-        clusters ,
-        prefix = "cluster",
-        prop_filter = 0,
-        return = "graph"
-      )
-    
-    graph_df <- as_long_data_frame(clustree_graph)
-    
+    #print(hierarchy_graph)
     # prune the graph with only core edges (this makes it a ~tree)
-    hierarchy <- prune_tree(graph_df, clusters)
+    print("non-unique")
+    graph_df <- as_long_data_frame(hierarchy_graph)
+    hierarchy <- prune_tree(graph_df, hierarchy)
+    #print(hierarchy)
+    hierarchy_graph = hierarchy$Clustree_obj
+    hierarchy <- DataFrame(hierarchy$Cluster_obj)
+    
   }
   
-  hierarchy_df <- DataFrame(hierarchy$Cluster_obj)
-  #hierarchy_df <- hierarchy$Cluster_obj
+  
+  # collapses tree if the levels are the same at different resolutions
+  #print(hierarchy_graph)
+  collapsed_graph <- collapse_tree(hierarchy_graph)
+  
+  
+  cluster_names <-
+    unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))
+  
+  
+  hierarchy <- hierarchy[, cluster_names]
+  
+  for (clusnames in names(hierarchy)) {
+    hierarchy[[clusnames]] <-
+      paste(clusnames, hierarchy[[clusnames]], sep = 'C')
+  }
+  
+  samples <- rownames(hierarchy)
+  if(is.null(rownames(hierarchy))){
+    samples<- 1:nrow(hierarchy)
+  }
+  print(samples)
+  hierarchy <- cbind(hierarchy, samples)
+  hierarchy <- checkRoot(hierarchy)
   
   
   new(
     "TreeCluster",
-    hierarchy_df
+    hierarchy
   )
+  
+  # tree <- TreeIndex(hierarchy)
+  # rownames(tree) <- rownames(hierarchy)
+  # 
+  # treeviz <- TreeViz(SimpleList(counts = counts), colData = tree)
+  # # plot_tree(TreeSE_obj@colData@hierarchy_tree)
+  # treeviz
+  # 
 }

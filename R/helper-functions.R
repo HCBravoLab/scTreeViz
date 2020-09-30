@@ -190,6 +190,7 @@ collapse_tree <- function(original_graph) {
   }
   
   if (length(delete_set_vertices) != 0) {
+    message("Collapsing the graph by removing redundant nodes")
     ver_list <- ver_list[-delete_set_vertices, ]
   }
   ver_list
@@ -204,6 +205,7 @@ checkRoot <- function(cluster_df) {
   # Handle Forests
   cols <- colnames(cluster_df)
   if (length(unique(cluster_df[[1]])) > 1) {
+    message("Given Tree is a Forest\n Adding extra root")
     cluster_df$root <- "ClusterAllClusters"
     cols <- c("root", cols)
   }
@@ -229,7 +231,7 @@ check_unique_parent <- function(clusterdata) {
       
       if (parent > 1) {
         message(
-          "Not a tree, some nodes with multiple parents in level",
+          "Not a tree, some nodes with multiple parents in level ",
           i,
           "\n Opting for Cluster reassignment "
         )
@@ -248,10 +250,14 @@ check_unique_parent <- function(clusterdata) {
 #' @return Dataframe containing cluster information at different resolutions
 #'
 rename_clusters <- function(clusdata) {
+  message("Renaming clusters...")
+  message("Previous cluster names ", colnames(clusdata))
+  
   clusnames <- seq(length(colnames(clusdata)))
   
   clusnames <- paste0("cluster", clusnames)
   colnames(clusdata) <- clusnames
+  message("New cluster names ", colnames(clusdata))
   clusdata
 }
 
@@ -390,18 +396,18 @@ createFromSCE <-
            reduced_dim = c("TSNE")) {
     if (check_colData == TRUE) {
       clusterdata <- colData(object)
-      if (!is.null(suffix)) {
-        clusterdata <-
-          clusterdata[, endsWith(colnames(clusterdata), suffix)]
-      }
-      else{
-        clusterdata <-
-          clusterdata[, startsWith(colnames(clusterdata), prefix)]  
-      }
-      
-      if (length(colnames(clusterdata)) == 0) {
-        stop("No cluster information found")
-      }
+      # if (!is.null(suffix)) {
+      #   clusterdata <-
+      #     clusterdata[, endsWith(colnames(clusterdata), suffix)]
+      # }
+      # else{
+      #   clusterdata <-
+      #     clusterdata[, startsWith(colnames(clusterdata), prefix)]  
+      # }
+      # 
+      # if (length(colnames(clusterdata)) == 0) {
+      #   stop("No cluster information found")
+      # }
     }
     else{
       message("No default clusters provided")
@@ -438,27 +444,20 @@ createFromSCE <-
 #' @export
 #'
 createTreeViz <- function(clusters, counts) {
-  chk_unique <- check_unique_parent(clusters)
-  if (chk_unique == FALSE) {
-    treeviz <- preprocessAndCreateTreeViz(clusters, counts)
-  }
-  else{
-    clusters <- rename_clusters(clusters)
-    
-    for (clusnames in names(clusters)) {
-      clusters[[clusnames]] <-
-        paste(clusnames, clusters[[clusnames]], sep = 'C')
-    }
-    samples <- rownames(clusters)
-    clusters <- cbind(clusters, samples)
-    
-    clusters <- checkRoot(clusters)
-    
-    tree <- TreeIndex(clusters)
-    rownames(tree) <- rownames(clusters)
-    
-    treeviz <- TreeViz(SimpleList(counts = counts), colData = tree)
-  }
+  # if(!is(clusters, "TreeCluster")){
+  #     stop("Not an object of  Tree Cluster")
+  #     
+  # }
+  
+  
+  clusters <- TreeCluster(clusters)
+  clusters<- as.data.frame(clusters)
+  
+  tree <- TreeIndex(clusters)
+  rownames(tree) <- rownames(clusters)
+  
+  treeviz <- TreeViz(SimpleList(counts = counts), colData = tree)
+ # }
   # plot_tree(TreeSE_obj@colData@hierarchy_tree)
   treeviz
 }

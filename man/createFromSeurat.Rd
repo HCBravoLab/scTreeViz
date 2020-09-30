@@ -5,6 +5,8 @@
 \title{Creates a `TreeViz` object from `Seurat`}
 \usage{
 createFromSeurat(object, reduced_dim = c("TSNE"))
+
+createFromSeurat(object, reduced_dim = c("TSNE"))
 }
 \arguments{
 \item{object}{`Seurat` class containing cluster information at different resolutions}
@@ -13,7 +15,11 @@ createFromSeurat(object, reduced_dim = c("TSNE"))
 }
 \value{
 `TreeViz` Object
+
+`TreeViz` Object
 }
 \description{
+Creates a `TreeViz` object from `Seurat`
+
 Creates a `TreeViz` object from `Seurat`
 }
