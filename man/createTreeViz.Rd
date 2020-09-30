@@ -5,6 +5,8 @@
 \title{Creates `TreeViz` object from hierarchy and count matrix}
 \usage{
 createTreeViz(clusters, counts)
+
+createTreeViz(clusters, counts)
 }
 \arguments{
 \item{clusters}{Dataframe containing cluster information at different resolutions}
@@ -13,7 +15,11 @@ createTreeViz(clusters, counts)
 }
 \value{
 `TreeViz`` Object
+
+`TreeViz`` Object
 }
 \description{
+This module returns the Tree Summarized Experiment if the dataframe is tree, throws error otherwise
+
 This module returns the Tree Summarized Experiment if the dataframe is tree, throws error otherwise
 }

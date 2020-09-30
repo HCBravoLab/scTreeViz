@@ -5,13 +5,19 @@
 \title{Renames cluster names for consistency in visualization}
 \usage{
 rename_clusters(clusdata)
+
+rename_clusters(clusdata)
 }
 \arguments{
 \item{clusdata}{Dataframe containing cluster information at different resolutions}
 }
 \value{
 Dataframe containing cluster information at different resolutions
+
+Dataframe containing cluster information at different resolutions
 }
 \description{
+Renames cluster names for consistency in visualization
+
 Renames cluster names for consistency in visualization
 }

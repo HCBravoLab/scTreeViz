@@ -5,13 +5,19 @@
 \title{collapse tree if resolutions does not change cluster assignments}
 \usage{
 collapse_tree(original_graph)
+
+collapse_tree(original_graph)
 }
 \arguments{
 \item{original_graph}{Dataframe containing cluster information at different resolutions}
 }
 \value{
 Dataframe containing cluster information at different resolutions
+
+Dataframe containing cluster information at different resolutions
 }
 \description{
+collapse tree if resolutions does not change cluster assignments
+
 collapse tree if resolutions does not change cluster assignments
 }

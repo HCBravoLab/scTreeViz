@@ -6,6 +6,8 @@
 Also prunes and collapses the hierarchy to remove redundant levels.}
 \usage{
 preprocessAndCreateTreeViz(clusters, counts)
+
+preprocessAndCreateTreeViz(clusters, counts)
 }
 \arguments{
 \item{clusters}{Dataframe containing cluster information at different resolutions}
@@ -14,8 +16,13 @@ preprocessAndCreateTreeViz(clusters, counts)
 }
 \value{
 TreeSummarizedExperiment Object that can be visualized with metavizr
+
+TreeSummarizedExperiment Object that can be visualized with metavizr
 }
 \description{
+Creates the `TreeViz` object from cluster hierarchy and count matrix.
+Also prunes and collapses the hierarchy to remove redundant levels.
+
 Creates the `TreeViz` object from cluster hierarchy and count matrix.
 Also prunes and collapses the hierarchy to remove redundant levels.
 }

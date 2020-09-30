@@ -2,6 +2,7 @@
 
 export(ImportFromSeurat)
 export(ImportFromSingleCellExperiment)
+export(TreeCluster)
 export(TreeIndex)
 export(TreeViz)
 export(aggregateTree)
