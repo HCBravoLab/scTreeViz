@@ -68,10 +68,10 @@ plot(treeViz)
 # Forming clusters
 for (i in  seq(10)) {
   clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
-  sce[[paste0("cluster", i)]] <- factor(clust.kmeans$cluster)
+  sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
 }
 
-treeViz<- createFromSCE(sce, check_colData = TRUE)
+treeViz<- createFromSCE(sce, check_colData = TRUE, col_regex = "clust")
 plot(treeViz)
 ```
 
@@ -117,7 +117,7 @@ Note: If the reduced dimension is not present it would be ignored.
 
 We use the `createFromSeurat` function to create a `TreeViz` object from `Seurat` object. In addition the object, we pass the name of dimensionality reductions present in the object as a paramter in vector format to indicate these measurements should be added to `treeviz` for visualization. If the mentioned reduced dimension is not present it would simply be ignored.
 ```{r, eval=TRUE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
-treeViz<- createFromSeurat(pbmc, reduced_dim = c("umap","pca","tsne"))
+treeViz<- createFromSeurat(pbmc, check_metaData = TRUE, reduced_dim = c("umap","pca","tsne"))
 plot(treeViz)
 ```
 
