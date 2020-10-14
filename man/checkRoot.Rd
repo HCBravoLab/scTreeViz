@@ -5,19 +5,13 @@
 \title{check if hierarchy has more than 1 root, if do create a root}
 \usage{
 checkRoot(cluster_df)
-
-checkRoot(cluster_df)
 }
 \arguments{
 \item{cluster_df}{Dataframe containing cluster information at different resolutions}
 }
 \value{
 Dataframe containing cluster information at different resolutions
-
-Dataframe containing cluster information at different resolutions
 }
 \description{
-check if hierarchy has more than 1 root, if do create a root
-
 check if hierarchy has more than 1 root, if do create a root
 }

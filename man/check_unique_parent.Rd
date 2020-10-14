@@ -5,19 +5,13 @@
 \title{check if every node has a single parent (tree vs graph)}
 \usage{
 check_unique_parent(clusterdata)
-
-check_unique_parent(clusterdata)
 }
 \arguments{
 \item{clusterdata}{Dataframe containing cluster information at different resolutions}
 }
 \value{
 Dataframe containing cluster information at different resolutions
-
-Dataframe containing cluster information at different resolutions
 }
 \description{
-check if every node has a single parent (tree vs graph)
-
 check if every node has a single parent (tree vs graph)
 }

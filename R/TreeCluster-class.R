@@ -1,24 +1,26 @@
-setClassUnion("CharacterOrNull", c("character", "NULL"))
-
-#' TreeCluster class to manage treeviz cluster data
+#' ClusterHierarchy class to manage treeviz cluster data
 setClass(
-  "TreeCluster",
+  "ClusterHierarchy",
   contains = c("DataFrame")
 )
 
 
-#' create a new Treecluster object
+#' create a new ClusterHierarchy object
 #' @param hierarchy hierarchy as a dataFrame
+#' @param col_regex Regular Expression for choosing columns
+#' @param columns Vector containing list of columns to choose from with ordering
+#' @return `ClusterHierarchy`` return an object of class ClusterHierarchy containing cluster information
 #' @importFrom methods new
 #' @importFrom S4Vectors DataFrame
 #' @export
-TreeCluster <- function(hierarchy = NULL, filter=NULL, keyword="cluster", ordering =NULL) {
+#' 
+ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   #will se later if this is needed
     # 
-    if (is.null(hierarchy)) {
-      stop("No hirerarchy")
-      
-    }
+    # if (is.null(hierarchy)) {
+    #   stop("No hirerarchy")
+    #   
+    # }
     # 
     # if (ncol(hierarchy) == 0) {
     #   return(
@@ -31,39 +33,28 @@ TreeCluster <- function(hierarchy = NULL, filter=NULL, keyword="cluster", orderi
     # 
 
   #Filter key words
-  if(!is.null(filter)){
-    if (is.null(keyword)) {
-      stop("No Keyword giver for Filter")
-      
-    }
-    if(filter=="prefix"){
-      hierarchy<- hierarchy[, startsWith(colnames(hierarchy), keyword)] 
-    }
-    if(filter=="suffix"){
-      hierarchy<- hierarchy[, endssWith(colnames(hierarchy), keyword)] 
-    }
-    if(filter=="match"){
-      hierarchy<- hierarchy[, grep( keyword, colnames(hierarchy))] 
-    }
-    
+  if(!is.null(col_regex)){
+      hierarchy<- hierarchy[, grep( col_regex, colnames(hierarchy))] 
   }
   
   #ordering
   #print(colnames(hierarchy))
   #column name, not indices
-  if(!is.null(ordering)){
-    hierarchy<-hierarchy[ordering]
+  if(!is.null(columns)){
+    hierarchy<-hierarchy[columns]
     #print(hierarchy)
     #reorder(hierarchy,ordering)
   }
   for(cols in colnames(hierarchy)){
     hierarchy[[cols]]<- as.factor(hierarchy[[cols]])
   }
+  hierarchy<- as.data.frame( hierarchy)
   hierarchy <- rename_clusters(hierarchy)
   
   uniqeness <-
     check_unique_parent(hierarchy)
   
+  #print(str(hierarchy))
   # Create clustree object
   hierarchy_graph <-
     clustree(
@@ -78,7 +69,7 @@ TreeCluster <- function(hierarchy = NULL, filter=NULL, keyword="cluster", orderi
   if(uniqeness==FALSE){
     #print(hierarchy_graph)
     # prune the graph with only core edges (this makes it a ~tree)
-    print("non-unique")
+    message("non-unique")
     graph_df <- as_long_data_frame(hierarchy_graph)
     hierarchy <- prune_tree(graph_df, hierarchy)
     #print(hierarchy)
@@ -104,17 +95,18 @@ TreeCluster <- function(hierarchy = NULL, filter=NULL, keyword="cluster", orderi
       paste(clusnames, hierarchy[[clusnames]], sep = 'C')
   }
   
+  # print(names(hierarchy))
   samples <- rownames(hierarchy)
   if(is.null(rownames(hierarchy))){
     samples<- 1:nrow(hierarchy)
   }
-  print(samples)
+  
   hierarchy <- cbind(hierarchy, samples)
   hierarchy <- checkRoot(hierarchy)
   
   
   new(
-    "TreeCluster",
+    "ClusterHierarchy",
     hierarchy
   )
   
