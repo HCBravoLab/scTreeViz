@@ -206,7 +206,7 @@ setMethod("plot", "TreeViz", function(x, y, ...) {
   fig <- ggraph(mygraph, layout = 'dendrogram', circular = FALSE) +
     ggraph::geom_edge_diagonal() +
     ggraph::geom_node_point(show.legend = TRUE) +
-    ggraph::geom_node_label(aes(label = substring(V(mygraph)$name, 8))) +
+    ggraph::geom_node_label(aes(label = sub(pattern="cluster",replacement="L",x=V(mygraph)$name))) +
     theme_void()
   show(fig)
   

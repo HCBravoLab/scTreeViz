@@ -71,7 +71,7 @@ for (i in  seq(10)) {
   sce[[paste0("cluster", i)]] <- factor(clust.kmeans$cluster)
 }
 
-treeViz<- createFromSCE(sce,   check_colData = TRUE)
+treeViz<- createFromSCE(sce, check_colData = TRUE)
 plot(treeViz)
 ```
 

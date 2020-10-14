@@ -7,38 +7,27 @@ clusters based on Walktrap algorithm if no default is provided}
 \usage{
 createFromSCE(
   object,
-  prefix = "cluster",
-  suffix = NULL,
   check_colData = FALSE,
-  reduced_dim = c("TSNE")
-)
-
-createFromSCE(
-  object,
-  prefix = "cluster",
-  suffix = NULL,
-  check_colData = FALSE,
+  col_regex = NULL,
+  columns = NULL,
   reduced_dim = c("TSNE")
 )
 }
 \arguments{
 \item{object}{`SingleCellExperiment` object to be visualized}
 
-\item{prefix}{common prefix that identifies the cluster columns}
-
 \item{check_colData}{whether to colData of `SingeCellExperiment` object for cluster information or not}
+
+\item{col_regex}{common regular expression shared across all columns with cluster information}
+
+\item{columns}{vector containing columns with cluster information}
 
 \item{reduced_dim}{Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)}
 }
 \value{
 `TreeViz` Object
-
-`TreeViz` Object
 }
 \description{
-Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
-clusters based on Walktrap algorithm if no default is provided
-
 Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
 clusters based on Walktrap algorithm if no default is provided
 }

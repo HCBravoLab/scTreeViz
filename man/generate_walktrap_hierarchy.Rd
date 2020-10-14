@@ -7,22 +7,14 @@ walktrap returns clustering at highest modularity. The modularity value indicate
 Intermediate cluster assignments are created based on monotonically increasing level of modularity}
 \usage{
 generate_walktrap_hierarchy(object, nsteps = 7)
-
-generate_walktrap_hierarchy(object, nsteps = 7)
 }
 \arguments{
 \item{object}{`Single Cell Experiment` on which `WalkTrap` clustering will be computed}
 }
 \value{
-`Single Cell Experiment` Object with hierarchy information in metadata slot
-
-`Single Cell Experiment` Object with hierarchy information in metadata slot
+dataframe with hierarchy information
 }
 \description{
-Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
-walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
-Intermediate cluster assignments are created based on monotonically increasing level of modularity
-
 Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
 walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
 Intermediate cluster assignments are created based on monotonically increasing level of modularity
