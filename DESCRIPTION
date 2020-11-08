@@ -10,19 +10,21 @@ Maintainer: Hector Corrada Bravo <hcorrada@gmail.com>
 Description: This package provides classes to support interactive data
           aggregation and visualization of genomic datasets with hierarchies. The `TreeIndex` class 
           provides methods to manage hierarchy as tree and split the tree at a given level or at
-          a given node selection thats spans across levels. The `TreeSE` class extends `SummarizedExperiment` 
+          a given node selection thats spans across levels. The `TreeViz` class extends `SummarizedExperiment` 
           and performs aggregations where either rowData or colData or both can be a 
           hierarchy (a `TreeIndex` class).
 License: Artistic-2.0
 Depends: R (>= 3.4), methods, epivizr, SummarizedExperiment
 Imports: epivizrStandalone, BiocGenerics, Biobase, 
         data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
-        httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer
-Suggests: knitr, BiocStyle, testthat, Seurat, msd16s, SingleCellExperiment
+        httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer,
+        dplyr, ggraph, scater, tidygraph
+Suggests: knitr, BiocStyle, testthat, Seurat, msd16s, SingleCellExperiment, SC3, 
+        metagenomeSeq, scRNAseq
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8
 LazyData: true
 Collate: 'TreeIndex-class.R' 'TreeIndex-methods.R' 'TreeViz-class.R' 'TreeViz-methods.R' 'startTreeViz.R' 
-         'TreeVizApp-class.R' 'EpivizTreeData-class.R' 'helper-functions.R'
+         'TreeVizApp-class.R' 'EpivizTreeData-class.R' 'helper-functions.R' 'vignette_data.R'
 RoxygenNote: 7.1.1
