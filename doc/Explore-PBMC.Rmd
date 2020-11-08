@@ -1,0 +1,113 @@
+---
+title: "Explore PBMC 3K dataset"
+author: "Jayaram Kancherla, Kazi Zinat Tasnim, Hector Corrada Bravo"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Explore PBMC 3K dataset}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+The package provides the PBMC 3K dataset for interactive exploration with TreeViz. To generate `Treeviz` objects on your datasets, follow the `ExploreTreeViz` vignette.
+
+## Loading required packages
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(TreeViz)
+```
+
+## Loading data
+
+```{r}
+data(PBMC3k_TreeViz)
+```
+
+### (Optional) Generating the PBMC 3K TreeViz object
+
+This section follows similar steps as detailed in Seurat's tutorial -  https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html
+
+```{r, eval=FALSE, echo=TRUE} 
+library(Seurat)
+
+pbmc.data <- Read10X(data.dir = "../data/pbmc3k/filtered_gene_bc_matrices/hg19/")
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
+
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+
+pbmc <- NormalizeData(pbmc)
+
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes)
+
+pbmc <- FindVariableFeatures(pbmc)
+pbmc <- FindNeighbors(pbmc, dims=1:10)
+
+pbmc <- FindClusters(pbmc, resolution=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0), save.SNN=TRUE)
+
+pbmc <- RunTSNE(pbmc)
+pbmc <- RunUMAP(pbmc, dims=1:5)
+pbmc <- RunPCA(pbmc)
+
+PBMC3K_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"))
+PBMC3K_TreeViz
+```
+
+## Initialize the App
+
+To start interactive exploration on this data, 
+
+```{r, eval=FALSE}
+app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100)
+```
+
+The app by default chooses `resolution 0.4` as a starting set of clusters for exploration. This
+
+1. Opens the browser (http://epiviz.cbcb.umd.edu/treeviz) and creates a web socket connection between the app and your local R-session
+2. Adds a `facetZoom` visualization to navigate the cluster hierarchy
+3. Heatmap of the top `n` (default to 100) most variable genes from the dataset where counts are aggregated to the choosen cluster resolutions
+4. Scatter plots for each of the reduced dimensions available in the object.  
+ 
+![Treeviz App](images/Treeviz-annotated.png){width=90%}
+
+### Interactions
+
+As you are exploring this dataset, you notice in the tsne/umap/pca plots that the clusters (colored orange, green, red and purple) are not well separated.
+
+![clusters](images/treeviz_clusters.png)
+These clusters (4C1, 4C4, 4C6, 4C7) at cluster resolution 0.4 do not seem to be well separated. So may be I would like to choose a lower resolution for these cells. As I look at the hierarchy in the `facetZoom` they belong to the same parent (2C1) at cluster resolution 0.2. I can now choose to cluster these cells at a different resolution (as shown below). This immediately reflects the changes in the dimensionality plots, computes a new count matrix based on the selection and updates the heatmap. 
+
+![aggregation](images/treeviz_agg.gif){width=70%}
+
+
+Similarly if a cell type or cluster is not of interest, one can remove cluster(s) from analysis. This will grey out the cluster from the dimensionality plots, remove the cluster from the heatmap and update the dynamic clustering over genes. 
+
+![remove](images/treeviz_remove.gif){width=70%}
+
+### Additional Plots
+
+We can add plots to visualize expression of a single gene across clusters. To add a box plot for gene `TYROBP`
+
+```{r, eval=FALSE}
+app$plotGene(gene="TYROBP")
+```
+
+![box plot](images/treeviz_boxplot.png)
+
+
+you can also add this through the UI through the `add visualization` interface on the top and choose "Gene Box Plot".
+
+## Close the App
+
+To end the interactive session, 
+
+```{r, eval=FALSE}
+app$stop_app()
+```
+
