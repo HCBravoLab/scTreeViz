@@ -40,7 +40,7 @@ The first step in using the `Treeviz` package is to wrap datasets into `TreeViz`
 
 ## Create TreeViz from count matrix and Cluster hierarchy
 
-```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 n=64
 # create a hierarchy
 df<- data.frame(cluster0=rep(1,n))
@@ -60,7 +60,7 @@ plot(treeViz)
 
 We use the dataset `pbmc_small` available through Seurat to create a `TreeViz` object.  
 
-```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 data(pbmc_small)
 pbmc <- pbmc_small
 ```
@@ -91,7 +91,7 @@ We provide the `createFromSeurat` function to create a `TreeViz` object from `Se
 
 Note: If the reduced dimension is not present it would be ignored.
 
-```{r, eval=TRUE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE}
 treeViz<- createFromSeurat(pbmc, reduced_dim = c("umap","pca","tsne"))
 plot(treeViz)
 ```
@@ -100,7 +100,7 @@ plot(treeViz)
 
 A number of Single cell datasets are available as `SingleCellExperiment` objects through the `scRNAseq` package, for this usecase, we use `LunSpikeInData` dataset. In addition, we calculate the dimensionality reductions; UMAP, TSNE and PCA from the functions provided in `scater` package. 
 
-```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 # load dataset
 sce<- LunSpikeInData('416b')
 # Normalization
@@ -119,7 +119,7 @@ Similar to the `Seurat` methods, we provide `createFromSCE` function to create a
 
 Note: In both cases the user needs to provide the name of dimensionality reductions present in the object as a parameter.
 
-```{r, warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
 plot(treeViz)
 ```
@@ -151,7 +151,7 @@ Users can add Box plots per gene through either the `Add Visualization` button i
 
 ```{r, eval=FALSE, echo=TRUE}
 # to add a box plot of expression for a gene
-app$plot_gene(gene="TYROBP")
+app$plotGene(gene="TYROBP")
 ```
 
 Here, we visualize the 5th, 50th and 500th most variable gene as Box plot,

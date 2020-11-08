@@ -1,10 +1,10 @@
 ---
-title: "TreeSE-basics"
+title: "TreeViz-basics"
 author: "Jayaram Kancherla, Hector Corrada Bravo"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Introduction to TreeSE}
+  %\VignetteIndexEntry{Introduction to TreeViz}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
