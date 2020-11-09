@@ -12,7 +12,7 @@ TreeViz currently requires a development version of `epivizrData` which supports
 To install TreeViz, 
 
 ```{r}
-BiocManager::install("epiviz/epivizrData@SparseMeasurements")
+BiocManager::install("epiviz/epivizrData")
 BiocManager::install("HCBravoLab/TreeViz")
 ```
 ***Note: you can also use devtools to install the package from github***
