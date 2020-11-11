@@ -5,7 +5,9 @@ setClass(
 )
 
 
-#' create a new ClusterHierarchy object
+#' create a new ClusterHierarchy object. User can give either
+#' col_regex or  columns option to filter the columns or specify 
+#' the column order
 #' @param hierarchy hierarchy as a dataFrame
 #' @param col_regex Regular Expression for choosing columns
 #' @param columns Vector containing list of columns to choose from with ordering
@@ -33,6 +35,9 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
     # 
 
   #Filter key words
+  if(!is.null(col_regex) && !is.null(columns)){
+    message("Cannot use both")
+  }
   if(!is.null(col_regex)){
       hierarchy<- hierarchy[, grep( col_regex, colnames(hierarchy))] 
   }
@@ -69,7 +74,7 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   if(uniqeness==FALSE){
     #print(hierarchy_graph)
     # prune the graph with only core edges (this makes it a ~tree)
-    message("non-unique")
+    # message("non-unique")
     graph_df <- as_long_data_frame(hierarchy_graph)
     hierarchy <- prune_tree(graph_df, hierarchy)
     #print(hierarchy)
@@ -90,6 +95,7 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   
   hierarchy <- hierarchy[, cluster_names]
   
+  #renaming nodes from numbers to cluster1C1 cluster1C2 so on..
   for (clusnames in names(hierarchy)) {
     hierarchy[[clusnames]] <-
       paste(clusnames, hierarchy[[clusnames]], sep = 'C')

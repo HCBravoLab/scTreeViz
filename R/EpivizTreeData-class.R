@@ -637,19 +637,19 @@ EpivizTreeData$methods(
     data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
                               selectedLevels = .self$.levelSelected + 1,
                               selections = .self$.nodeSelections)
-
+    
     max_length <- ncol(.self$.object)
-      # max(data_rows$end)
-
+    # max(data_rows$end)
+    
     cluster_names <- rep("removed", max_length)
     for (i in 1:length(data_rows$metadata$label)) {
       start <- data_rows$start[i]
       end <- data_rows$end[i]
       cluster_names[start:end] <- data_rows$metadata$label[i]
     }
-
+    
     measurements <-  metadata(.self$.object)$reduced_dim[[method]]
-
+    
     data <- list()
     level <- .self$.levelSelected + 1
     i <- 1
@@ -717,7 +717,7 @@ EpivizTreeData$methods(
     # }
     # , 
     # "cluster_order" = data_rows$metadata$label
-    
+    print(data_rows$metadata$label)
     result <- list("data" = unname(data), "pca_variance_explained" = c(1,1),
                    "cluster_order" = data_rows$metadata$label)
     return(result)
