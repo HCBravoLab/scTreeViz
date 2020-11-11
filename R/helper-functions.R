@@ -233,7 +233,7 @@ check_unique_parent <- function(clusterdata) {
         message(
           "Not a tree, some nodes with multiple parents in level ",
           i,
-          "\n Opting for Cluster reassignment "
+          "\n Performing Cluster reassignment "
         )
         return (FALSE)
       }
@@ -250,15 +250,15 @@ check_unique_parent <- function(clusterdata) {
 #' @return Dataframe containing cluster information at different resolutions
 #'
 rename_clusters <- function(clusdata) {
-  message("Renaming clusters...")
-  message("Previous cluster names ", paste(colnames(clusdata), collapse = "\t"))
+  message("Renaming cluster Levels...")
+  message("Previous Level names ", paste(colnames(clusdata), collapse = "\t"))
 
   
   clusnames <- seq(length(colnames(clusdata)))
   
   clusnames <- paste0("cluster", clusnames)
   colnames(clusdata) <- clusnames
-  message("New cluster names ", paste(colnames(clusdata), collapse = "\t"))
+  message("New Level names ", paste(colnames(clusdata), collapse = "\t"))
   clusdata
 }
 
@@ -388,6 +388,7 @@ createFromSeurat <- function(object,
   treeviz <-
     createTreeViz(clusterdata, GetAssayData(object))
   #print(treeviz)
+  
   for (dim_names in reduced_dim) {
     if (dim_names %in% Reductions(object)) {
       reducdim <- Reductions(object, slot = dim_names)
@@ -398,6 +399,10 @@ createFromSeurat <- function(object,
         colnames(object)
     }
   }
+  
+  #names(metadata(treeviz)$reduced_dim) <- toupper(names(metadata(treeviz)$reduced_dim))
+  
+  print(names(metadata(treeviz)$reduced_dim))
   treeviz
 }
 
@@ -481,8 +486,9 @@ createTreeViz <- function(clusters, counts) {
   
   
   clusters <- as.data.frame(clusters)
-  colnames(clusters)<- sub(pattern = "cluster", replacement = "L", x=colnames(clusters))
+  colnames(clusters)<- sub(pattern = "cluster", replacement = "", x=colnames(clusters))
   #print(colnames(clusters))
+  colnames(clusters) <- paste(colnames(clusters), ".")
   tree <- TreeIndex(clusters)
   rownames(tree) <- rownames(clusters)
   

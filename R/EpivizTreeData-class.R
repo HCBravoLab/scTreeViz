@@ -625,17 +625,31 @@ EpivizTreeData$methods(
       method <- "TSNE"
     }
     
-    removed_cells <- c()
-    if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
-      removed_selections <- names(which(.self$.nodeSelections == 0))
-      
-      removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
-        .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
-      })))
+    # removed_cells <- c()
+    # if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
+    #   removed_selections <- names(which(.self$.nodeSelections == 0))
+    # 
+    #   removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
+    #     .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
+    #   })))
+    # }
+    
+    data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
+                              selectedLevels = .self$.levelSelected + 1,
+                              selections = .self$.nodeSelections)
+    
+    max_length <- ncol(.self$.object)
+    # max(data_rows$end)
+    
+    cluster_names <- rep("removed", max_length)
+    for (i in 1:length(data_rows$metadata$label)) {
+      start <- data_rows$start[i]
+      end <- data_rows$end[i]
+      cluster_names[start:end] <- data_rows$metadata$label[i]
     }
     
     measurements <-  metadata(.self$.object)$reduced_dim[[method]]
-
+    
     data <- list()
     level<- .self$.levelSelected + 1
     i<- 1
@@ -658,49 +672,51 @@ EpivizTreeData$methods(
       i<- i+1
     }
     
-    df <- do.call(rbind.data.frame, data)
-    nodeSelections <- .self$.nodeSelections
-    
-    for (node in names(nodeSelections)) {
-      if (nodeSelections[[node]] == 2) {
-        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-        for( i in 1:nrow(node_row) ) {
-          node_irow <- node_row[i, ]
-          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-          df[indices, "name"] <- node_irow$node_label
-        }
-      }
-    }
-    
-    indices_to_remove <- c()
-    for (node in names(nodeSelections)) {
-      if (nodeSelections[[node]] == 0) {
-        # removed node
-        node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-        for( i in 1:nrow(node_row) ) {
-          node_irow <- node_row[i, ]
-          level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-          indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-          indices_to_remove <- c(indices_to_remove, indices)
-        }
-      }
-    }
-    
-    df[unique(indices_to_remove), "name"] <- "removed"
-    
-    data <- list()
-    # TODO: need to add sample attributes
-    for (i in 1:nrow(df)) {
-      data[[df[i, "sample_id"]]] <- list(
-        dim1 = df$dim1[i],
-        dim2 = df$dim2[i],
-        sample_id = df$sample_id[i],
-        name = df$name[i]
-      )
-    }
-    
-    result <- list(data = unname(data), pca_variance_explained = c(1,1))
+    # df <- do.call(rbind.data.frame, data)
+    # nodeSelections <- .self$.nodeSelections
+    # 
+    # for (node in names(nodeSelections)) {
+    #   if (nodeSelections[[node]] == 2) {
+    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+    #     for( i in 1:nrow(node_row) ) {
+    #       node_irow <- node_row[i, ]
+    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+    #       df[indices, "name"] <- node_irow$node_label
+    #     }
+    #   }
+    # }
+    # 
+    # indices_to_remove <- c()
+    # for (node in names(nodeSelections)) {
+    #   if (nodeSelections[[node]] == 0) {
+    #     # removed node
+    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
+    #     for( i in 1:nrow(node_row) ) {
+    #       node_irow <- node_row[i, ]
+    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
+    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
+    #       indices_to_remove <- c(indices_to_remove, indices)
+    #     }
+    #   }
+    # }
+    # 
+    # df[unique(indices_to_remove), "name"] <- "removed"
+    # data <- list()
+    # # TODO: need to add sample attributes
+    # for (i in 1:nrow(df)) {
+    #   data[[df[i, "sample_id"]]] <- list(
+    #     dim1 = df$dim1[i],
+    #     dim2 = df$dim2[i],
+    #     sample_id = df$sample_id[i],
+    #     name = df$name[i]
+    #   )
+    # }
+    # , 
+    # "cluster_order" = data_rows$metadata$label
+    print(data_rows$metadata$label)
+    result <- list("data" = unname(data), "pca_variance_explained" = c(1,1),
+                   "cluster_order" = data_rows$metadata$label)
     return(result)
   },
   
