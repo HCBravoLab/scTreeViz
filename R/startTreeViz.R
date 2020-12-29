@@ -220,7 +220,7 @@
 #' app$stop_app()
 #'
 #' @export
-startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.umd.edu/treeviz",
+startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://epiviz.cbcb.umd.edu/treeviz",
                          register_function = .register_all_treeviz_things, delay=2L,
                          ...) {
   chr="treevizr"
@@ -249,12 +249,16 @@ startTreeviz <- function(data = NULL, top_genes=100, host="http://epiviz.cbcb.um
     
     if (!is.null(data)) {
       
-      data <- find_top_variable_genes(data, top_genes)
-      if (!("reduced_dim"  %in% names(metadata(data)))) {
-        
-        data <- calculate_tsne(data)
-        
+      if (!is.null(genes)) {
+        data <- set_gene_list(data, genes)
+      } else {
+        data <- find_top_variable_genes(data, top_genes)
       }
+      
+      if (!("reduced_dim"  %in% names(metadata(data)))) {
+        data <- calculate_tsne(data)
+      }
+      
       mApp$navigate(chr, start, end)
       mApp$server$wait_to_clear_requests()
       .delay_requests(mApp$server, timeout =  delay)

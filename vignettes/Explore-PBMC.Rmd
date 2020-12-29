@@ -64,7 +64,11 @@ PBMC3K_TreeViz
 To start interactive exploration on this data, 
 
 ```{r, eval=FALSE}
+# to visualize top 100 variable genes
 app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100)
+
+# to visualize a genes list
+# app <- startTreeviz(PBMC3k_TreeViz, genes=c("GBA", "FDPS", "TREM2"))
 ```
 
 The app by default chooses `resolution 0.4` as a starting set of clusters for exploration. This

@@ -463,6 +463,15 @@ find_top_variable_genes <- function(treeviz, top = 100) {
   treeviz
 }
 
+#' Sets gene list for visualization
+#' 
+set_gene_list <- function(treeviz, genes) {
+  genes_in_assay  <- rownames(assays(treeviz)$counts)
+  metadata(treeviz)$top_variable <- intersect(genes_in_assay, genes)
+  
+  treeviz
+}
+
 #' Calculates `tsne` Dimensionality Reduction on `TreeViz` object. The result is added to reduced_dim slot in metadata
 #'
 #' @param treeViz TreeViz object
