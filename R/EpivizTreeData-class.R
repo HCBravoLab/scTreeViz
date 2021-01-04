@@ -621,6 +621,9 @@ EpivizTreeData$methods(
     }
     "
     
+    method<- toupper(method)
+    message(method)
+    
     if (is.null(method)) {
       method <- "TSNE"
     }
@@ -649,7 +652,7 @@ EpivizTreeData$methods(
     }
     
     measurements <-  metadata(.self$.object)$reduced_dim[[method]]
-    
+    message(measurements)
     data <- list()
     level <- .self$.levelSelected + 1
     i <- 1
@@ -717,9 +720,12 @@ EpivizTreeData$methods(
     # }
     # , 
     # "cluster_order" = data_rows$metadata$label
-    print(data_rows$metadata$label)
+    
     result <- list("data" = unname(data), "pca_variance_explained" = c(1,1),
                    "cluster_order" = data_rows$metadata$label)
+    
+    print(result)
+    
     return(result)
   },
   
