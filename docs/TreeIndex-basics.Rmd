@@ -1,0 +1,61 @@
+---
+title: "Basic create and access TreeIndex objects"
+author: "Jayaram Kancherla, Hector Corrada Bravo"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Introduction to TreeIndex}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## loading required packages
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(TreeViz)
+library(metagenomeSeq)
+library(msd16s)
+```
+
+
+## Example Data
+
+```{r}
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+```
+
+
+## Create `TreeIndex` object from feature hierarchy
+```{r}
+tree <- TreeIndex(hierarchy)
+tree
+```
+
+## Operations on `TreeIndex` object
+
+Similar to subset operations in data frame, `TreeIndex` objects can subset leaf nodes in the tree. The result is a new `TreeIndex` object with the filtered rows.
+
+```{r}
+subset <- tree[1:1000,]
+subset
+```
+
+We can also prune the tree to a given level as shown below. The result is a list of nodes and their indices. The indices can then be used to aggregate counts in `SummarizedExperiment` objects
+
+```{r}
+tree_level <- splitAt(tree, selectedLevel = 2)
+tree_level
+```
+
+We can also format the result of a prune operation as a `TreeIndex` object. however, the mapping of indices to the count matrix are lost in translation.
+
+```{r}
+tree_level <- splitAt(tree, selectedLevel = 2, format="TreeIndex")
+tree_level
+```

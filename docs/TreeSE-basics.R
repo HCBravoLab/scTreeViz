@@ -1,0 +1,93 @@
+## ----setup, include=FALSE-----------------------------------------------------
+knitr::opts_chunk$set(echo = TRUE)
+
+## ----load-packages, message=FALSE, warning=FALSE------------------------------
+library(TreeViz)
+library(metagenomeSeq)
+library(msd16s)
+library(S4Vectors)
+library(clustree)
+library(Seurat)
+library(SingleCellExperiment)
+
+## -----------------------------------------------------------------------------
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+
+## -----------------------------------------------------------------------------
+tree <- TreeIndex(hierarchy)
+
+mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
+mbiome
+
+## -----------------------------------------------------------------------------
+aggr <- aggregateTree(mbiome, selectedLevel=3, by="row")
+aggr
+
+## -----------------------------------------------------------------------------
+
+# lets get the list of all nodes from the tree
+nodes <- getNodes(tree)
+
+# select/remove rows in data frame to only keep nodes to aggregate 
+# this example chooses all level 3 nodes and two nodes from level 4 (Bacillales and Lactobacillales) 
+# to define the node selection. The dataframe can also be filtered by name and lineage.
+nodes <- nodes[level %in% c(3,4),][1:19]
+
+# aggregate counts to node selection
+agg_sel <- aggregateTree(mbiome, selectedLevel=3, selectedNodes=nodes, by="row")
+agg_sel
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  # Seurat tutorial on pbmc 3k dataset
+#  # dataset follows tutorial from Seurat
+#  # https://satijalab.org/seurat/pbmc3k_tutorial.html
+#  # data set link - https://s3-us-west-2.amazonaws.com/10x.files/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz
+#  pbmc.data <- Read10X(data.dir = "data/filtered_gene_bc_matrices/hg19/")
+#  
+#  pbmc <- CreateSeuratObject(raw.data = pbmc.data, min.cells = 3, min.genes = 200,
+#                             project = "10X_PBMC")
+#  
+#  mito.genes <- grep(pattern = "^MT-", x = rownames(x = pbmc@data), value = TRUE)
+#  percent.mito <- Matrix::colSums(pbmc@raw.data[mito.genes, ])/Matrix::colSums(pbmc@raw.data)
+#  
+#  pbmc <- AddMetaData(object = pbmc, metadata = percent.mito, col.name = "percent.mito")
+#  
+#  pbmc <- FilterCells(object = pbmc, subset.names = c("nGene", "percent.mito"),
+#                      low.thresholds = c(200, -Inf), high.thresholds = c(2500, 0.05))
+#  
+#  pbmc <- NormalizeData(object = pbmc, normalization.method = "LogNormalize",
+#                        scale.factor = 10000)
+#  
+#  pbmc <- FindVariableGenes(object = pbmc, mean.function = ExpMean, dispersion.function = LogVMR,
+#                            x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5)
+#  
+#  pbmc <- ScaleData(object = pbmc, vars.to.regress = c("nUMI", "percent.mito"))
+#  
+#  pbmc <- RunPCA(object = pbmc, pc.genes = pbmc@var.genes, do.print = TRUE, pcs.print = 1:5,
+#                 genes.print = 5)
+#  
+#  pbmc <- FindClusters(object = pbmc, reduction.type = "pca", dims.use = 1:10,
+#                       resolution = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0), print.output = 0, save.SNN = TRUE)
+#  
+#  graph <- clustree(pbmc, return="graph")
+#  
+#  pbmc_TreeSE <- ImportFromSeurat(pbmc, graph)
+#  pbmc_TreeSE
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  aggregateTree(pbmc_TreeSE, selectedLevel=3, by="col")
+
+## -----------------------------------------------------------------------------
+
+sce <- SingleCellExperiment(assays = list(counts = sc_example$counts,
+                                          logcounts = sc_example$logcounts),
+                            colData = sc_example$sc3_clusters,
+                            reducedDims = SimpleList(TSNE = sc_example$tsne))
+
+graph <- clustree(sce, prefix = "sc3_", suffix = "_clusters", return="graph")
+
+treeSE <- ImportFromSingleCellExperiment(sce, graph)
+treeSE
+

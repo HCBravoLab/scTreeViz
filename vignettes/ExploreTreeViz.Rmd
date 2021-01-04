@@ -84,7 +84,7 @@ Note: In both cases the user needs to provide the name of dimensionality reducti
 
 We use the dataset `pbmc_small` available through Seurat to create a `TreeViz` object.  
 
-```{r, eval=TRUE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 data(pbmc_small)
 pbmc <- pbmc_small
 ```
@@ -167,7 +167,7 @@ Users can add Box plots per gene through either the `Add Visualization` button i
 
 ```{r, eval=FALSE, echo=TRUE}
 # to add a box plot of expression for a gene
-app$plot_gene(gene="TYROBP")
+app$plotGene(gene="TYROBP")
 ```
 ## Start TreeViz with app running locally
 
