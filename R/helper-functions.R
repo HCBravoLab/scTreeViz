@@ -487,8 +487,10 @@ createTreeViz <- function(clusters, counts) {
   
   clusters <- as.data.frame(clusters)
   colnames(clusters)<- sub(pattern = "cluster", replacement = "", x=colnames(clusters))
-  #print(colnames(clusters))
-  colnames(clusters) <- paste(colnames(clusters), ".")
+  #print(colnames(clusters)[1:length(colnames(clusters))-1])
+  colnames(clusters)[1:length(colnames(clusters))-1] <- paste(colnames(clusters)[1:length(colnames(clusters))-1], ".")
+  colnames(clusters)[length(colnames(clusters))] <- "Cells"
+  print(colnames(clusters))
   tree <- TreeIndex(clusters)
   rownames(tree) <- rownames(clusters)
   
