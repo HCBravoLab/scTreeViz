@@ -621,7 +621,7 @@ EpivizTreeData$methods(
     }
     "
     
-    method<- toupper(method)
+    #method<- toupper(method)
     message(method)
     
     if (is.null(method)) {
@@ -651,8 +651,11 @@ EpivizTreeData$methods(
       cluster_names[start:end] <- data_rows$metadata$label[i]
     }
     
+    #print(metadata(.self$.object))
     measurements <-  metadata(.self$.object)$reduced_dim[[method]]
-    message(measurements)
+    #print("abc")
+    print(method)
+    #print(measurements)
     data <- list()
     level<- .self$.levelSelected + 1
     i<- 1
@@ -721,7 +724,7 @@ EpivizTreeData$methods(
     result <- list("data" = unname(data), "pca_variance_explained" = c(1,1),
                    "cluster_order" = data_rows$metadata$label)
     
-    print(result)
+    #print(result)
     
     return(result)
   },
