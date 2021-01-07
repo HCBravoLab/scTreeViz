@@ -93,15 +93,21 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
     unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))
   
   
+  #take only uncollapsed columns
   hierarchy <- hierarchy[, cluster_names]
+  
+  digits<- sub(pattern = "cluster", replacement = "", x=cluster_names)
+  cluster_names <- paste0(digits, ".",cluster_names, sep="")
+ 
+   
   
   #renaming nodes from numbers to cluster1C1 cluster1C2 so on..
   for (clusnames in names(hierarchy)) {
     hierarchy[[clusnames]] <-
       paste(clusnames, hierarchy[[clusnames]], sep = 'C')
   }
-  
-  # print(names(hierarchy))
+  names(hierarchy)<- cluster_names
+ 
   samples <- rownames(hierarchy)
   if(is.null(rownames(hierarchy))){
     samples<- 1:nrow(hierarchy)
