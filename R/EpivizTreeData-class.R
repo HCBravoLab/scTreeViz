@@ -612,7 +612,7 @@ EpivizTreeData$methods(
     return(result)
   },
   
-  getReducedDim=function(method = NULL) {
+  getReducedDim=function(method = NULL, gene = NULL) {
     " Compute PCA over all features for given samples
     \\describe{
     \\item{measurements}{Samples to compute PCA over}
@@ -637,19 +637,24 @@ EpivizTreeData$methods(
     data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
                               selectedLevels = .self$.levelSelected + 1,
                               selections = .self$.nodeSelections)
-
+    
     max_length <- ncol(.self$.object)
-      # max(data_rows$end)
-
+    # max(data_rows$end)
+    
     cluster_names <- rep("removed", max_length)
     for (i in 1:length(data_rows$metadata$label)) {
       start <- data_rows$start[i]
       end <- data_rows$end[i]
       cluster_names[start:end] <- data_rows$metadata$label[i]
     }
-
+    
     measurements <-  metadata(.self$.object)$reduced_dim[[method]]
-
+    
+    genes <- rep(100, length(measurements))
+    if (!(is.null(gene)) && gene != "") {
+      genes <- assays(.self$.object)$counts[gene, ]
+    }
+    
     data <- list()
     level <- .self$.levelSelected + 1
     i <- 1
@@ -668,7 +673,8 @@ EpivizTreeData$methods(
           sample_id = col,
           dim1 = unname(measurements[col, 1]),
           dim2 = unname(measurements[col, 2]),
-          name = unlist(cluster_names[[row_index]])
+          name = unlist(cluster_names[[row_index]]),
+          gene = unname(genes[row_index])
           # name = name
         )
       data[[col]] <- temp
@@ -719,102 +725,8 @@ EpivizTreeData$methods(
     # "cluster_order" = data_rows$metadata$label
     
     result <- list("data" = unname(data), "pca_variance_explained" = c(1,1),
-                   "cluster_order" = data_rows$metadata$label)
-    return(result)
-  },
-  
-  getAlphaDiversity=function(measurements=NULL){
-    
-    if (!is.null(measurements)) {
-      gene <- measurements[1]
-    }
-    
-    data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
-                              selectedLevels = .self$.levelSelected + 1,
-                              selections = .self$.nodeSelections)
-    
-    max_length <- ncol(.self$.object)
-    # max(data_rows$end)
-    
-    cluster_names <- rep("removed", max_length)
-    for (i in 1:length(data_rows$metadata$label)) {
-      start <- data_rows$start[i]
-      end <- data_rows$end[i]
-      cluster_names[start:end] <- data_rows$metadata$label[i]
-    }
-    
-    level<- .self$.levelSelected + 1
-    selectedNodes <- .self$.nodeSelections
-    
-    counts <- assays(.self$.object)$counts
-    
-    # Assuming single cell datasets for now
-    # TODO: fix later
-    # if(.self$.treeIn == "col") {
-    gene_col <- counts[gene, ]
-    # }
-    # else if (.self.treeIn == "row") {
-    #   gene_col <- counts[, gene]
-    # }
-    # 
-    
-    data <- list()
-    i <- 1
-    for (col in names(gene_col)) {
-      
-      row_index = which(colData(.self$.object)$samples == col)
-      
-      data[[col]] <- list(
-        alphaDiversity = gene_col[[col]],
-        sample_id = col,
-        # name = unname(colData(.self$.object)[[level]][i])
-        name = unlist(cluster_names[[row_index]])
-      )
-      i <- i+1
-    }
-    
-    # df <- do.call(rbind.data.frame, data)
-    # nodeSelections <- selectedNodes
-    # 
-    # for (node in names(nodeSelections)) {
-    #   if (nodeSelections[[node]] == 2) {
-    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-    #     for( i in 1:nrow(node_row) ) {
-    #       node_irow <- node_row[i, ]
-    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-    #       df[indices, "name"] <- node_irow$node_label
-    #     }
-    #   }
-    # }
-    # 
-    # indices_to_remove <- c()
-    # for (node in names(nodeSelections)) {
-    #   if (nodeSelections[[node]] == 0) {
-    #     # removed node
-    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-    #     for( i in 1:nrow(node_row) ) {
-    #       node_irow <- node_row[i, ]
-    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-    #       indices_to_remove <- c(indices_to_remove, indices)
-    #     }
-    #   }
-    # }
-    # 
-    # df[unique(indices_to_remove), "name"] <- "removed"
-    # 
-    # data <- list()
-    # # TODO: need to add sample attributes
-    # for (i in 1:nrow(df)) {
-    #   data[[df[i, "sample_id"]]] <- list(
-    #     alphaDiversity = df$alphaDiversity[i],
-    #     sample_id = df$sample_id[i],
-    #     name = df$name[i]
-    #   )
-    # }
-    
-    result <- list(data = unname(data))
+                   "cluster_order" = data_rows$metadata$label,
+                   "gene_min_max" = c(min(genes), max(genes)))
     return(result)
   }
 )
