@@ -125,8 +125,8 @@
       stop("cannot find datasource", request_data$measurements)
     }
     
-    cat(request_data$measurements[[request_data$datasource]][1])
-    result <- obj$getReducedDim(request_data$measurements[[request_data$datasource]][1])
+    result <- obj$getReducedDim(method=request_data$measurements[[request_data$datasource]][1],
+                                gene=request_data$gene)
     result <- list(data = result)
     names(result) <- request_data$datasource
     result
