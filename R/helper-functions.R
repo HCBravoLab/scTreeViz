@@ -349,7 +349,16 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   
   cluster_data <- as.data.frame(cluster_data)
   colnames(cluster_data) <- paste0("cluster", monotonic_index)
-  cluster_data
+  cluster_data$samples <- rownames(cluster_data) <- colnames(object)
+  
+  cluster_data <- as.data.table(cluster_data)
+  rownames(cluster_data) <- colnames(object)
+  cols <- colnames(cluster_data)[1:length(colnames(cluster_data))-1]
+  order <- rep(1, length(cluster_data)-1)
+  cluster_data <- setorderv(cluster_data, cols = cols, order = order)
+  cluster_data <- as.data.frame(cluster_data)
+  rownames(cluster_data) <- cluster_data$samples
+  cluster_data[,cols]
   # metadata(object)$treeviz_clusters <- cluster_data
   # object
 }
