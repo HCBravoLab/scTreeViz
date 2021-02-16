@@ -2,7 +2,9 @@
 % Please edit documentation in R/TreeCluster-class.R
 \name{ClusterHierarchy}
 \alias{ClusterHierarchy}
-\title{create a new ClusterHierarchy object}
+\title{create a new ClusterHierarchy object. User can give either
+col_regex or  columns option to filter the columns or specify 
+the column order}
 \usage{
 ClusterHierarchy(hierarchy, col_regex = NULL, columns = NULL)
 }
@@ -17,5 +19,7 @@ ClusterHierarchy(hierarchy, col_regex = NULL, columns = NULL)
 `ClusterHierarchy`` return an object of class ClusterHierarchy containing cluster information
 }
 \description{
-create a new ClusterHierarchy object
+create a new ClusterHierarchy object. User can give either
+col_regex or  columns option to filter the columns or specify 
+the column order
 }
