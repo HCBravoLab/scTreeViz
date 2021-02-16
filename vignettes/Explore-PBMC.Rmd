@@ -47,13 +47,14 @@ all.genes <- rownames(pbmc)
 pbmc <- ScaleData(pbmc, features = all.genes)
 
 pbmc <- FindVariableFeatures(pbmc)
+pbmc <- RunPCA(pbmc)
+
 pbmc <- FindNeighbors(pbmc, dims=1:10)
 
 pbmc <- FindClusters(pbmc, resolution=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0), save.SNN=TRUE)
 
 pbmc <- RunTSNE(pbmc)
 pbmc <- RunUMAP(pbmc, dims=1:5)
-pbmc <- RunPCA(pbmc)
 
 PBMC3K_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"))
 PBMC3K_TreeViz
