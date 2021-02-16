@@ -12,7 +12,7 @@ generate_walktrap_hierarchy(object, nsteps = 7)
 \item{object}{`Single Cell Experiment` on which `WalkTrap` clustering will be computed}
 }
 \value{
-`Single Cell Experiment` Object with hierarchy information in metadata slot
+dataframe with hierarchy information
 }
 \description{
 Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.

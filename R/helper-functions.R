@@ -18,7 +18,7 @@ check_alternate <- function(sub_df, all_df)
   for (i in seq(1, nrow(sub_df))) {
     for (j in seq(1, nrow(all_df))) {
       if (sub_df$to_node[i] == all_df$to_node[j]) {
-        assign_df[nrow(assign_df) + 1,] <-
+        assign_df[nrow(assign_df) + 1, ] <-
           c(
             sub_df$to_cluster[i],
             sub_df$to_clust[i],
@@ -51,8 +51,8 @@ change_assignment <- function(graph, cluster_obj) {
                        colnames(cluster_obj))
     
     
-    
     for (j in 1:nrow(cluster_obj)) {
+      
       if (as.numeric(as.character(cluster_obj[[j, sink_res]])) == as.numeric(graph$Sink_node_clust[i])  &&
           as.numeric(as.character(cluster_obj[[j, source_res]])) == as.numeric(graph$Assign_from_clust[i])) {
         cluster_obj[[j, source_res]] <-
@@ -114,7 +114,7 @@ prune_tree <- function(graph, cluster_df) {
     
     # See number of core edges at each iter
     # No False edges acyclic tree
-    if (nrow(graph[graph$is_core == FALSE, ]) == 0) {
+    if (nrow(graph[graph$is_core == FALSE,]) == 0) {
       ngraph <-
         clustree(
           cluster_df ,
@@ -127,8 +127,7 @@ prune_tree <- function(graph, cluster_df) {
     
     # Apply function
     assign_df <-
-      check_alternate(graph[graph$is_core == FALSE, ], graph[graph$is_core == TRUE, ])
-    
+      check_alternate(graph[graph$is_core == FALSE,], graph[graph$is_core == TRUE,])
     cluster_df <- change_assignment(assign_df, cluster_df)
     ngraph <-
       clustree(
@@ -191,7 +190,8 @@ collapse_tree <- function(original_graph) {
   }
   
   if (length(delete_set_vertices) != 0) {
-    ver_list <- ver_list[-delete_set_vertices, ]
+    message("Collapsing the graph by removing redundant nodes")
+    ver_list <- ver_list[-delete_set_vertices,]
   }
   ver_list
 }
@@ -205,7 +205,8 @@ checkRoot <- function(cluster_df) {
   # Handle Forests
   cols <- colnames(cluster_df)
   if (length(unique(cluster_df[[1]])) > 1) {
-    cluster_df$root <- "ClusterAllClusters"
+    message("Given Tree is a Forest\n Adding extra root")
+    cluster_df$root <- "clusterlAllClusters"
     cols <- c("root", cols)
   }
   
@@ -223,17 +224,23 @@ check_unique_parent <- function(clusterdata) {
     childs <- unique(clusterdata[[i]])
     for (values in childs) {
       subsetted_list <-
-        clusterdata[clusterdata[[colnames(clusterdata)[[i]]]] == values, ]
+        clusterdata[clusterdata[[colnames(clusterdata)[[i]]]] == values,]
       
       
       parent <- length(unique(subsetted_list[[i - 1]]))
       
       if (parent > 1) {
-        stop("Not a tree, some nodes with multiple parents in level", i)
+        message(
+          "Not a tree, some nodes with multiple parents in level ",
+          i,
+          "\n Performing Cluster reassignment "
+        )
+        return (FALSE)
       }
       #cat(nrow(subsetted_list)," ",parent, "\n")
     }
   }
+  return(TRUE)
 }
 
 
@@ -243,10 +250,15 @@ check_unique_parent <- function(clusterdata) {
 #' @return Dataframe containing cluster information at different resolutions
 #'
 rename_clusters <- function(clusdata) {
+  message("Renaming cluster Levels...")
+  message("Previous Level names ", paste(colnames(clusdata), collapse = "\t"))
+
+  
   clusnames <- seq(length(colnames(clusdata)))
   
   clusnames <- paste0("cluster", clusnames)
   colnames(clusdata) <- clusnames
+  message("New Level names ", paste(colnames(clusdata), collapse = "\t"))
   clusdata
 }
 
@@ -316,10 +328,11 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
 #' walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
 #' Intermediate cluster assignments are created based on monotonically increasing level of modularity
 #' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
-#' @return `Single Cell Experiment` Object with hierarchy information in metadata slot
+#' @return dataframe with hierarchy information
 #' @export
 #'
 generate_walktrap_hierarchy <- function(object, nsteps = 7) {
+  message("calculating walktrap clusters")
   SNN_Graph <- scran::buildSNNGraph(object)
   clusters <- igraph::cluster_walktrap(SNN_Graph, steps = nsteps)
   modularity <- c()
@@ -336,32 +349,60 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   
   cluster_data <- as.data.frame(cluster_data)
   colnames(cluster_data) <- paste0("cluster", monotonic_index)
-  metadata(object)$treeviz_clusters <- cluster_data
-  object
+  cluster_data
+  # metadata(object)$treeviz_clusters <- cluster_data
+  # object
 }
 
 #' Creates a `TreeViz` object from `Seurat`
 #'
 #' @param object `Seurat` class containing cluster information at different resolutions
-#' @param reduced_dim Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists) 
+#' @param check_metaData whether to metaData of `Seurat` object for cluster information or not
+#' @param col_regex common regular expression shared across all columns with cluster information
+#' @param columns vector containing columns with cluster information
+#' @param reduced_dim Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
 #' @export
 #'
-createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
-  clusterdata <- object@meta.data
-  clusterdata <- clusterdata[, grep("*snn*", colnames(clusterdata))]
+createFromSeurat <- function(object,
+                             check_metaData = FALSE,
+                             col_regex = "*snn*",
+                             columns = NULL,
+                             reduced_dim = c("TSNE")) {
   
+  
+  if (check_metaData==FALSE) {
+    message("No default clusters provided")
+    object.sce <- as.SingleCellExperiment(object)
+    clusterdata <- generate_walktrap_hierarchy(object.sce)
+    clusterdata <- ClusterHierarchy(clusterdata)
+  }
+  else{
+    #provide snn option
+    clusterdata <- object@meta.data
+    clusterdata <- ClusterHierarchy(clusterdata, col_regex, columns)
+    #clusterdata <- clusterdata[, grep("*snn*", colnames(clusterdata))]
+  }
+  #clusterdata<- ClusterHierarchy(clusterdata)
+  #print(clusterdata)
   treeviz <-
-    preprocessAndCreateTreeViz(clusterdata, GetAssayData(object))
+    createTreeViz(clusterdata, GetAssayData(object))
+  #print(treeviz)
   
-  for(dim_names in reduced_dim){
+  for (dim_names in reduced_dim) {
     if (dim_names %in% Reductions(object)) {
       reducdim <- Reductions(object, slot = dim_names)
       
-      metadata(treeviz)$reduced_dim[[dim_names]] <- reducdim@cell.embeddings[, 1:2]
-      rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
+      metadata(treeviz)$reduced_dim[[dim_names]] <-
+        reducdim@cell.embeddings[, 1:2]
+      rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <-
+        colnames(object)
     }
   }
+  
+  #names(metadata(treeviz)$reduced_dim) <- toupper(names(metadata(treeviz)$reduced_dim))
+  
+  print(names(metadata(treeviz)$reduced_dim))
   treeviz
 }
 
@@ -369,44 +410,60 @@ createFromSeurat <- function(object, reduced_dim = c("TSNE")) {
 #' Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
 #' clusters based on Walktrap algorithm if no default is provided
 #' @param object `SingleCellExperiment` object to be visualized
-#' @param prefix common prefix that identifies the cluster columns
 #' @param check_colData whether to colData of `SingeCellExperiment` object for cluster information or not
+#' @param col_regex common regular expression shared across all columns with cluster information
+#' @param columns vector containing columns with cluster information
 #' @param reduced_dim Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
 #' @export
 #'
 createFromSCE <-
   function(object,
-           prefix = "cluster",
            check_colData = FALSE,
+           col_regex = NULL,
+           columns = NULL,
            reduced_dim = c("TSNE")) {
     if (check_colData == TRUE) {
       clusterdata <- colData(object)
       clusterdata <-
-        clusterdata[, startsWith(colnames(clusterdata), prefix)]
-      if (length(colnames(clusterdata)) == 0) {
-        stop("No cluster information found")
-      }
+        ClusterHierarchy(clusterdata, col_regex, columns)
+      # if (!is.null(suffix)) {
+      #   clusterdata <-
+      #     clusterdata[, endsWith(colnames(clusterdata), suffix)]
+      # }
+      # else{
+      #   clusterdata <-
+      #     clusterdata[, startsWith(colnames(clusterdata), prefix)]
+      # }
+      #
+      # if (length(colnames(clusterdata)) == 0) {
+      #   stop("No cluster information found")
+      # }
     }
     else{
       message("No default clusters provided")
-      if (is.null(metadata(object)$treeviz_clusters)) {
-        message("calculating walktrap clusters")
-        object <- generate_walktrap_hierarchy(object)
-      }
-      clusterdata <- metadata(object)$treeviz_clusters
+      # if (is.null(metadata(object)$treeviz_clusters)) {
+      
+      clusterdata <- generate_walktrap_hierarchy(object)
+      clusterdata <- ClusterHierarchy(clusterdata)
+      # object <- generate_walktrap_hierarchy(object)
+      # }
+      # clusterdata <- metadata(object)$treeviz_clusters
     }
-    rownames(clusterdata) <- colnames(object)
+    
+    # clusterdata<- as.data.frame(clusterdata)
+    # rownames(clusterdata) <- colnames(object)
     count <- counts(object)
     rownames(count) <- rownames(counts(object))
     
-    treeviz <- createTreeViz(as.data.frame(clusterdata), count)
-    for(dim_names in reduced_dim){
+    treeviz <- createTreeViz(clusterdata, count)
+    for (dim_names in reduced_dim) {
       if (dim_names %in% reducedDimNames(object)) {
         metadata(treeviz)$reduced_dim[[dim_names]] <-
           reducedDims(object)[[dim_names]][, 1:2]
         
-        rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
+        rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <-
+          colnames(object)
       }
     }
     treeviz
@@ -416,29 +473,33 @@ createFromSCE <-
 #'
 #' This module returns the Tree Summarized Experiment if the dataframe is tree, throws error otherwise
 #'
-#' @param clusters Dataframe containing cluster information at different resolutions
+#' @param clusters `ClusterHierarchy` object containing cluster information at different resolutions
 #' @param counts matrix Dense or sparse matrix containing the count matrix
 #' @return `TreeViz`` Object
 #' @export
 #'
 createTreeViz <- function(clusters, counts) {
-  clusters <- rename_clusters(clusters)
+  # if(!is(clusters, "TreeCluster")){
+  #     stop("Not an object of  Tree Cluster")
+  #
+  # }
   
-  for (clusnames in names(clusters)) {
-    clusters[[clusnames]] <-
-      paste(clusnames, clusters[[clusnames]], sep = 'C')
-  }
   
-  check_unique_parent(clusters)
-  samples <- rownames(clusters)
-  clusters <- cbind(clusters, samples)
+  column_names<- colnames(clusters)
+  clusters <- as.data.frame(clusters)
+  colnames(clusters)<-column_names
   
-  clusters <- checkRoot(clusters)
+  
+  # colnames(clusters)<- sub(pattern = "cluster", replacement = "", x=colnames(clusters))
+  #print(colnames(clusters)[1:length(colnames(clusters))-1])
+  # colnames(clusters)[1:length(colnames(clusters))-1] <- paste(colnames(clusters)[1:length(colnames(clusters))-1], ".")
+  # colnames(clusters)[length(colnames(clusters))] <- "Cells"
   
   tree <- TreeIndex(clusters)
   rownames(tree) <- rownames(clusters)
   
   treeviz <- TreeViz(SimpleList(counts = counts), colData = tree)
+  # }
   # plot_tree(TreeSE_obj@colData@hierarchy_tree)
   treeviz
 }
@@ -483,9 +544,10 @@ set_gene_list <- function(treeviz, genes) {
 calculate_tsne <- function(treeviz) {
   message("No defaults dimensionality reductions provided")
   message("Calculating TSNE")
-  tsne<- calculateTSNE(assays(treeviz)$counts)
-  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne[,1:2]
-  rownames(metadata(treeviz)$reduced_dim[['TSNE']]) <- colnames(treeviz)
+  tsne <- calculateTSNE(assays(treeviz)$counts)
+  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne[, 1:2]
+  rownames(metadata(treeviz)$reduced_dim[['TSNE']]) <-
+    colnames(treeviz)
   message("adding tsne to reduced dim slots")
   treeviz
 }

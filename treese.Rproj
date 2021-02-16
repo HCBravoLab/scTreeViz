@@ -1,8 +1,8 @@
 Version: 1.0
 
-RestoreWorkspace: Default
+RestoreWorkspace: No
 SaveWorkspace: Default
-AlwaysSaveHistory: Default
+AlwaysSaveHistory: No
 
 EnableCodeIndexing: Yes
 UseSpacesForTab: Yes

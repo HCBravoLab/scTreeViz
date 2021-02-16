@@ -7,7 +7,7 @@
 createTreeViz(clusters, counts)
 }
 \arguments{
-\item{clusters}{Dataframe containing cluster information at different resolutions}
+\item{clusters}{`ClusterHierarchy` object containing cluster information at different resolutions}
 
 \item{counts}{matrix Dense or sparse matrix containing the count matrix}
 }

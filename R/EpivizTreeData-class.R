@@ -621,6 +621,9 @@ EpivizTreeData$methods(
     }
     "
     
+    #method<- toupper(method)
+    message(method)
+    
     if (is.null(method)) {
       method <- "TSNE"
     }
