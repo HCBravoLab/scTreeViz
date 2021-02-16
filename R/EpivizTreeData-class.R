@@ -621,11 +621,9 @@ EpivizTreeData$methods(
     }
     "
     
-    #method<- toupper(method)
-    message(method)
     
     if (is.null(method)) {
-      method <- "TSNE"
+      method <- names(metadata(.self$.object)$reduced_dim)[[1]]
     }
     
     # removed_cells <- c()
