@@ -24,5 +24,6 @@ biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8
 LazyData: true
 Collate: 'TreeIndex-class.R' 'TreeIndex-methods.R' 'TreeViz-class.R' 'TreeViz-methods.R' 'startTreeViz.R' 
-         'TreeVizApp-class.R' 'EpivizTreeData-class.R' 'helper-functions.R' 'TreeCluster-class.R' 'vignette_data.R'
+         'TreeVizApp-class.R' 'EpivizTreeData-class.R' 'helper-functions.R' 'TreeCluster-class.R'
+         'vignette_data.R'
 RoxygenNote: 7.1.1
