@@ -351,14 +351,14 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   colnames(cluster_data) <- paste0("cluster", monotonic_index)
   cluster_data$samples <- rownames(cluster_data) <- colnames(object)
   
-  cluster_data <- as.data.table(cluster_data)
-  rownames(cluster_data) <- colnames(object)
-  cols <- colnames(cluster_data)[1:length(colnames(cluster_data))-1]
-  order <- rep(1, length(cluster_data)-1)
-  cluster_data <- setorderv(cluster_data, cols = cols, order = order)
-  cluster_data <- as.data.frame(cluster_data)
-  rownames(cluster_data) <- cluster_data$samples
-  cluster_data[,cols]
+  # cluster_data <- as.data.table(cluster_data)
+  # rownames(cluster_data) <- colnames(object)
+  # cols <- colnames(cluster_data)[1:length(colnames(cluster_data))-1]
+  # order <- rep(1, length(cluster_data)-1)
+  # cluster_data <- setorderv(cluster_data, cols = cols, order = order)
+  # cluster_data <- as.data.frame(cluster_data)
+  # rownames(cluster_data) <- cluster_data$samples
+  cluster_data
   # metadata(object)$treeviz_clusters <- cluster_data
   # object
 }
@@ -387,10 +387,11 @@ createFromSeurat <- function(object,
     clusterdata <- ClusterHierarchy(clusterdata)
   }
   else{
-    #provide snn option
+    # provide snn option
     clusterdata <- object@meta.data
+    clusterdata$samples <- rownames(clusterdata) <- colnames(object)
     clusterdata <- ClusterHierarchy(clusterdata, col_regex, columns)
-    #clusterdata <- clusterdata[, grep("*snn*", colnames(clusterdata))]
+    # clusterdata <- clusterdata[, grep("*snn*", colnames(clusterdata))]
   }
   #clusterdata<- ClusterHierarchy(clusterdata)
   #print(clusterdata)
@@ -434,6 +435,7 @@ createFromSCE <-
            reduced_dim = c("TSNE")) {
     if (check_colData == TRUE) {
       clusterdata <- colData(object)
+      clusterdata$samples <- rownames(clusterdata) <- colnames(object)
       clusterdata <-
         ClusterHierarchy(clusterdata, col_regex, columns)
       # if (!is.null(suffix)) {

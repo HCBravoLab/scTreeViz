@@ -53,7 +53,17 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   for(cols in colnames(hierarchy)){
     hierarchy[[cols]]<- as.factor(hierarchy[[cols]])
   }
-  hierarchy<- as.data.frame( hierarchy)
+  
+  hierarchy_dt <- as.data.table(hierarchy)
+  hierarchy_dt$samples <- rownames(hierarchy_dt) <- rownames(hierarchy)
+  cols <- colnames(hierarchy_dt)[1:length(colnames(hierarchy_dt))-1]
+  order <- rep(1, length(hierarchy_dt)-1)
+  hierarchy_dt <- setorderv(hierarchy_dt, cols = cols, order = order)
+  hierarchy_df <- as.data.frame(hierarchy_dt)
+  rownames(hierarchy_df) <- hierarchy_df$samples
+  hierarchy <- hierarchy_df[,cols]
+  
+  # hierarchy<- as.data.frame(hierarchy)
   hierarchy <- rename_clusters(hierarchy)
   
   uniqeness <-
