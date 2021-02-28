@@ -36,7 +36,7 @@ This section follows similar steps as detailed in Seurat's tutorial -  https://s
 ```{r, eval=FALSE, echo=TRUE} 
 library(Seurat)
 
-pbmc.data <- Read10X(data.dir = "../data/pbmc3k/filtered_gene_bc_matrices/hg19/")
+pbmc.data <- Read10X(data.dir = "../../filtered_gene_bc_matrices/hg19/")
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
 
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
@@ -47,15 +47,16 @@ all.genes <- rownames(pbmc)
 pbmc <- ScaleData(pbmc, features = all.genes)
 
 pbmc <- FindVariableFeatures(pbmc)
+pbmc <- RunPCA(pbmc)
+
 pbmc <- FindNeighbors(pbmc, dims=1:10)
 
 pbmc <- FindClusters(pbmc, resolution=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0), save.SNN=TRUE)
 
 pbmc <- RunTSNE(pbmc)
 pbmc <- RunUMAP(pbmc, dims=1:5)
-pbmc <- RunPCA(pbmc)
 
-PBMC3K_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"))
+PBMC3K_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"), check_metaData = TRUE)
 PBMC3K_TreeViz
 ```
 
@@ -65,7 +66,7 @@ To start interactive exploration on this data,
 
 ```{r, eval=FALSE}
 # to visualize top 100 variable genes
-app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100)
+app <- startTreeviz(PBMC3K_TreeViz, top_genes = 10, host="http://localhost:8877")
 
 # to visualize a genes list
 # app <- startTreeviz(PBMC3k_TreeViz, genes=c("GBA", "FDPS", "TREM2"))
