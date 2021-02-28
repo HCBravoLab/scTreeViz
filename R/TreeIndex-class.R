@@ -81,6 +81,9 @@ TreeIndex <- function(hierarchy = NULL,
   )
 }
 
+#' generate hierarchy tree
+#' @param hierarchy hierarchy as a data.table
+#' @param feature_order order of the tree if different from colnames
 .generate_hierarchy_tree <- function(hierarchy, feature_order) {
   fd <- hierarchy
   for (i in seq(ncol(fd))) {
@@ -112,6 +115,9 @@ TreeIndex <- function(hierarchy = NULL,
   ordered_fData_df
 }
 
+#' generate node ids in the tree
+#' @param hierarchy_tree hierarchy as a data.table
+#' @param feature_order order of the tree if different from colnames
 .generate_node_ids <- function(hierarchy_tree, feature_order) {
   table_node_ids <- hierarchy_tree
   id_list <- sapply(feature_order, function(level) {
@@ -144,6 +150,10 @@ TreeIndex <- function(hierarchy = NULL,
   node_ids_table <- node_ids_dt
 }
 
+#' generate nodes table tree
+#' @param hierarchy_tree hierarchy as a data.table
+#' @param node_ids_table node ids
+#' @param feature_order order of the tree if different from colnames
 .generate_nodes_table <-
   function(hierarchy_tree,
            node_ids_table,
@@ -207,6 +217,11 @@ TreeIndex <- function(hierarchy = NULL,
     ret_table
   }
 
+#' generate leaf of table
+#' @param hierarchy_tree hierarchy as a data.table
+#' @param node_ids_table node ids
+#' @param nodes_table nodes table
+#' @param feature_order order of the tree if different from colnames
 .generate_leaf_of_table <-
   function(hierarchy_tree,
            node_ids_table,
@@ -269,6 +284,9 @@ TreeIndex <- function(hierarchy = NULL,
     leaf_of_table[, id := as.character(id)]
   }
 
+#' replace if there are NA's in the hierarchy
+#' @param replacing_na_obj_fData hierarchy data table
+#' @param feature_order order of the tree if different from colnames
 .replaceNAFeatures = function(replacing_na_obj_fData, feature_order) {
   for (i in seq(1, length(feature_order))) {
     na_indices <-
@@ -294,11 +312,12 @@ TreeIndex <- function(hierarchy = NULL,
                 feature_order[i],
                 replacing_na_obj_fData[, feature_order[1]][na_indices[j]],
                 sep = "_")
-      } else{
+      } else {
         replacing_na_obj_fData[, feature_order[i]][na_indices[j]] <-
           paste("Not_Annotated", feature_order[i], sep = "_")
       }
     }
+    
     null_indices <-
       which(replacing_na_obj_fData[, feature_order[i]] == "NULL")
     for (j in seq(1, length(null_indices))) {

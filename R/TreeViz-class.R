@@ -128,5 +128,3 @@ ImportFromSingleCellExperiment <- function(scExp, clustree, cluster_names = NULL
 
   TreeViz(SimpleList(counts = counts), colData = tree)
 }
-
-

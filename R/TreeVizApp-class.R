@@ -5,25 +5,31 @@
 #' @importClassesFrom epivizrData EpivizDataMgr EpivizMeasurement EpivizData
 #' @exportClass TreeVizApp
 TreeVizApp <- setRefClass("TreeVizApp",
-                        contains = "EpivizApp",
-                        fields=list(
-                          .url_parms="list",
-                          .browser_fun="function",
-                          server="EpivizServer",
-                          data_mgr="EpivizDataMgr",
-                          chart_mgr="EpivizChartMgr"
-                        ),
-                        methods=list(
-                          initialize=function(.url_parms=.url_parms, .browser_fun=.browser_fun,
-                                              server=server, data_mgr=data_mgr, chart_mgr=chart_mgr) {
-                            callSuper(.url_parms=.url_parms, .browser_fun=.browser_fun,
-                                      server=server, data_mgr=data_mgr, chart_mgr=chart_mgr)
-                          }
-                        )
+  contains = "EpivizApp",
+  fields=list(
+    .url_parms="list",
+    .browser_fun="function",
+    server="EpivizServer",
+    data_mgr="EpivizDataMgr",
+    chart_mgr="EpivizChartMgr"
+  ),
+  methods=list(
+    initialize=function(.url_parms=.url_parms, .browser_fun=.browser_fun,
+                        server=server, data_mgr=data_mgr, chart_mgr=chart_mgr) {
+      callSuper(.url_parms=.url_parms, .browser_fun=.browser_fun,
+                server=server, data_mgr=data_mgr, chart_mgr=chart_mgr)
+    }
+  )
 )
 
 TreeVizApp$methods(
   plotGene = function(gene = NULL, datasource_name = "SCRNA_1") {
+    " Plot a bar plot for a gene across cell types
+    \\describe{
+    \\item{gene}{gene to extract expression values}
+    \\item{datasource_name}{object to extract from (automatically selected)}
+    }
+    "
     
     if (is.null(gene)) {
       stop("gene symbol must be provided")
@@ -47,6 +53,59 @@ TreeVizApp$methods(
     
   }
 )
+
+# TreeVizApp$methods(
+#   explore=function(data) {
+#     'explore adds facetZoon, heatmap and TSNE to the app.'
+#     # treeViz <- data 
+#     
+#     # find variable genes
+#     data <- find_top_variable_genes(data, 100)
+#     
+#     now <- Sys.time()
+#     while ((Sys.time() - now) < 10) {
+#       # just iterate
+#       # .self$server$wait_to_clear_requests()
+#     }
+#     
+#     .self$server$wait_to_clear_requests()
+#     
+#     # add facetZoom
+#     facetZoom <- .self$plot(data, datasource_name = "SCRNA", tree = "col")
+#     
+#     .self$server$wait_to_clear_requests()
+#     
+#     now <- Sys.time()
+#     while ((Sys.time() - now) < 10) {
+#       # just iterate
+#       # .self$server$wait_to_clear_requests()
+#     }
+#     
+#     mes <- .self$get_ms_object(chart_id_or_object = facetZoom)
+#     # Get Measurements from the plot
+#     ms_list <- facetZoom$get_measurements()
+#     subset_ms_list <- Filter(function(ms) ms@id %in% metadata(data)$top_variable, ms_list)
+#     
+#     print("variable genes length")
+#     print(length(subset_ms_list))
+#     
+#     # add Heatmap
+#     .self$chart_mgr$visualize(chart_type = "HeatmapPlot",  measurements = subset_ms_list)
+#     
+#     .self$server$wait_to_clear_requests()
+#     
+#     now <- Sys.time()
+#     while ((Sys.time() - now) < 10) {
+#       # just iterate
+#       # .self$server$wait_to_clear_requests()
+#     }
+#     
+#     # TSNE
+#     .self$chart_mgr$revisualize(chart_type = "PCAScatterPlot", chart= facetZoom)
+#     
+#     .self$server$wait_to_clear_requests() 
+#   }
+# )
 
 # TreeVizApp$methods(
 #   explore=function(data) {

@@ -55,7 +55,7 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
       
       featureSelection = NULL
       
-      if(!is.null(featureSelection)){
+      if(!is.null(featureSelection)) {
         featureSelection <- featureSelection[which(names(featureSelection) != "NA")]
         featureSelection <- featureSelection[which(names(featureSelection) != "no_match")]
         
@@ -125,7 +125,7 @@ EpivizTreeData$methods(
     else {
       out <- lapply(rownames(sample_table), function(sample) {
         epivizrData:::SparseEpivizMeasurement(id=sample,
-                                              datasourceId=.self$.id)
+          datasourceId=.self$.id)
       })
       
       .self$.measurements <- out 
@@ -586,7 +586,7 @@ EpivizTreeData$methods(
         if(m %in% colnames(aggcounts)){
           inner_result <- aggcounts[,m]
           data_columns[[m]] <- unname(unlist(inner_result))
-        } else{
+        } else {
           inner_result <- rep(0.0, nrow(aggcounts))
           data_columns[[m]] <- inner_result
         }
@@ -596,7 +596,7 @@ EpivizTreeData$methods(
         if(m %in% rownames(aggcounts)){
           inner_result <- aggcounts[m,]
           data_columns[[m]] <- unname(unlist(inner_result))
-        } else{
+        } else {
           inner_result <- rep(0.0, ncol(aggcounts))
           data_columns[[m]] <- inner_result
         }
@@ -615,12 +615,10 @@ EpivizTreeData$methods(
   getReducedDim=function(method = NULL, gene = NULL) {
     " Compute PCA over all features for given samples
     \\describe{
-    \\item{measurements}{Samples to compute PCA over}
-    \\item{start}{Start of feature range to query }
-    \\item{end}{End of feature range to query}
+    \\item{method}{which dimension to access}
+    \\item{gene}{send expression of a gene back with the dimensions}
     }
     "
-    
     
     if (is.null(method)) {
       method <- names(metadata(.self$.object)$reduced_dim)[[1]]
@@ -651,7 +649,6 @@ EpivizTreeData$methods(
     level <- .self$.levelSelected + 1
     i <- 1
     for (col in rownames(measurements)) {
-      
       row_index = which(colData(.self$.object)$samples == col)
       
       # TODO: need to add sample attributes

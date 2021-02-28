@@ -1,4 +1,3 @@
-
 #' PBMC 3K dataset for use with vignette
 #' 
 #' @format A [`TreeViz`] object

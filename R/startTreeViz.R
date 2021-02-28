@@ -254,7 +254,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
       } else {
         data <- find_top_variable_genes(data, top_genes)
       }
-      
+
       if (!("reduced_dim"  %in% names(metadata(data)))) {
         data <- calculate_tsne(data)
       }
