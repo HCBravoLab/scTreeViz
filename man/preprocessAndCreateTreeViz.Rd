@@ -10,7 +10,7 @@ preprocessAndCreateTreeViz(clusters, counts)
 \arguments{
 \item{clusters}{Dataframe containing cluster information at different resolutions}
 
-\item{count}{matrix Dense or sparse matrix containing the count matrix}
+\item{counts}{matrix Dense or sparse matrix containing the count matrix}
 }
 \value{
 TreeSummarizedExperiment Object that can be visualized with metavizr

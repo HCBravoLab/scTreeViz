@@ -4,10 +4,22 @@
 \alias{createFromSeurat}
 \title{Creates a `TreeViz` object from `Seurat`}
 \usage{
-createFromSeurat(object, reduced_dim = c("TSNE"))
+createFromSeurat(
+  object,
+  check_metadata = FALSE,
+  col_regex = "*snn*",
+  columns = NULL,
+  reduced_dim = c("TSNE")
+)
 }
 \arguments{
 \item{object}{`Seurat` class containing cluster information at different resolutions}
+
+\item{check_metadata}{whether to metaData of `Seurat` object for cluster information or not}
+
+\item{col_regex}{common regular expression shared across all columns with cluster information}
+
+\item{columns}{vector containing columns with cluster information}
 
 \item{reduced_dim}{Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists)}
 }

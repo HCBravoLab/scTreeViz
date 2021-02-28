@@ -2,18 +2,20 @@
 % Please edit documentation in R/helper-functions.R
 \name{find_top_variable_genes}
 \alias{find_top_variable_genes}
-\title{Finds top variable genes `TreeViz`}
+\title{Finds top variable genes `TreeViz`
+Finds the n top variable genes within the genes present in `TreeViz` object}
 \usage{
 find_top_variable_genes(treeviz, top = 100)
 }
 \arguments{
-\item{top}{number of top genes to be calculated}
+\item{treeviz}{TreeViz object}
 
-\item{treeViz}{TreeViz object}
+\item{top}{number of top genes to be calculated}
 }
 \value{
 `TreeViz` Object with added top_variable_gene information in metadata
 }
 \description{
+Finds top variable genes `TreeViz`
 Finds the n top variable genes within the genes present in `TreeViz` object
 }

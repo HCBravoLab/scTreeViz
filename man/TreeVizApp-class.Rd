@@ -8,4 +8,13 @@
 \description{
 Class managing connection to metaviz application.
 }
+\section{Methods}{
+
+\describe{
+\item{\code{plotGene(gene = NULL, datasource_name = "SCRNA_1")}}{Plot a bar plot for a gene across cell types
+\describe{
+\item{gene}{gene to extract expression values}
+\item{datasource_name}{object to extract from (automatically selected)}
+}}
+}}
 

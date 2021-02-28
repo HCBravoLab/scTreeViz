@@ -2,16 +2,18 @@
 % Please edit documentation in R/helper-functions.R
 \name{calculate_tsne}
 \alias{calculate_tsne}
-\title{Calculates `tsne` Dimensionality Reduction on `TreeViz` object. The result is added to reduced_dim slot in metadata}
+\title{Calculates `tsne` Dimensionality Reduction on `TreeViz` object. 
+The result is added to reduced_dim slot in metadata}
 \usage{
 calculate_tsne(treeviz)
 }
 \arguments{
-\item{treeViz}{TreeViz object}
+\item{treeviz}{TreeViz object}
 }
 \value{
 `TreeViz` Object with added 'TSNE'tnse`information in reduced_dim slot of metadata
 }
 \description{
-Calculates `tsne` Dimensionality Reduction on `TreeViz` object. The result is added to reduced_dim slot in metadata
+Calculates `tsne` Dimensionality Reduction on `TreeViz` object. 
+The result is added to reduced_dim slot in metadata
 }

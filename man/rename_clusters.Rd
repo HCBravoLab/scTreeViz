@@ -4,10 +4,10 @@
 \alias{rename_clusters}
 \title{Renames cluster names for consistency in visualization}
 \usage{
-rename_clusters(clusdata)
+rename_clusters(clusterdata)
 }
 \arguments{
-\item{clusdata}{Dataframe containing cluster information at different resolutions}
+\item{clusterdata}{Dataframe containing cluster information at different resolutions}
 }
 \value{
 Dataframe containing cluster information at different resolutions

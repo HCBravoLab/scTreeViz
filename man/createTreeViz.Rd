@@ -2,12 +2,13 @@
 % Please edit documentation in R/helper-functions.R
 \name{createTreeViz}
 \alias{createTreeViz}
-\title{Creates `TreeViz` object from hierarchy and count matrix}
+\title{Creates `TreeViz` object from hierarchy and count matrix
+This module returns the Tree Summarized Experiment if the dataframe is tree, throws error otherwise}
 \usage{
 createTreeViz(clusters, counts)
 }
 \arguments{
-\item{clusters}{Dataframe containing cluster information at different resolutions}
+\item{clusters}{`ClusterHierarchy` object containing cluster information at different resolutions}
 
 \item{counts}{matrix Dense or sparse matrix containing the count matrix}
 }
@@ -15,5 +16,6 @@ createTreeViz(clusters, counts)
 `TreeViz`` Object
 }
 \description{
+Creates `TreeViz` object from hierarchy and count matrix
 This module returns the Tree Summarized Experiment if the dataframe is tree, throws error otherwise
 }
