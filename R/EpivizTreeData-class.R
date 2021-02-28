@@ -11,72 +11,72 @@
 #' @import Rtsne
 #' @exportClass EpivizTreeData
 EpivizTreeData <- setRefClass("EpivizTreeData",
-                              contains = "EpivizData",
-                              fields = list(
-                                .levels = "ANY",
-                                .maxDepth = "numeric",
-                                .feature_order = "character",
-                                .minValue = "numeric",
-                                .maxValue = "numeric",
-                                .sampleAnnotation = "ANY",
-                                .nodeSelections = "ANY",
-                                .levelSelected = "ANY",
-                                .lastRootId = "character",
-                                .json_query = "ANY",
-                                .graph = "ANY",
-                                .treeIn = "character",
-                                .measurements = "ANY"
-                              ),
-                              
-                              methods=list(
-                                initialize=function(object, tree="row", columns=NULL, control=metavizControl(), feature_order=NULL, ...) {
-                                  
-                                  if(is.null(feature_order)) {
-                                    if(tree == "row") {
-                                      .self$.feature_order = colnames(rowData(object))
-                                    } else {
-                                      .self$.feature_order = colnames(colData(object))
-                                    }
-                                  } else {
-                                    .self$.feature_order <- feature_order
-                                  }
-                                  
-                                  .self$.levelSelected <- 3
-                                  .self$.lastRootId <- "0-0"
-                                  .self$.nodeSelections <- list()
-                                  .self$.treeIn <- tree
-                                  .self$.measurements <- NULL
-                                  
-                                  if(tree == "row") {
-                                    .self$.graph <- rowData(object)
-                                  } else {
-                                    .self$.graph <- colData(object)
-                                  }
-                                  
-                                  featureSelection = NULL
-                                  
-                                  if(!is.null(featureSelection)){
-                                    featureSelection <- featureSelection[which(names(featureSelection) != "NA")]
-                                    featureSelection <- featureSelection[which(names(featureSelection) != "no_match")]
-                                    
-                                    if(tree == "row") {
-                                      node_ids <- sapply(names(featureSelection), function(n) {
-                                        as.character(rowData(object)$nodes_table[node_label==n,id])
-                                      })
-                                    } else {
-                                      node_ids <- sapply(names(featureSelection), function(n) {
-                                        as.character(colData(object)$nodes_table[node_label==n,id])
-                                      })
-                                    }
-                                    
-                                    temp_selections <- unname(featureSelection)
-                                    names(temp_selections) <- node_ids
-                                    .self$.nodeSelections = temp_selections
-                                  }
-                                  
-                                  callSuper(object=object, ...)
-                                }
-                              )
+  contains = "EpivizData",
+  fields = list(
+    .levels = "ANY",
+    .maxDepth = "numeric",
+    .feature_order = "character",
+    .minValue = "numeric",
+    .maxValue = "numeric",
+    .sampleAnnotation = "ANY",
+    .nodeSelections = "ANY",
+    .levelSelected = "ANY",
+    .lastRootId = "character",
+    .json_query = "ANY",
+    .graph = "ANY",
+    .treeIn = "character",
+    .measurements = "ANY"
+  ),
+  
+  methods=list(
+    initialize=function(object, tree="row", columns=NULL, control=metavizControl(), feature_order=NULL, ...) {
+      
+      if(is.null(feature_order)) {
+        if(tree == "row") {
+          .self$.feature_order = colnames(rowData(object))
+        } else {
+          .self$.feature_order = colnames(colData(object))
+        }
+      } else {
+        .self$.feature_order <- feature_order
+      }
+      
+      .self$.levelSelected <- 3
+      .self$.lastRootId <- "0-0"
+      .self$.nodeSelections <- list()
+      .self$.treeIn <- tree
+      .self$.measurements <- NULL
+      
+      if(tree == "row") {
+        .self$.graph <- rowData(object)
+      } else {
+        .self$.graph <- colData(object)
+      }
+      
+      featureSelection = NULL
+      
+      if(!is.null(featureSelection)){
+        featureSelection <- featureSelection[which(names(featureSelection) != "NA")]
+        featureSelection <- featureSelection[which(names(featureSelection) != "no_match")]
+        
+        if(tree == "row") {
+          node_ids <- sapply(names(featureSelection), function(n) {
+            as.character(rowData(object)$nodes_table[node_label==n,id])
+          })
+        } else {
+          node_ids <- sapply(names(featureSelection), function(n) {
+            as.character(colData(object)$nodes_table[node_label==n,id])
+          })
+        }
+        
+        temp_selections <- unname(featureSelection)
+        names(temp_selections) <- node_ids
+        .self$.nodeSelections = temp_selections
+      }
+      
+      callSuper(object=object, ...)
+    }
+  )
 )
 
 # Epiviz Websockets Protocol
@@ -621,18 +621,10 @@ EpivizTreeData$methods(
     }
     "
     
-    if (is.null(method)) {
-      method <- "TSNE"
-    }
     
-    # removed_cells <- c()
-    # if(!is.null(.self$.nodeSelections) && !(length(.self$.nodeSelections) == 0)) {
-    #   removed_selections <- names(which(.self$.nodeSelections == 0))
-    # 
-    #   removed_cells <- unique(unlist(sapply(removed_selections, function(n) {
-    #     .self$.graph@nodes_table[grep(n, .self$.graph@nodes_table$lineage), "node_label"]
-    #   })))
-    # }
+    if (is.null(method)) {
+      method <- names(metadata(.self$.object)$reduced_dim)[[1]]
+    }
     
     data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
                               selectedLevels = .self$.levelSelected + 1,
@@ -660,11 +652,6 @@ EpivizTreeData$methods(
     i <- 1
     for (col in rownames(measurements)) {
       
-      # name <- unname(colData(.self$.object)[[level]][i])
-      # if (name %in% removed_cells) {
-      #   name <- "removed"
-      # }
-      
       row_index = which(colData(.self$.object)$samples == col)
       
       # TODO: need to add sample attributes
@@ -680,49 +667,6 @@ EpivizTreeData$methods(
       data[[col]] <- temp
       i <- i+1
     }
-    
-    # df <- do.call(rbind.data.frame, data)
-    # nodeSelections <- .self$.nodeSelections
-    # 
-    # for (node in names(nodeSelections)) {
-    #   if (nodeSelections[[node]] == 2) {
-    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-    #     for( i in 1:nrow(node_row) ) {
-    #       node_irow <- node_row[i, ]
-    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-    #       df[indices, "name"] <- node_irow$node_label
-    #     }
-    #   }
-    # }
-    # 
-    # indices_to_remove <- c()
-    # for (node in names(nodeSelections)) {
-    #   if (nodeSelections[[node]] == 0) {
-    #     # removed node
-    #     node_row <- .self$.graph@nodes_table[.self$.graph@nodes_table$id == node, ]
-    #     for( i in 1:nrow(node_row) ) {
-    #       node_irow <- node_row[i, ]
-    #       level <- colnames(.self$.graph@hierarchy_tree)[unique(node_irow$level)]
-    #       indices <- which(.self$.graph@hierarchy_tree[[level]] %in% node_irow$node_label)
-    #       indices_to_remove <- c(indices_to_remove, indices)
-    #     }
-    #   }
-    # }
-    # 
-    # df[unique(indices_to_remove), "name"] <- "removed"
-    # data <- list()
-    # # TODO: need to add sample attributes
-    # for (i in 1:nrow(df)) {
-    #   data[[df[i, "sample_id"]]] <- list(
-    #     dim1 = df$dim1[i],
-    #     dim2 = df$dim2[i],
-    #     sample_id = df$sample_id[i],
-    #     name = df$name[i]
-    #   )
-    # }
-    # , 
-    # "cluster_order" = data_rows$metadata$label
     
     result <- list("data" = unname(data), "pca_variance_explained" = c(1,1),
                    "cluster_order" = data_rows$metadata$label,
