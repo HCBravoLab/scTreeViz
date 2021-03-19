@@ -203,7 +203,7 @@ checkRoot <- function(cluster_df) {
   cols <- colnames(cluster_df)
   if (length(unique(cluster_df[[1]])) > 1) {
     message("Given Tree is a Forest\n Adding extra root")
-    cluster_df$root <- "clusterlAllClusters"
+    cluster_df$root <- "ClusterAllClusters"
     cols <- c("root", cols)
   }
   
@@ -440,6 +440,12 @@ createFromSCE <-
 #' @export
 #'
 createTreeViz <- function(clusters, counts) {
+  
+  if (!class(hierarchy) %in% "ClusterHierarchy") {
+    stop("clusters is not a ClusterHierarchy class")
+  }
+  
+  counts <- counts[,clusters$samples]
   column_names <- colnames(clusters)
   clusters <- as.data.frame(clusters)
   colnames(clusters) <- column_names
