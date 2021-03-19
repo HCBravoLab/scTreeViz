@@ -146,7 +146,7 @@ setMethod("splitAt", "TreeIndex",
             leaf_order_table <-
               leaf_order_table[, leaf := as.character(leaf)]
             leaf_order_table <-
-              leaf_order_table[otu_index > start &
+              leaf_order_table[otu_index >= start &
                                  otu_index <= end]
 
             leaf_indices <-
