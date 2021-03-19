@@ -15,7 +15,11 @@ for(cols in colnames(df)){
   df[[cols]] <- as.factor(df[[cols]])
 }
 
-treeviz <- preprocessAndCreateTreeViz(df, counts)
+colnames(counts) <- df$samples <- rownames(df) <- paste0("cell-", 1:ncol(counts))
+rownames(counts) <- paste0("gene-", 1:nrow(counts))
+hierarchy <- ClusterHierarchy(df)
+
+treeviz <- createTreeViz(hierarchy, counts)
 
 test_that("create TreeVizClass", {
   expect_is(treeviz, "TreeViz")
@@ -31,8 +35,7 @@ test_that("check single_root", {
 })
 
 test_that("check multiple_parent", {
-  expect_error(createTreeViz(df,counts),"Not a tree")
-  
+
   hierarchydf <- colData(treeviz)@hierarchy_tree
   hierarchydf <- hierarchydf[, !colnames(hierarchydf) %in% c("samples", "otu_index")]
   

@@ -116,7 +116,7 @@ plot(treeViz)
 
 ## Create TreeViz from count matrix and Cluster hierarchy
 
-```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+```{r, eval=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE}
 n=64
 # create a hierarchy
 df<- data.frame(cluster0=rep(1,n))

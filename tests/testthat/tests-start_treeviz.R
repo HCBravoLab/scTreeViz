@@ -1,6 +1,7 @@
-context("create TreVvizApp class")
+context("create TreeVizApp class")
 
 test_that("startTreeViz creates a TreeVizApp Object", {
+  skip("need data here")
   app <- startTreeviz(non_interactive=TRUE)
   expect_is(app, "TreeVizApp")
   
