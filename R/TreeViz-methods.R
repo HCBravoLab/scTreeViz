@@ -86,6 +86,7 @@ setMethod("aggregateTree", "TreeViz",
               
             }
             else if (by == "col") {
+            
               aggFun <- rowSums
               groups <-
                 splitAt(
@@ -113,11 +114,12 @@ setMethod("aggregateTree", "TreeViz",
               rownames(newMat) <- rownames(x)
             }
             
-            if(!is.null(selectedNodes)) {
-              return(newMat)
-            }
+            # if(!is.null(selectedNodes)) {
+            #   return(newMat)
+            # }
             
             if (format == "TreeViz") {
+              
               if (by == "row") {
                 newRowData <-
                   splitAt(

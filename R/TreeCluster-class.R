@@ -131,7 +131,8 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
     "ClusterHierarchy",
     hierarchy
   )
-  
+  #print(hierarchy)
+  hierarchy
   # tree <- TreeIndex(hierarchy)
   # rownames(tree) <- rownames(hierarchy)
   # 

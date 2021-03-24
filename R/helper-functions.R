@@ -494,8 +494,11 @@ createTreeViz <- function(clusters, counts) {
   #     stop("Not an object of  Tree Cluster")
   #
   # }
-  
-  
+  #print(dimnames(clusters))
+  #print(clusters$samples)
+  print("dimnames")
+  print(dimnames(counts))
+  counts<-counts[,clusters$samples]
   column_names<- colnames(clusters)
   clusters <- as.data.frame(clusters)
   colnames(clusters)<-column_names
@@ -508,7 +511,9 @@ createTreeViz <- function(clusters, counts) {
   
   tree <- TreeIndex(clusters)
   rownames(tree) <- rownames(clusters)
-  
+  print(counts)
+  print(rownames(clusters))
+  #
   treeviz <- TreeViz(SimpleList(counts = counts), colData = tree)
   # }
   # plot_tree(TreeSE_obj@colData@hierarchy_tree)
