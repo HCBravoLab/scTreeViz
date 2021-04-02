@@ -65,11 +65,12 @@ TreeVizApp$methods(
     if (is.null(obj)) {
       stop("cannot find datasource", datasource_name)
     }
-    level <- obj$.levelSelected+1
-    node <- obj$.nodeSelections
-    aggtreeviz <-
-      aggregateTree(obj$.object, level, node, by = "col", format = "TreeViz")
-    
+    sce<-obj$extract_SCE_epiviz()
+    # level <- obj$.levelSelected+1
+    # node <- obj$.nodeSelections
+    # aggtreeviz <-
+    #   aggregateTree(obj$.object, level, node, by = "col", format = "TreeViz")
+    # 
     
     # sce <-
     #   SingleCellExperiment(
@@ -77,32 +78,32 @@ TreeVizApp$methods(
     #     colData = colData(aggtreeviz)@hierarchy_tree
     #   )
     # 
-    reduced_dims=list()
-    for( name in names(metadata(obj$.object)$reduced_dim)){
-      if(name=="pca"){
-        pca_data <- prcomp(t(assays(aggtreeviz)$counts), rank=2)
-        reduced_dims[[name]]=pca_data$x
-      }
-      if(name=="tsne"){
-        tsne_data <- Rtsne(t(assays(aggtreeviz)$counts),  perplexity = 1)
-        reduced_dims[[name]]=tsne_data$Y
-      }
-      
-      if(name=="umap"){
-        custom.settings = umap.defaults
-        custom.settings$n_neighbors = 2
-        
-        umap_data <- umap(t(assays(aggtreeviz)$counts),custom.settings)
-        reduced_dims[[name]]=umap_data$layout
-      }
-      
-    }
-    sce <- SingleCellExperiment(assays = list(counts = assays(aggtreeviz)$counts
-    ),
-    colData = colData(aggtreeviz)@hierarchy_tree,
-    reducedDims =reduced_dims
-    )
-    
+    # reduced_dims=list()
+    # for( name in names(metadata(obj$.object)$reduced_dim)){
+    #   if(name=="pca"){
+    #     pca_data <- prcomp(t(assays(aggtreeviz)$counts), rank=2)
+    #     reduced_dims[[name]]=pca_data$x
+    #   }
+    #   if(name=="tsne"){
+    #     tsne_data <- Rtsne(t(assays(aggtreeviz)$counts),  perplexity = 1)
+    #     reduced_dims[[name]]=tsne_data$Y
+    #   }
+    #   
+    #   if(name=="umap"){
+    #     custom.settings = umap.defaults
+    #     custom.settings$n_neighbors = 2
+    #     
+    #     umap_data <- umap(t(assays(aggtreeviz)$counts),custom.settings)
+    #     reduced_dims[[name]]=umap_data$layout
+    #   }
+    #   
+    # }
+    # sce <- SingleCellExperiment(assays = list(counts = assays(aggtreeviz)$counts
+    # ),
+    # colData = colData(aggtreeviz)@hierarchy_tree,
+    # reducedDims =reduced_dims
+    # )
+    # 
   }
 )
 

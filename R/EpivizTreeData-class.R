@@ -677,5 +677,23 @@ EpivizTreeData$methods(
                    "cluster_order" = data_rows$metadata$label,
                    "gene_min_max" = c(min(genes), max(genes)))
     return(result)
-  }
+  },
+  
+  extract_SCE_epiviz = function() {
+    #aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, start = start, end = end, by=.self$.treeIn, format="counts")
+    
+    level <- .self$.levelSelected+1
+    node <- .self$.nodeSelections
+    aggtreeviz <-
+      aggregateTree(.self$.object, selectedLevel=level, selectedNodes=node, by = "col", format = "TreeViz")
+    
+    print(assays(aggtreeviz)$counts)
+    sce <-
+      SingleCellExperiment(
+        assays = list(#counts=assays(.self$.object)$counts,
+          agg_counts = assays(aggtreeviz)$counts),
+        colData = colData(aggtreeviz)@hierarchy_tree
+      )
+
+      }
 )
