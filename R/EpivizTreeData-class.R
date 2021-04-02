@@ -682,16 +682,18 @@ EpivizTreeData$methods(
   extract_SCE_epiviz = function(level, node) {
     #aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, start = start, end = end, by=.self$.treeIn, format="counts")
     
-    aggtreeviz <-
-      aggregateTree(.self$.object, selectedLevel=level, selectedNodes=node, by = "col", format = "TreeViz")
+    meas1<-   getRows(measurements = NULL, start = 1, end = colData(.self$.object)@nrows, selectedLevels = level, selections = node)
+    #length(meas1$metadata$label)
+    val=meas1$end-meas1$start+1
+    val[length(val)]=val[length(val)]-1
+    clus<-unlist(mapply(rep, meas1$metadata$label, val))
     
-    print(assays(aggtreeviz)$counts)
-    sce <-
-      SingleCellExperiment(
-        assays = list(#counts=assays(.self$.object)$counts,
-          agg_counts = assays(aggtreeviz)$counts),
-        colData = colData(aggtreeviz)@hierarchy_tree
-      )
+    sce <- SingleCellExperiment(assays = list(counts = assays(.self$.object)$counts),
+                                colData = clus,
+                                rowData=rowData(.self$.object)
+                                
+    )
+    
 
-      }
+    }
 )
