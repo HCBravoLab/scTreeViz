@@ -679,11 +679,9 @@ EpivizTreeData$methods(
     return(result)
   },
   
-  extract_SCE_epiviz = function() {
+  extract_SCE_epiviz = function(level, node) {
     #aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, start = start, end = end, by=.self$.treeIn, format="counts")
     
-    level <- .self$.levelSelected+1
-    node <- .self$.nodeSelections
     aggtreeviz <-
       aggregateTree(.self$.object, selectedLevel=level, selectedNodes=node, by = "col", format = "TreeViz")
     

@@ -65,9 +65,10 @@ TreeVizApp$methods(
     if (is.null(obj)) {
       stop("cannot find datasource", datasource_name)
     }
-    sce<-obj$extract_SCE_epiviz()
-    # level <- obj$.levelSelected+1
-    # node <- obj$.nodeSelections
+    level <- obj$.levelSelected+1
+    node <- obj$.nodeSelections
+    sce<-obj$extract_SCE_epiviz(level, node)
+    
     # aggtreeviz <-
     #   aggregateTree(obj$.object, level, node, by = "col", format = "TreeViz")
     # 
