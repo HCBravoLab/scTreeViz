@@ -58,8 +58,6 @@ TreeVizApp$methods(
   },
   
   
-  #' @import umap
-  #' @import Rtsne
   extract_SCE = function(cluster_name="cluster") {
     obj <- .self$data_mgr$.find_datasource("SCRNA_1")
     if (is.null(obj)) {
