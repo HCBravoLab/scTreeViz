@@ -522,9 +522,9 @@ EpivizTreeData$methods(
       if(length(res) > 0) {
         ends[i] <- max(res)
         starts[i] <- min(res)
-        if(i == length(nodes)) {
-          starts[i] <- min(res) - 1
-        }
+        # if(i == length(nodes)) {
+        #   starts[i] <- min(res) - 1
+        # }
         indexes[i] <- min(res)
         metadata[['label']][i] <- feature_label
         metadata[['id']][i] <- unique(.self$.graph@nodes_table[node_label==nodes[i], id])[1]
@@ -669,5 +669,22 @@ EpivizTreeData$methods(
                    "cluster_order" = data_rows$metadata$label,
                    "gene_min_max" = c(min(genes), max(genes)))
     return(result)
+  },
+  
+  extract_SCE_epiviz = function(level, node) {
+
+    meas1<-   getRows(measurements = NULL, start = 1, end = colData(.self$.object)@nrows, selectedLevels = level, selections = node)
+    #length(meas1$metadata$label)
+    val=meas1$end-meas1$start+1
+    val[length(val)]=val[length(val)]-1
+    clus<-unlist(mapply(rep, meas1$metadata$label, val))
+    
+    sce <- SingleCellExperiment(assays = list(counts = assays(.self$.object)$counts),
+                                colData = clus,
+                                rowData=rowData(.self$.object)
+                                
+    )
+    
+    
   }
 )
