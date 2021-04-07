@@ -63,7 +63,11 @@ test_that("check aggregate_tree", {
   aggtree <- TreeViz:::aggregateTree(treeviz, by="col", selectedLevel=3)
   
   agg_df <- as.data.frame(assays(aggtree)$counts)
-  result <- all.equal(agg_df, sum_df, check.attributes= FALSE)
+  # result <- all.equal(agg_df, sum_df, check.attributes= FALSE)
+
+  expect_equal(dim(agg_df),dim(sum_df))
+  result<- all.equal(agg_df, sum_df, check.attributes= FALSE, ignore.col.order=TRUE, ignore.row.order=TRUE)
+
   expect_equal(result, TRUE)
 })
 
