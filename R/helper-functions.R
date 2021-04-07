@@ -441,7 +441,7 @@ createFromSCE <-
 #'
 createTreeViz <- function(clusters, counts) {
   
-  if (!class(hierarchy) %in% "ClusterHierarchy") {
+  if (!class(clusters) %in% "ClusterHierarchy") {
     stop("clusters is not a ClusterHierarchy class")
   }
   
