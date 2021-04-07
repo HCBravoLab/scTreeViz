@@ -60,14 +60,14 @@ TreeVizApp$methods(
   
   #' @import umap
   #' @import Rtsne
-  extract_SCE = function(datasource_name = "SCRNA_1") {
-    obj <- .self$data_mgr$.find_datasource(datasource_name)
+  extract_SCE = function(cluster_name="cluster") {
+    obj <- .self$data_mgr$.find_datasource("SCRNA_1")
     if (is.null(obj)) {
       stop("cannot find datasource", datasource_name)
     }
     level <- obj$.levelSelected+1
     node <- obj$.nodeSelections
-    sce<-obj$extract_SCE_epiviz(level, node)
+    sce<-obj$extract_SCE_epiviz(cluster_name,level, node)
     
     # aggtreeviz <-
     #   aggregateTree(obj$.object, level, node, by = "col", format = "TreeViz")
