@@ -57,7 +57,6 @@ pbmc <- RunTSNE(pbmc)
 pbmc <- RunUMAP(pbmc, dims=1:5)
 
 PBMC3k_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"))
-PBMC3k_TreeViz
 ```
 
 ## Initialize the App
@@ -94,6 +93,41 @@ These clusters (4C1, 4C4, 4C6, 4C7) at cluster resolution 0.4 do not seem to be 
 Similarly if a cell type or cluster is not of interest, one can remove cluster(s) from analysis. This will grey out the cluster from the dimensionality plots, remove the cluster from the heatmap and update the dynamic clustering over genes. 
 
 ![remove](images/treeviz_remove.gif){width=70%}
+
+
+### Propagate cluster selections
+
+Until now, we have shown how to explore cluster resolutions at different levels. 
+You might be thinking - Now what I do with the cluster selections from the UI
+
+#### Extract Cluster Selections
+
+To extract the selections, we provide a convenience method that returns
+a `SingleCellExperiment` object for the provided dataset. The ColData of this object
+will contain the cluster labels `treeviz_clusters` (column)
+
+```{r, eval=FALSE}
+sce <- app$extract_SCE()
+```
+
+#### Marker Gene Analysis
+
+Now that we have clusters across resolutions, we can find marker genes for these clusters
+
+```{r, eval=FALSE}
+library(scater)
+sce <- logNormCounts(sce)
+markers <- findMarkers(sce, groups=sce$treeviz_clusters)
+```
+
+`markers` contains the results of the tests sorted by `p.value`.
+
+```{r}
+markers_pr <- lapply(markers, function(x) {
+  rownames(head(x[x$p.value < 0.05,]))
+})
+markers_pr
+```
 
 ### Additional Plots
 
