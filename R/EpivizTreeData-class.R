@@ -671,22 +671,29 @@ EpivizTreeData$methods(
     return(result)
   },
   
-  extract_SCE_epiviz = function(cluster_name,level, node) {
-    #aggregateTree(.self$.object, selectedLevel=selectedLevels, selectedNodes=selections, start = start, end = end, by=.self$.treeIn, format="counts")
+  extract_SCE_epiviz = function(cluster_name="treeviz_clusters") {
+
+    data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
+                              selectedLevels = .self$.levelSelected + 1,
+                              selections = .self$.nodeSelections)
     
-    meas1<-   getRows(measurements = NULL, start = 1, end = colData(.self$.object)@nrows, selectedLevels = level, selections = node)
-    #length(meas1$metadata$label)
-    val=meas1$end-meas1$start+1
-    val[length(val)]=val[length(val)]-1
-    clus<-unlist(mapply(rep, meas1$metadata$label, val))
+    max_length <- ncol(.self$.object)
+    # max(data_rows$end)
+    
+    cluster_names <- rep("removed", max_length)
+    for (i in 1:length(data_rows$metadata$label)) {
+      start <- data_rows$start[i]
+      end <- data_rows$end[i]
+      cluster_names[start:end] <- data_rows$metadata$label[i]
+    }
+    
+    # TODO: dumb but whatever, need a shorthand notation
+    coldata <- data.frame(treeviz_clusters = unlist(cluster_names))
+    colnames(coldata) <- c(cluster_name)
     
     sce <- SingleCellExperiment(assays = list(counts = assays(.self$.object)$counts),
-                                colData = as.data.frame( clus),
+                                colData = coldata,
                                 rowData=rowData(.self$.object)
-                                
     )
-    colnames(colData(sce))<-cluster_name
-    sce
-    
   }
 )
