@@ -441,6 +441,12 @@ createFromSCE <-
 #'
 createTreeViz <- function(clusters, counts) {
   
+  if (class(clusters) %in% "data.frame") {
+    clusters$samples <- rownames(clusters) <- colnames(counts)
+    clusters <- ClusterHierarchy(clusters)
+  }
+  
+  
   if (!class(clusters) %in% "ClusterHierarchy") {
     stop("clusters is not a ClusterHierarchy class")
   }
