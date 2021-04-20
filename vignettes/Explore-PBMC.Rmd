@@ -21,6 +21,7 @@ The package provides the PBMC 3K dataset for interactive exploration with TreeVi
 
 ```{r load-packages, message=FALSE, warning=FALSE}
 library(TreeViz)
+library(scran)
 ```
 
 ## Loading data
@@ -56,8 +57,7 @@ pbmc <- FindClusters(pbmc, resolution=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.
 pbmc <- RunTSNE(pbmc)
 pbmc <- RunUMAP(pbmc, dims=1:5)
 
-PBMC3K_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"), check_metaData = TRUE)
-PBMC3K_TreeViz
+PBMC3k_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"))
 ```
 
 ## Initialize the App
@@ -66,7 +66,7 @@ To start interactive exploration on this data,
 
 ```{r, eval=FALSE}
 # to visualize top 100 variable genes
-app <- startTreeviz(PBMC3K_TreeViz, top_genes = 10, host="http://localhost:8877")
+app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100)
 
 # to visualize a genes list
 # app <- startTreeviz(PBMC3k_TreeViz, genes=c("GBA", "FDPS", "TREM2"))
@@ -94,6 +94,41 @@ These clusters (4C1, 4C4, 4C6, 4C7) at cluster resolution 0.4 do not seem to be 
 Similarly if a cell type or cluster is not of interest, one can remove cluster(s) from analysis. This will grey out the cluster from the dimensionality plots, remove the cluster from the heatmap and update the dynamic clustering over genes. 
 
 ![remove](images/treeviz_remove.gif){width=70%}
+
+
+### Propagate cluster selections
+
+Until now, we have shown how to explore cluster resolutions at different levels. 
+You might be thinking - Now what I do with the cluster selections from the UI
+
+#### Extract Cluster Selections
+
+To extract the selections, we provide a convenience method that returns
+a `SingleCellExperiment` object for the provided dataset. The ColData of this object
+will contain the cluster labels `treeviz_clusters` (column)
+
+```{r, eval=FALSE}
+sce <- app$extract_SCE()
+```
+
+#### Marker Gene Analysis
+
+Now that we have clusters across resolutions, we can find marker genes for these clusters
+
+```{r, eval=FALSE}
+library(scater)
+sce <- logNormCounts(sce)
+markers <- findMarkers(sce, groups=sce$treeviz_clusters)
+```
+
+`markers` contains the results of the tests sorted by `p.value`.
+
+```{r}
+markers_pr <- lapply(markers, function(x) {
+  rownames(head(x[x$p.value < 0.05,]))
+})
+markers_pr
+```
 
 ### Additional Plots
 
