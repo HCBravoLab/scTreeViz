@@ -20,7 +20,7 @@ The package provides the PBMC 3K dataset for interactive exploration with TreeVi
 ## Loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(TreeViz)
+library(Palmtree)
 library(scran)
 ```
 
@@ -66,7 +66,7 @@ To start interactive exploration on this data,
 
 ```{r, eval=FALSE}
 # to visualize top 100 variable genes
-app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100)
+app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100, host="http://localhost:8877")
 
 # to visualize a genes list
 # app <- startTreeviz(PBMC3k_TreeViz, genes=c("GBA", "FDPS", "TREM2"))
