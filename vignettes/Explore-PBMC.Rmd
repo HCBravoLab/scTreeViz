@@ -123,7 +123,7 @@ markers <- findMarkers(sce, groups=sce$treeviz_clusters)
 
 `markers` contains the results of the tests sorted by `p.value`.
 
-```{r}
+```{r, eval=FALSE}
 markers_pr <- lapply(markers, function(x) {
   rownames(head(x[x$p.value < 0.05,]))
 })

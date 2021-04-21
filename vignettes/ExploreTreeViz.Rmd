@@ -143,7 +143,10 @@ app <- startTreeviz(treeViz, top_genes = 500)
 ```
 
 Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
-![Treeviz](images/Treeviz.png)
+
+![pbmc dataset](images/Treeviz.png)
+
+
 
 ## Adding Gene Box Plots
 
