@@ -1,4 +1,3 @@
-library(Seurat)
 context("testing TreeViz Class")
 
 n=32

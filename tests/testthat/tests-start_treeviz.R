@@ -1,8 +1,14 @@
 context("create TreeVizApp class")
+library(Seurat)
 
 test_that("startTreeViz creates a TreeVizApp Object", {
-  skip("need data here")
-  app <- startTreeviz(non_interactive=TRUE)
+  #skip("need data here")
+  pbmc_small
+  treeviz<-createFromSeurat(pbmc_small)
+  app <-
+    startTreeviz(treeviz,
+                 try_ports=TRUE,
+                 non_interactive=TRUE)
   expect_is(app, "TreeVizApp")
   
   expect_is(app$server, "EpivizServer")
