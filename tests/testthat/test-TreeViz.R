@@ -1,4 +1,6 @@
 context("testing TreeViz Class")
+library(Seurat)
+library(scater)
 
 n=32
 df <- data.frame(cluster0=rep(seq(1:2),each=ceiling(n/(2)),len=n))
@@ -71,3 +73,18 @@ test_that("check aggregate_tree", {
   expect_equal(result, TRUE)
 })
 
+test_that("Testing CreatefromSeurat class", {
+  #skip("need data here")
+  pbmc_small
+  treeviz<-createFromSeurat(pbmc_small)
+  expect_is(treeviz, "TreeViz")
+})
+
+test_that("Testing CreatefromSCE class", {
+  #skip("need data here")
+  set.seed(1)
+  sce <- mockSCE()
+  sce <- logNormCounts(sce)
+  treeviz<-createFromSCE(sce) 
+  expect_is(treeviz, "TreeViz")
+})
