@@ -141,12 +141,11 @@ Start the App from the `treeViz` object we created. This adds a `facetZoom` to n
 ```{r, eval=FALSE, echo=TRUE}
 app <- startTreeviz(treeViz, top_genes = 500)
 ```
-
-Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
+![Cell 416B dataset](images/cell416B.png)
 
 ![pbmc dataset](images/Treeviz.png)
 
-
+Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
 
 ## Adding Gene Box Plots
 
