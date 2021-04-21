@@ -20,7 +20,7 @@ Imports: epivizrStandalone, BiocGenerics, Biobase,
         httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer,
         dplyr, ggraph, scater, tidygraph, Seurat, SingleCellExperiment
 Suggests: knitr, BiocStyle, testthat, msd16s, SC3, 
-        metagenomeSeq, scRNAseq 
+        metagenomeSeq, scRNAseq, rmarkdown
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, Metagenomics, SingleCell
 Encoding: UTF-8
