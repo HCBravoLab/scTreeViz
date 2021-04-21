@@ -57,7 +57,7 @@ pbmc <- FindClusters(pbmc, resolution=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.
 pbmc <- RunTSNE(pbmc)
 pbmc <- RunUMAP(pbmc, dims=1:5)
 
-PBMC3k_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"))
+PBMC3k_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"), check_metadata = TRUE)
 ```
 
 ## Initialize the App
@@ -103,25 +103,41 @@ You might be thinking - Now what I do with the cluster selections from the UI
 
 #### Extract Cluster Selections
 
-To extract the selections, we provide a convenience method that returns
-a `SingleCellExperiment` object for the provided dataset. The ColData of this object
-will contain the cluster labels `treeviz_clusters` (column)
+To extract the selections, we provide a convenient method that returns
+a `SingleCellExperiment` object for the provided dataset. The `ColData` of this object
+will contain the cluster labels from the app in `treeviz_clusters` slot. 
 
 ```{r, eval=FALSE}
 sce <- app$extract_SCE()
+table(sce$treeviz_clusters)
 ```
+
+Note: If the clusters are removed from the analysis on the app during exploration, 
+these will be labeled as `removed`.
+
+We can also quickly look at the the total number of cells in each of the clusters.
+
+> table(sce$treeviz_clusters)
+
+cluster2C1 cluster4C0 cluster4C3 cluster4C5    removed 
+       701       1199        303        148        349 
 
 #### Marker Gene Analysis
 
-Now that we have clusters across resolutions, we can find marker genes for these clusters
+Now that we have clusters labels from the exploration back in our R-session, 
+we can find marker genes for these clusters.
 
 ```{r, eval=FALSE}
 library(scater)
 sce <- logNormCounts(sce)
-markers <- findMarkers(sce, groups=sce$treeviz_clusters)
+
+# ignore removed cells 
+sce_rm <- sce[, sce$treeviz_clusters != 'removed']
+
+markers <- findMarkers(sce_rm, groups=sce_rm$treeviz_clusters)
 ```
 
-`markers` contains the results of the tests sorted by `p.value`.
+`markers` contains the results of the tests filtered by `p.value`.
 
 ```{r, eval=FALSE}
 markers_pr <- lapply(markers, function(x) {
@@ -130,18 +146,34 @@ markers_pr <- lapply(markers, function(x) {
 markers_pr
 ```
 
-### Additional Plots
+$cluster2C1
+[1] "AIF1"   "CST3"   "CFD"    "S100A8" "TYROBP" "LGALS2"
 
-We can add plots to visualize expression of a single gene across clusters. To add a box plot for gene `TYROBP`
+$cluster4C0
+[1] "CST3"   "NKG7"   "GZMB"   "CCL5"   "TYROBP" "CD3D"  
 
+$cluster4C3
+[1] "AIF1"   "CD3D"   "NKG7"   "S100A8" "GZMB"   "CCL5"  
+
+$cluster4C5
+[1] "CD3D"   "CFD"    "NKG7"   "GZMB"   "LGALS2" "GNLY"  
+
+
+### Expression of a Gene 
+
+From the marker gene analysis, we notice `AIF1` is the top marker for cluster 
+`cluster2C1`. We can explore the expression of this gene across all the clusters
+using the `plotGene` function and WE clearly notice a higher expression in this
+cluster.
+ 
 ```{r, eval=FALSE}
-app$plotGene(gene="TYROBP")
+app$plotGene(gene="AIF1")
 ```
 
 ![box plot](images/treeviz_boxplot.png)
 
-
-you can also add this through the UI through the `add visualization` interface on the top and choose "Gene Box Plot".
+This can also be done through the UI through the `add visualization` interface 
+on the top and choose "Gene Box Plot".
 
 ## Close the App
 
