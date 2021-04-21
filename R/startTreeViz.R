@@ -144,7 +144,7 @@
       if (is.null(obj)) {
         stop("cannot find datasource", m)
       }
-      obj$getAlphaDiversity(measurements)
+      obj$getGeneExpr(measurements)
     })
     names(result) <- names(measurementsList)
     result
@@ -321,6 +321,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
 #' @return An object of class \code{\link[TreeViz]{TreevizApp}}
 #'
 #' @import epivizrStandalone
+#' @importFrom GenomeInfoDb SeqInfo
 #' @examples
 #'
 #' #' # see package vignette for example usage

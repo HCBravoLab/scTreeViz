@@ -695,5 +695,49 @@ EpivizTreeData$methods(
                                 colData = coldata,
                                 rowData=rowData(.self$.object)
     )
+  },
+  
+  getGeneExpr=function(measurements=NULL){
+    
+    if (!is.null(measurements)) {
+      gene <- measurements[1]
+    }
+    
+    data_rows = .self$getRows(measurements = NULL, start = 1, end = 100000,
+                              selectedLevels = .self$.levelSelected + 1,
+                              selections = .self$.nodeSelections)
+    
+    max_length <- ncol(.self$.object)
+    # max(data_rows$end)
+    
+    cluster_names <- rep("removed", max_length)
+    for (i in 1:length(data_rows$metadata$label)) {
+      start <- data_rows$start[i]
+      end <- data_rows$end[i]
+      cluster_names[start:end] <- data_rows$metadata$label[i]
+    }
+    
+    level<- .self$.levelSelected + 1
+    selectedNodes <- .self$.nodeSelections
+    
+    counts <- assays(.self$.object)$counts
+    
+    gene_col <- counts[gene, ]
+    data <- list()
+    i <- 1
+    for (col in names(gene_col)) {
+      
+      row_index = which(colData(.self$.object)$samples == col)
+      
+      data[[col]] <- list(
+        alphaDiversity = gene_col[[col]],
+        sample_id = col,
+        name = unlist(cluster_names[[row_index]])
+      )
+      i <- i+1
+    }
+    
+    result <- list(data = unname(data))
+    return(result)
   }
 )
