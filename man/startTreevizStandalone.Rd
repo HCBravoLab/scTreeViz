@@ -2,7 +2,7 @@
 % Please edit documentation in R/startTreeViz.R
 \name{startTreevizStandalone}
 \alias{startTreevizStandalone}
-\title{Start treeviz app in standalone (locally) and create \code{\link[treeviz]{TreevizApp}} object to manage connection.}
+\title{Start treeviz app in standalone (locally) and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.}
 \usage{
 startTreevizStandalone(
   data = NULL,
@@ -21,10 +21,10 @@ This allows standalone app to run in Rstudio's viewer (FALSE by default)}
 \item{...}{additional parameters passed to \code{\link[epivizrStandalone]{startStandalone}}.}
 }
 \value{
-An object of class \code{\link{TreevizApp}}
+An object of class \code{\link[TreeViz]{TreevizApp}}
 }
 \description{
-Start treeviz app in standalone (locally) and create \code{\link[treeviz]{TreevizApp}} object to manage connection.
+Start treeviz app in standalone (locally) and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.
 }
 \examples{
 
