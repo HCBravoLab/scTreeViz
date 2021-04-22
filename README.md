@@ -1,9 +1,9 @@
 # Palmtree
 This package provides methods to interactively explore and visualize datasets with hierarchies. eg. single cells datasets with hierarchy over cells at different resolutions. 
 
-For a walkthrough of various features of the app, checkout the vignette at 
+For a walk through of various features of the app, checkout the vignette at 
 
-https://hcbravolab.github.io/TreeViz/Explore-PBMC.html
+https://hcbravolab.github.io/palmtree/Explore-PBMC.html
 
 ## Installation and requiremenets
 
@@ -13,7 +13,7 @@ To install `Palmtree`,
 
 ```{r}
 BiocManager::install("epiviz/epivizrData")
-BiocManager::install("HCBravoLab/Palmtree")
+BiocManager::install("HCBravoLab/palmtree")
 ```
 ***Note: you can also use devtools to install the package from github***
 
@@ -24,6 +24,6 @@ To try out and explore the various features of the package, we provide the PBMC 
 To checkout all the vignettes
 
 ```{r}
-library(Palmtree)
-browseVignettes("Palmtree")
+library(palmtree)
+browseVignettes("palmtree")
 ```

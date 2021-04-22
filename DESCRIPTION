@@ -1,4 +1,4 @@
-Package: Palmtree
+Package: palmtree
 Type: Package
 Title: R/Bioconductor package to interactively explore and visualize single cell RNA-seq datasets with hierarhical annotations
 Version: 0.99.0
@@ -20,8 +20,7 @@ Imports: epivizrStandalone, BiocGenerics, Biobase,
         data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
         httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer,
         dplyr, ggraph, scater, tidygraph, Seurat, SingleCellExperiment
-Suggests: knitr, BiocStyle, testthat, msd16s, SC3, 
-        metagenomeSeq, scRNAseq, rmarkdown
+Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, SingleCell
 Encoding: UTF-8

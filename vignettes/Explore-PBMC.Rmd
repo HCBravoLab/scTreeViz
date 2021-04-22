@@ -20,7 +20,7 @@ The package provides the PBMC 3K dataset for interactive exploration with TreeVi
 ## Loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(Palmtree)
+library(palmtree)
 library(scran)
 ```
 
@@ -79,21 +79,21 @@ The app by default chooses `resolution 0.4` as a starting set of clusters for ex
 3. Heatmap of the top `n` (default to 100) most variable genes from the dataset where counts are aggregated to the choosen cluster resolutions
 4. Scatter plots for each of the reduced dimensions available in the object.  
  
-![Treeviz App](images/Treeviz-annotated.png){width=90%}
+![Overview of Palmtree App](images/Treeviz-annotated.png){width=90%}
 
 ### Interactions
 
 As you are exploring this dataset, you notice in the tsne/umap/pca plots that the clusters (colored orange, green, red and purple) are not well separated.
 
-![clusters](images/treeviz_clusters.png)
+![Reduced Dimensionality Plot](images/treeviz_clusters.png)
 These clusters (4C1, 4C4, 4C6, 4C7) at cluster resolution 0.4 do not seem to be well separated. So may be I would like to choose a lower resolution for these cells. As I look at the hierarchy in the `facetZoom` they belong to the same parent (2C1) at cluster resolution 0.2. I can now choose to cluster these cells at a different resolution (as shown below). This immediately reflects the changes in the dimensionality plots, computes a new count matrix based on the selection and updates the heatmap. 
 
-![aggregation](images/treeviz_agg.gif){width=70%}
+![Aggregate cells at a different resolution](images/treeviz_agg.gif){width=70%}
 
 
 Similarly if a cell type or cluster is not of interest, one can remove cluster(s) from analysis. This will grey out the cluster from the dimensionality plots, remove the cluster from the heatmap and update the dynamic clustering over genes. 
 
-![remove](images/treeviz_remove.gif){width=70%}
+![removing cells or cluster from analysis](images/treeviz_remove.gif){width=70%}
 
 
 ### Propagate cluster selections
@@ -109,7 +109,6 @@ will contain the cluster labels from the app in `treeviz_clusters` slot.
 
 ```{r, eval=FALSE}
 sce <- app$extract_SCE()
-table(sce$treeviz_clusters)
 ```
 
 Note: If the clusters are removed from the analysis on the app during exploration, 
@@ -117,15 +116,16 @@ these will be labeled as `removed`.
 
 We can also quickly look at the the total number of cells in each of the clusters.
 
+```{}
 > table(sce$treeviz_clusters)
 
 cluster2C1 cluster4C0 cluster4C3 cluster4C5    removed 
        701       1199        303        148        349 
+```
 
 #### Marker Gene Analysis
 
-Now that we have clusters labels from the exploration back in our R-session, 
-we can find marker genes for these clusters.
+Now that we have clusters labels, we can find marker genes for these clusters.
 
 ```{r, eval=FALSE}
 library(scater)
@@ -146,6 +146,7 @@ markers_pr <- lapply(markers, function(x) {
 markers_pr
 ```
 
+```{}
 $cluster2C1
 [1] "AIF1"   "CST3"   "CFD"    "S100A8" "TYROBP" "LGALS2"
 
@@ -157,7 +158,7 @@ $cluster4C3
 
 $cluster4C5
 [1] "CD3D"   "CFD"    "NKG7"   "GZMB"   "LGALS2" "GNLY"  
-
+```
 
 ### Expression of a Gene 
 
@@ -170,7 +171,7 @@ cluster.
 app$plotGene(gene="AIF1")
 ```
 
-![box plot](images/treeviz_boxplot.png)
+![Expression of gene AIF1 across clusters](images/treeviz_boxplot.png){width=80%}
 
 This can also be done through the UI through the `add visualization` interface 
 on the top and choose "Gene Box Plot".

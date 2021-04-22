@@ -18,12 +18,12 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-[`Palmtree`](https://github.com/HCBravoLab/Palmtree) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `Palmtree` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for dimensionality reductions like UMAP or TSNE.
+[`Palmtree`](https://github.com/HCBravoLab/palmtree) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `Palmtree` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for dimensionality reductions like UMAP or TSNE.
 
 ## Loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(Palmtree)
+library(palmtree)
 library(dplyr)
 library(Seurat)
 library(SC3)
