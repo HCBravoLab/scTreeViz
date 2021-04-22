@@ -5,7 +5,7 @@ For a walk through of various features of the app, checkout the vignette at
 
 https://hcbravolab.github.io/palmtree/Explore-PBMC.html
 
-## Installation and requiremenets
+## Installation and requirements
 
 `Palmtree` currently requires a development version of `epivizrData` which supports Sparse Measurements. We plan to push this to `bioc` soon. 
 
