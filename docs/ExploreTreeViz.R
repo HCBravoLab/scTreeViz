@@ -5,7 +5,7 @@ knitr::opts_chunk$set(
 )
 
 ## ----load-packages, message=FALSE, warning=FALSE------------------------------
-library(TreeViz)
+library(palmtree)
 library(dplyr)
 library(Seurat)
 library(SC3)
@@ -16,18 +16,27 @@ library(igraph)
 library(scRNAseq)
 
 ## ---- eval=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE----
-#  n=64
-#  # create a hierarchy
-#  df<- data.frame(cluster0=rep(1,n))
-#  for(i in seq(1,5)){
-#    df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+#  # load dataset
+#  sce<- LunSpikeInData('416b')
+#  # Normalization
+#  sce <- logNormCounts(sce)
+#  # calculate umap and tsne
+#  sce <- runUMAP(sce)
+#  sce<- runTSNE(sce)
+#  sce<- runPCA(sce)
+
+## ---- eval=FALSE, warning=FALSE, error=FALSE, message=FALSE-------------------
+#  treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
+#  plot(treeViz)
+
+## ---- eval=FALSE, warning=FALSE, error=FALSE, message=FALSE-------------------
+#  # Forming clusters
+#  for (i in  seq(10)) {
+#    clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
+#    sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
 #  }
 #  
-#  # generate a count matrix
-#  counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
-#  
-#  # create a `TreeViz` object
-#  treeViz <- createTreeViz(df, counts)
+#  treeViz<- createFromSCE(sce, check_coldata = TRUE, col_regex = "clust")
 #  plot(treeViz)
 
 ## ---- eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE----
@@ -46,34 +55,31 @@ library(scRNAseq)
 #  pbmc
 
 ## ---- eval=FALSE, echo=TRUE, results='hide', warning=FALSE, error=FALSE, message=FALSE----
-#  pbmc<- RunTSNE(pbmc)
+#  # pbmc<- RunTSNE(pbmc)
 #  pbmc<- RunUMAP(pbmc, dims=1:3)
 #  Reductions(pbmc)
 
 ## ---- eval=FALSE, echo=TRUE,  warning=FALSE, error=FALSE, message=FALSE-------
-#  treeViz<- createFromSeurat(pbmc, reduced_dim = c("umap","pca","tsne"))
+#  treeViz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("umap","pca","tsne"))
 #  plot(treeViz)
 
 ## ---- eval=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE----
-#  # load dataset
-#  sce<- LunSpikeInData('416b')
-#  # Normalization
-#  sce <- logNormCounts(sce)
-#  # calculate umap and tsne
-#  sce <- runUMAP(sce)
-#  sce<- runTSNE(sce)
-#  sce<- runPCA(sce)
-
-## ---- eval=FALSE, warning=FALSE, error=FALSE, message=FALSE-------------------
-#  treeViz <- createFromSCE(sce, reduced_dim = c("UMAP","PCA","TSNE"))
+#  n=64
+#  # create a hierarchy
+#  df<- data.frame(cluster0=rep(1,n))
+#  for(i in seq(1,5)){
+#    df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+#  }
+#  
+#  # generate a count matrix
+#  counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
+#  
+#  # create a `TreeViz` object
+#  treeViz <- createTreeViz(df, counts)
 #  plot(treeViz)
 
 ## ---- eval=FALSE, echo=TRUE---------------------------------------------------
 #  app <- startTreeviz(treeViz, top_genes = 500)
-
-## ---- eval=FALSE, echo=TRUE---------------------------------------------------
-#  # to add a box plot of expression for a gene
-#  app$plotGene(gene="TYROBP")
 
 ## ---- eval=FALSE, echo=TRUE---------------------------------------------------
 #  app$stop_app()

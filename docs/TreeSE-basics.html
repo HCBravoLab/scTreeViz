@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jayaram Kancherla, Hector Corrada Bravo" />
 
-<meta name="date" content="2020-11-08" />
+<meta name="date" content="2021-04-22" />
 
 <title>TreeViz-basics</title>
 
@@ -765,7 +765,7 @@ function toggle_visibility(id1) {
 
 <h1 class="title toc-ignore">TreeViz-basics</h1>
 <p class="author-name">Jayaram Kancherla, Hector Corrada Bravo</p>
-<h4 class="date">2020-11-08</h4>
+<h4 class="date">2021-04-22</h4>
 
 </div>
 
@@ -784,7 +784,7 @@ function toggle_visibility(id1) {
 
 <div id="loading-required-packages" class="section level2">
 <h2><span class="header-section-number">0.1</span> loading required packages</h2>
-<pre class="r"><code>library(TreeViz)
+<pre class="r"><code>library(palmtree)
 library(metagenomeSeq)
 library(msd16s)
 library(S4Vectors)
@@ -1872,7 +1872,7 @@ agg_sel</code></pre>
 ## Pseudomonadales                            0            0            0
 ## Verrucomicrobiales                         1            2            0
 ##                                 PM6:20080114 PM6:20080121 PM6:20071217
-## Actinomycetales                            0            2            0
+## Actinomycetales                            0            2            1
 ## Not_Annotated_family_Bacteria            317          524          136
 ## Not_Annotated_family_Bacteria.1          317          524          136
 ## Not_Annotated_family_Bacteria.2          317          524          136
@@ -2402,9 +2402,7 @@ pbmc_TreeSE</code></pre>
 
 graph &lt;- clustree(sce, prefix = &quot;sc3_&quot;, suffix = &quot;_clusters&quot;, return=&quot;graph&quot;)</code></pre>
 <pre><code>## Warning: The `add` argument of `group_by()` is deprecated as of dplyr 1.0.0.
-## Please use the `.add` argument instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+## Please use the `.add` argument instead.</code></pre>
 <pre class="r"><code>treeSE &lt;- ImportFromSingleCellExperiment(sce, graph)
 treeSE</code></pre>
 <pre><code>## class: TreeViz 

@@ -2,7 +2,7 @@
 knitr::opts_chunk$set(echo = TRUE)
 
 ## ----load-packages, message=FALSE, warning=FALSE------------------------------
-library(TreeViz)
+library(palmtree)
 library(metagenomeSeq)
 library(msd16s)
 library(S4Vectors)
