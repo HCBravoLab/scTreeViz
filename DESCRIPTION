@@ -20,7 +20,7 @@ Imports: epivizrStandalone, BiocGenerics, Biobase,
         data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
         httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer,
         dplyr, ggraph, scater, tidygraph, Seurat, SingleCellExperiment
-Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown
+Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown, msd16s, metagenomeSeq
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, SingleCell
 Encoding: UTF-8
