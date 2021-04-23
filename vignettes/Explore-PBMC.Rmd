@@ -24,13 +24,7 @@ library(palmtree)
 library(scran)
 ```
 
-## Loading data
-
-```{r}
-data(PBMC3k_TreeViz)
-```
-
-### (Optional) Generating the PBMC 3K TreeViz object
+### Generating the PBMC 3K TreeViz object
 
 This section follows similar steps as detailed in Seurat's tutorial -  https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html
 
