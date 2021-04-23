@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(TreeViz)
+library(palmtree)
 library(metagenomeSeq)
 library(msd16s)
 library(S4Vectors)

@@ -144,7 +144,7 @@
       if (is.null(obj)) {
         stop("cannot find datasource", m)
       }
-      obj$getAlphaDiversity(measurements)
+      obj$getGeneExpr(measurements)
     })
     names(result) <- names(measurementsList)
     result

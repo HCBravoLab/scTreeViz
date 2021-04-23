@@ -20,7 +20,8 @@ The package provides the PBMC 3K dataset for interactive exploration with TreeVi
 ## Loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(TreeViz)
+library(palmtree)
+library(scran)
 ```
 
 ## Loading data
@@ -36,7 +37,7 @@ This section follows similar steps as detailed in Seurat's tutorial -  https://s
 ```{r, eval=FALSE, echo=TRUE} 
 library(Seurat)
 
-pbmc.data <- Read10X(data.dir = "../data/pbmc3k/filtered_gene_bc_matrices/hg19/")
+pbmc.data <- Read10X(data.dir = "../../filtered_gene_bc_matrices/hg19/")
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
 
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
@@ -47,16 +48,16 @@ all.genes <- rownames(pbmc)
 pbmc <- ScaleData(pbmc, features = all.genes)
 
 pbmc <- FindVariableFeatures(pbmc)
+pbmc <- RunPCA(pbmc)
+
 pbmc <- FindNeighbors(pbmc, dims=1:10)
 
 pbmc <- FindClusters(pbmc, resolution=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0), save.SNN=TRUE)
 
 pbmc <- RunTSNE(pbmc)
 pbmc <- RunUMAP(pbmc, dims=1:5)
-pbmc <- RunPCA(pbmc)
 
-PBMC3K_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"))
-PBMC3K_TreeViz
+PBMC3k_TreeViz <- createFromSeurat(pbmc, reduced_dim = c("pca", "tsne", "umap"), check_metadata = TRUE)
 ```
 
 ## Initialize the App
@@ -64,7 +65,11 @@ PBMC3K_TreeViz
 To start interactive exploration on this data, 
 
 ```{r, eval=FALSE}
-app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100)
+# to visualize top 100 variable genes
+app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100, host="http://localhost:8877")
+
+# to visualize a genes list
+# app <- startTreeviz(PBMC3k_TreeViz, genes=c("GBA", "FDPS", "TREM2"))
 ```
 
 The app by default chooses `resolution 0.4` as a starting set of clusters for exploration. This
@@ -74,34 +79,102 @@ The app by default chooses `resolution 0.4` as a starting set of clusters for ex
 3. Heatmap of the top `n` (default to 100) most variable genes from the dataset where counts are aggregated to the choosen cluster resolutions
 4. Scatter plots for each of the reduced dimensions available in the object.  
  
-![Treeviz App](images/Treeviz-annotated.png){width=90%}
+![Overview of Palmtree App](images/Treeviz-annotated.png){width=90%}
 
 ### Interactions
 
 As you are exploring this dataset, you notice in the tsne/umap/pca plots that the clusters (colored orange, green, red and purple) are not well separated.
 
-![clusters](images/treeviz_clusters.png)
+![Reduced Dimensionality Plot](images/treeviz_clusters.png)
 These clusters (4C1, 4C4, 4C6, 4C7) at cluster resolution 0.4 do not seem to be well separated. So may be I would like to choose a lower resolution for these cells. As I look at the hierarchy in the `facetZoom` they belong to the same parent (2C1) at cluster resolution 0.2. I can now choose to cluster these cells at a different resolution (as shown below). This immediately reflects the changes in the dimensionality plots, computes a new count matrix based on the selection and updates the heatmap. 
 
-![aggregation](images/treeviz_agg.gif){width=70%}
+![Aggregate cells at a different resolution](images/treeviz_agg.gif){width=70%}
 
 
 Similarly if a cell type or cluster is not of interest, one can remove cluster(s) from analysis. This will grey out the cluster from the dimensionality plots, remove the cluster from the heatmap and update the dynamic clustering over genes. 
 
-![remove](images/treeviz_remove.gif){width=70%}
+![removing cells or cluster from analysis](images/treeviz_remove.gif){width=70%}
 
-### Additional Plots
 
-We can add plots to visualize expression of a single gene across clusters. To add a box plot for gene `TYROBP`
+### Propagate cluster selections
+
+Until now, we have shown how to explore cluster resolutions at different levels. 
+You might be thinking - Now what I do with the cluster selections from the UI
+
+#### Extract Cluster Selections
+
+To extract the selections, we provide a convenient method that returns
+a `SingleCellExperiment` object for the provided dataset. The `ColData` of this object
+will contain the cluster labels from the app in `treeviz_clusters` slot. 
 
 ```{r, eval=FALSE}
-app$plotGene(gene="TYROBP")
+sce <- app$extract_SCE()
 ```
 
-![box plot](images/treeviz_boxplot.png)
+Note: If the clusters are removed from the analysis on the app during exploration, 
+these will be labeled as `removed`.
 
+We can also quickly look at the the total number of cells in each of the clusters.
 
-you can also add this through the UI through the `add visualization` interface on the top and choose "Gene Box Plot".
+```{}
+> table(sce$treeviz_clusters)
+
+cluster2C1 cluster4C0 cluster4C3 cluster4C5    removed 
+       701       1199        303        148        349 
+```
+
+#### Marker Gene Analysis
+
+Now that we have clusters labels, we can find marker genes for these clusters.
+
+```{r, eval=FALSE}
+library(scater)
+sce <- logNormCounts(sce)
+
+# ignore removed cells 
+sce_rm <- sce[, sce$treeviz_clusters != 'removed']
+
+markers <- findMarkers(sce_rm, groups=sce_rm$treeviz_clusters)
+```
+
+`markers` contains the results of the tests filtered by `p.value`.
+
+```{r, eval=FALSE}
+markers_pr <- lapply(markers, function(x) {
+  rownames(head(x[x$p.value < 0.05,]))
+})
+markers_pr
+```
+
+```{}
+$cluster2C1
+[1] "AIF1"   "CST3"   "CFD"    "S100A8" "TYROBP" "LGALS2"
+
+$cluster4C0
+[1] "CST3"   "NKG7"   "GZMB"   "CCL5"   "TYROBP" "CD3D"  
+
+$cluster4C3
+[1] "AIF1"   "CD3D"   "NKG7"   "S100A8" "GZMB"   "CCL5"  
+
+$cluster4C5
+[1] "CD3D"   "CFD"    "NKG7"   "GZMB"   "LGALS2" "GNLY"  
+```
+
+### Expression of a Gene 
+
+From the marker gene analysis, we notice `AIF1` is the top marker for cluster 
+`cluster2C1`. We can explore the expression of this gene across all the clusters
+using the `plotGene` function and WE clearly notice a higher expression in this
+cluster.
+ 
+```{r, eval=FALSE}
+app$plotGene(gene="AIF1")
+```
+
+![Expression of gene AIF1 across clusters](images/treeviz_boxplot.png){width=80%}
+
+This can also be done through the UI through the `add visualization` interface 
+on the top and choose "Gene Box Plot".
 
 ## Close the App
 
