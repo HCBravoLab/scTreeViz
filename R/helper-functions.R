@@ -82,7 +82,7 @@ check_cycle <- function(pruned_graph) {
       adj_ver <-
         adjacent_vertices(pruned_graph, nodes, mode = "in")
       adj_ver <- as_ids(adj_ver[[1]])
-      str(adj_ver)
+      
       remove_node <- sample(adj_ver, 1)
       
       remove_edge <-

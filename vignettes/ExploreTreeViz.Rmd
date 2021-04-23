@@ -53,7 +53,7 @@ sce<- runTSNE(sce)
 sce<- runPCA(sce)
 ```
 
-Similar to the `Seurat` methods, we provide `createFromSCE` function to create a `TreeViz` object from `SingleCellExperiment` object. Here, the workflow works in two ways:
+We provide `createFromSCE` function to create a `TreeViz` object from `SingleCellExperiment` object. Here, the workflow works in two ways:
 
 1. If no cluster information is available in the `colData` of the `SingleCellExperiment` object, we create clusters at different resolutions using the `WalkTrap` algorithm by calling an internal function `generate_walktrap_hierarchy` and use this cluster information for visualization.
 
@@ -66,6 +66,7 @@ plot(treeViz)
 
 ```{r, eval=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 # Forming clusters
+set.seed(1000)
 for (i in  seq(10)) {
   clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
   sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
