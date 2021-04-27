@@ -62,7 +62,7 @@ test_that("check aggregate_tree", {
   sums[[3]] <- list(rowSums(counts[,c(16:25)]))
   sums[[4]] <- list(rowSums(counts[,c((26:32))]))
   sum_df <- as.data.frame(sums)
-  aggtree <- palmtree::aggregateTree(treeviz, by="col", selectedLevel=3)
+  aggtree <- palmtree:::aggregateTree(treeviz, by="col", selectedLevel=3)
   
   agg_df <- as.data.frame(assays(aggtree)$counts)
   # result <- all.equal(agg_df, sum_df, check.attributes= FALSE)

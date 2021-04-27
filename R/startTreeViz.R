@@ -321,6 +321,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
 #' @return An object of class \code{\link[TreeViz]{TreevizApp}}
 #'
 #' @import epivizrStandalone
+#' @importFrom GenomeInfoDb Seqinfo
 #' @examples
 #'
 #' #' # see package vignette for example usage

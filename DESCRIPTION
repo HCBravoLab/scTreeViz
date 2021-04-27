@@ -1,7 +1,7 @@
 Package: palmtree
 Type: Package
 Title: R/Bioconductor package to interactively explore and visualize single cell RNA-seq datasets with hierarhical annotations
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c( 
           person("Jayaram", "Kancherla", email="jayaram.kancherla@gmail.com", role=c("aut", "cre")),
           person("Hector", "Corrada Bravo", email="hcorrada@gmail.com", role=c("aut")),
@@ -20,12 +20,11 @@ Imports: epivizrStandalone, BiocGenerics, Biobase,
         data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
         httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer,
         dplyr, ggraph, scater, tidygraph, Seurat, SingleCellExperiment
-Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown
+Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown, msd16s, metagenomeSeq
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, SingleCell
 Encoding: UTF-8
 LazyData: true
 Collate: 'TreeIndex-class.R' 'TreeIndex-methods.R' 'TreeViz-class.R' 'TreeViz-methods.R' 'startTreeViz.R' 
          'TreeVizApp-class.R' 'EpivizTreeData-class.R' 'helper-functions.R' 'ClusterHierarchy-class.R'
-         'vignette_data.R'
 RoxygenNote: 7.1.1

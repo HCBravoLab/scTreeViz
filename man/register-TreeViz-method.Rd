@@ -14,7 +14,7 @@
 \item{...}{Additional arguments passed to object constructors}
 }
 \value{
-An \code{\link{EpivizMetagenomicsData-class}} object
+An \code{\link{EpivizTreeData-class}} object
 }
 \description{
 Generic method to register data to the epiviz data server

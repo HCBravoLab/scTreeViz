@@ -161,7 +161,7 @@ setMethod("aggregateTree", "TreeViz",
 #' @param object The object to register to data server
 #' @param columns Name of columns containing data to register
 #' @param ... Additional arguments passed to object constructors
-#' @return An \code{\link{EpivizMetagenomicsData-class}} object
+#' @return An \code{\link{EpivizTreeData-class}} object
 #' @importMethodsFrom epivizrData register
 #'
 setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...) {
