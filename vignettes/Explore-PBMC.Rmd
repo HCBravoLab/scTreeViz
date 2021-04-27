@@ -25,12 +25,9 @@ library(scran)
 ```
 
 ## Loading data
+In this walkthrough we use the pbmc 3k dataset that can be downloaded from [here](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz)
 
-```{r}
-data(PBMC3k_TreeViz)
-```
-
-### (Optional) Generating the PBMC 3K TreeViz object
+###  Generating the PBMC 3K TreeViz object
 
 This section follows similar steps as detailed in Seurat's tutorial -  https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html
 

@@ -267,7 +267,7 @@ rename_clusters <- function(clusterdata) {
 #' @import clustree
 #' @importFrom data.table setorder
 #' @importFrom igraph as_long_data_frame
-#' @export
+#' 
 preprocessAndCreateTreeViz <- function(clusters, counts) {
   clusters <- rename_clusters(clusters)
   setorder(clusters)
@@ -313,11 +313,19 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
 }
 
 #' Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
+#' 
 #' walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
 #' Intermediate cluster assignments are created based on monotonically increasing level of modularity
 #' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
 #' @param nsteps number of steps to use in `cluster_walktrap`
 #' @return dataframe with hierarchy information
+#' @examples
+#'\donotrun{
+#' library(scuttle)
+#' sce <- mockSCE()
+#' sce <- logNormCounts(sce)
+#' df <- generate_walktrap_hierarchy(sce)
+#'} 
 #' @export
 #'
 generate_walktrap_hierarchy <- function(object, nsteps = 7) {
