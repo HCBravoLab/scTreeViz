@@ -2,8 +2,7 @@
 % Please edit documentation in R/helper-functions.R
 \name{find_top_variable_genes}
 \alias{find_top_variable_genes}
-\title{Finds top variable genes `TreeViz`
-Finds the n top variable genes within the genes present in `TreeViz` object}
+\title{Finds top variable genes `TreeViz`}
 \usage{
 find_top_variable_genes(treeviz, top = 100)
 }
@@ -13,9 +12,18 @@ find_top_variable_genes(treeviz, top = 100)
 \item{top}{number of top genes to be calculated}
 }
 \value{
-`TreeViz` Object with added top_variable_gene information in metadata
+`TreeViz` Object with added top_variable_gene information in metadata slot
 }
 \description{
-Finds top variable genes `TreeViz`
 Finds the n top variable genes within the genes present in `TreeViz` object
+}
+\examples{
+\dontrun{
+library(Seurat)
+data(pbmc_small)
+pbmc <- pbmc_small
+treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+treeviz<-find_top_variable_genes(treeviz)
+metadata(treeviz)
+}
 }

@@ -2,9 +2,7 @@
 % Please edit documentation in R/ClusterHierarchy-class.R
 \name{ClusterHierarchy}
 \alias{ClusterHierarchy}
-\title{create a new ClusterHierarchy object. User can give either
-col_regex or  columns option to filter the columns or specify 
-the column order}
+\title{Creates a new ClusterHierarchy object.}
 \usage{
 ClusterHierarchy(hierarchy, col_regex = NULL, columns = NULL)
 }
@@ -16,10 +14,25 @@ ClusterHierarchy(hierarchy, col_regex = NULL, columns = NULL)
 \item{columns}{Vector containing list of columns to choose from with ordering}
 }
 \value{
-`ClusterHierarchy`` return an object of class ClusterHierarchy containing cluster information
+`ClusterHierarchy`` return an object of class ClusterHierarchy containing cluster information that ensures a valid dataframe for treeviz input
 }
 \description{
-create a new ClusterHierarchy object. User can give either
+Works as a validation check for multiple issues user passed dataframe might have.
+For example, multiple root nodes, incompatible naming, multiple parents of a single node, etc
+This function performs all this checks and tries to resolve the issues by making changes in cluster assignment
+User can give either
 col_regex or  columns option to filter the columns or specify 
 the column order
+}
+\examples{
+\dontrun{
+n=64
+# create a hierarchy
+df<- data.frame(cluster0=rep(1,n))
+for(i in seq(1,5)){
+  df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+}
+clus_hier<-ClusterHierarchy(df, col_regex = "clus")
+} 
+
 }

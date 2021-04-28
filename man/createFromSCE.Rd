@@ -31,3 +31,20 @@ createFromSCE(
 Creates a `TreeViz`` object from `SingleCellExperiment`. Generates
 clusters based on Walktrap algorithm if no default is provided
 }
+\examples{
+\dontrun{
+library(SingleCellExperiment)
+library(scuttle)
+library(scater)
+sce <- mockSCE()
+sce <- logNormCounts(sce)
+sce <- runTSNE(sce)
+sce <- runUMAP(sce)
+set.seed(1000)
+for (i in  seq(5)) {
+clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
+sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
+}
+treeviz <-createFromSCE(sce, check_coldata = TRUE, col_regex = "clust", reduced_dim = c("TSNE", "UMAP"))
+} 
+}

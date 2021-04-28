@@ -5,16 +5,31 @@ setClass(
 )
 
 
-#' create a new ClusterHierarchy object. User can give either
+#' Creates a new ClusterHierarchy object. 
+#' 
+#' Works as a validation check for multiple issues user passed dataframe might have.
+#' For example, multiple root nodes, incompatible naming, multiple parents of a single node, etc
+#' This function performs all this checks and tries to resolve the issues by making changes in cluster assignment
+#' User can give either
 #' col_regex or  columns option to filter the columns or specify 
 #' the column order
 #' @param hierarchy hierarchy as a dataFrame
 #' @param col_regex Regular Expression for choosing columns
 #' @param columns Vector containing list of columns to choose from with ordering
-#' @return `ClusterHierarchy`` return an object of class ClusterHierarchy containing cluster information
+#' @return `ClusterHierarchy`` return an object of class ClusterHierarchy containing cluster information that ensures a valid dataframe for treeviz input
 #' @importFrom methods new
 #' @importFrom S4Vectors DataFrame
 #' @export
+#' @examples
+#' \dontrun{
+#' n=64
+#' # create a hierarchy
+#' df<- data.frame(cluster0=rep(1,n))
+#' for(i in seq(1,5)){
+#'   df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+#' }
+#' clus_hier<-ClusterHierarchy(df, col_regex = "clus")
+#' } 
 #' 
 ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   #will se later if this is needed

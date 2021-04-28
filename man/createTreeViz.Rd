@@ -2,13 +2,12 @@
 % Please edit documentation in R/helper-functions.R
 \name{createTreeViz}
 \alias{createTreeViz}
-\title{Creates `TreeViz` object from hierarchy and count matrix
-This module returns the Tree Summarized Experiment if the dataframe is tree, throws error otherwise}
+\title{Creates `TreeViz` object from hierarchy and count matrix}
 \usage{
 createTreeViz(clusters, counts)
 }
 \arguments{
-\item{clusters}{`ClusterHierarchy` object containing cluster information at different resolutions}
+\item{clusters}{`ClusterHierarchy` object or a dataframe containing cluster information at different resolutions}
 
 \item{counts}{matrix Dense or sparse matrix containing the count matrix}
 }
@@ -16,6 +15,22 @@ createTreeViz(clusters, counts)
 `TreeViz`` Object
 }
 \description{
-Creates `TreeViz` object from hierarchy and count matrix
-This module returns the Tree Summarized Experiment if the dataframe is tree, throws error otherwise
+Provided with a count matrix and a dataframe or `ClusterHierarchy` object, this module 
+runs the necessary checks on the dataframe and tries to convert it to a tree by making necessary changes.
+Returns the `TreeViz` object if a tree is successfully generated from dataframe, throws error otherwise
+}
+\examples{
+\dontrun{
+n=64
+# create a hierarchy
+df<- data.frame(cluster0=rep(1,n))
+for(i in seq(1,5)){
+  df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+}
+# generate a count matrix
+counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
+colnames(counts)<- seq(1:64)
+# create a `TreeViz` object
+treeViz <- createTreeViz(df, counts)
+} 
 }
