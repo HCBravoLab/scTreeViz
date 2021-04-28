@@ -6,7 +6,7 @@
 \usage{
 setTreevizStandalone(
   url = "https://github.com/epiviz/epiviz.git",
-  branch = "transitions-live",
+  branch = "treeviz",
   local_path = NULL,
   non_interactive = FALSE
 )

@@ -267,7 +267,6 @@ rename_clusters <- function(clusterdata) {
 #' @import clustree
 #' @importFrom data.table setorder
 #' @importFrom igraph as_long_data_frame
-#' @export
 preprocessAndCreateTreeViz <- function(clusters, counts) {
   clusters <- rename_clusters(clusters)
   setorder(clusters)
@@ -318,7 +317,6 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
 #' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
 #' @param nsteps number of steps to use in `cluster_walktrap`
 #' @return dataframe with hierarchy information
-#' @export
 #'
 generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   
@@ -470,7 +468,6 @@ createTreeViz <- function(clusters, counts) {
 #' @return `TreeViz` Object with added top_variable_gene information in metadata
 #' @importFrom scran getTopHVGs
 #' @importFrom scran modelGeneVar
-#' @export
 #'
 find_top_variable_genes <- function(treeviz, top = 100) {
   dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
@@ -496,7 +493,6 @@ set_gene_list <- function(treeviz, genes) {
 #' @param treeviz TreeViz object
 #' @return `TreeViz` Object with added 'TSNE'tnse`information in reduced_dim slot of metadata
 #' @importFrom scater calculateTSNE
-#' @export
 calculate_tsne <- function(treeviz) {
   message("No defaults dimensionality reductions provided")
   message("Calculating TSNE")
