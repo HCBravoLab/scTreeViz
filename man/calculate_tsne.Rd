@@ -2,8 +2,7 @@
 % Please edit documentation in R/helper-functions.R
 \name{calculate_tsne}
 \alias{calculate_tsne}
-\title{Calculates `tsne` Dimensionality Reduction on `TreeViz` object. 
-The result is added to reduced_dim slot in metadata}
+\title{Calculates `tsne` Dimensionality Reduction on `TreeViz` object.}
 \usage{
 calculate_tsne(treeviz)
 }
@@ -11,9 +10,18 @@ calculate_tsne(treeviz)
 \item{treeviz}{TreeViz object}
 }
 \value{
-`TreeViz` Object with added 'TSNE'tnse`information in reduced_dim slot of metadata
+`TreeViz` Object with added `TSNE` iinformation in reduced_dim slot of metadata
 }
 \description{
-Calculates `tsne` Dimensionality Reduction on `TreeViz` object. 
 The result is added to reduced_dim slot in metadata
+}
+\examples{
+\dontrun{
+library(Seurat)
+data(pbmc_small)
+pbmc <- pbmc_small
+treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+treeviz<- calculate_tsne(treeviz)
+metadata(treeviz)$reduced_dim$TSNE
+}
 }

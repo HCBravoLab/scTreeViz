@@ -29,3 +29,11 @@ createFromSeurat(
 \description{
 Creates a `TreeViz` object from `Seurat`
 }
+\examples{
+\dontrun{
+library(Seurat)
+data(pbmc_small)
+pbmc <- pbmc_small
+treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+}
+}
