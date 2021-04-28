@@ -1,4 +1,4 @@
 library(testthat)
-library(palmtree)
+library(scTreeViz)
 
-test_check("palmtree")
+test_check("scTreeViz")

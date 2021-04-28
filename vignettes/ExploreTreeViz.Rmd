@@ -4,7 +4,7 @@ author: "Jayaram Kancherla, Kazi Tasnim Zinat, Héctor Corrada Bravo"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Explore Data using Palmtree}
+  %\VignetteIndexEntry{Explore Data using scTreeViz}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,12 +18,12 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-[`Palmtree`](https://github.com/HCBravoLab/palmtree) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `Palmtree` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for dimensionality reductions like UMAP or TSNE.
+[`scTreeViz`](https://github.com/HCBravoLab/palmtree) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `scTreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for dimensionality reductions like UMAP or TSNE.
 
 ## Loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(palmtree)
+library(scTreeViz)
 library(dplyr)
 library(Seurat)
 library(SC3)
@@ -36,7 +36,7 @@ library(scRNAseq)
 
 # Preparing Datasets
 
-The first step in using the `Palmtree` package is to wrap datasets into `TreeViz` objects. The `TreeViz` class extends `SummarizedExperiment` and provides various methods to interactively perform various operations on the underlying hierarchy and count or expression matrices. In this section, we show various ways to generate a `TreeViz` object either from existing Single Cell packages (SingleCellExperiment or Seurat) or from a raw count matrix and cluster hierarchy.
+The first step in using the `scTreeViz` package is to wrap datasets into `TreeViz` objects. The `TreeViz` class extends `SummarizedExperiment` and provides various methods to interactively perform various operations on the underlying hierarchy and count or expression matrices. In this section, we show various ways to generate a `TreeViz` object either from existing Single Cell packages (SingleCellExperiment or Seurat) or from a raw count matrix and cluster hierarchy.
 
 ## From `SingleCellExperiment`
 

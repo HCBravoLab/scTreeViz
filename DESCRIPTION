@@ -1,4 +1,4 @@
-Package: palmtree
+Package: scTreeViz
 Type: Package
 Title: R/Bioconductor package to interactively explore and visualize single cell RNA-seq datasets with hierarhical annotations
 Version: 0.99.1
@@ -8,7 +8,7 @@ Authors@R: c(
           person("Kazi Tasnim", "Zinat", email="kzintas@umd.edu", role=c("aut")),
           person("Stephanie", "Hicks", email="shicks19@jhu.edu", role=c("aut"))
           )
-Description: Palmtree provides classes to support interactive data
+Description: scTreeViz provides classes to support interactive data
           aggregation and visualization of single cell RNA-seq datasets with hierarchies for e.g. cell
           clusters at different resolutions. The `TreeIndex` class 
           provides methods to manage hierarchy and split the tree at a given resolution or
@@ -16,9 +16,8 @@ Description: Palmtree provides classes to support interactive data
           and can performs quick aggregations on the count matrix defined by clusters.
 License: Artistic-2.0
 Depends: R (>= 3.4), methods, epivizr, SummarizedExperiment
-Imports: epivizrStandalone, BiocGenerics, Biobase, 
-        data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
-        httr, ggplot2, igraph, clustree, scran, sys, epivizrData, epivizrServer,
+Imports: epivizrStandalone, data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
+        httr, igraph, clustree, scran, sys, epivizrData, epivizrServer,
         dplyr, ggraph, scater, tidygraph, Seurat, SingleCellExperiment
 Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown, msd16s, metagenomeSeq
 VignetteBuilder: knitr

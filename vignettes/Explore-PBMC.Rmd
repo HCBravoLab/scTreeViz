@@ -20,7 +20,7 @@ The package provides the PBMC 3K dataset for interactive exploration with TreeVi
 ## Loading required packages
 
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(palmtree)
+library(scTreeViz)
 library(scran)
 ```
 
@@ -73,7 +73,7 @@ The app by default chooses `resolution 0.4` as a starting set of clusters for ex
 3. Heatmap of the top `n` (default to 100) most variable genes from the dataset where counts are aggregated to the choosen cluster resolutions
 4. Scatter plots for each of the reduced dimensions available in the object.  
  
-![Overview of Palmtree App](images/Treeviz-annotated.png){width=90%}
+![Overview of scTreeViz App](images/Treeviz-annotated.png){width=90%}
 
 ### Interactions
 
