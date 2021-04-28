@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-[`scTreeViz`](https://github.com/HCBravoLab/palmtree) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `scTreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for dimensionality reductions like UMAP or TSNE.
+[`scTreeViz`](https://github.com/HCBravoLab/scTreeViz) is a package for interactive visualization and exploration of Single Cell RNA sequencing data. `scTreeViz` provides methods for exploring hierarchical features (eg. clusters in single cell at different resolutions or taxonomic hierarchy in single cell datasets), while supporting other useful data visualization charts like heatmaps for expression and scatter plots for dimensionality reductions like UMAP or TSNE.
 
 ## Loading required packages
 

@@ -60,7 +60,7 @@ To start interactive exploration on this data,
 
 ```{r, eval=FALSE}
 # to visualize top 100 variable genes
-app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100, host="http://localhost:8877")
+app <- startTreeviz(PBMC3k_TreeViz, top_genes = 100)
 
 # to visualize a genes list
 # app <- startTreeviz(PBMC3k_TreeViz, genes=c("GBA", "FDPS", "TREM2"))
