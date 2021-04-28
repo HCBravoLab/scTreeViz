@@ -415,6 +415,6 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
 #' }
 #'
 #' @export
-setTreevizStandalone <- function(url="https://github.com/epiviz/epiviz.git", branch="transitions-live", local_path=NULL, non_interactive=FALSE) {
+setTreevizStandalone <- function(url="https://github.com/epiviz/epiviz.git", branch="treeviz", local_path=NULL, non_interactive=FALSE) {
   setStandalone(url = url, branch = branch, local_path = local_path, non_interactive = non_interactive)
 }
