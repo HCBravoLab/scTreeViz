@@ -1,0 +1,77 @@
+---
+title: "TreeViz-basics"
+author: "Jayaram Kancherla, Hector Corrada Bravo"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Introduction to TreeViz}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## loading required packages
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(scTreeViz)
+library(metagenomeSeq)
+library(msd16s)
+library(S4Vectors)
+library(clustree)
+library(Seurat)
+library(SingleCellExperiment)
+```
+
+## Example Data
+
+```{r}
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+```
+
+
+## creating a `TreeViz` object
+
+```{r} 
+tree <- TreeIndex(hierarchy)
+
+mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
+mbiome
+```
+
+
+## Operations on TreeViz objects
+
+`TreeViz` provides `aggregateTree` method, to aggregate counts (rows or columns) to a given tree selection. The result is a `TreeViz` object.
+
+```{r}
+aggr <- aggregateTree(mbiome, selectedLevel=3, by="row")
+aggr
+```
+
+### Defining a cut in the tree
+
+In the previous example, we use the `selectedLevel` parameter to aggregate counts at level 3. 
+We also provide another parameter `selectedNodes` to allow users specify nodes for aggregating the tree. 
+using this parameter, we can perform aggregations at different levels of the tree.
+
+Note: A `facetZoom` visualization from `metavizr` will help make node selections easier.
+
+```{r}
+
+# lets get the list of all nodes from the tree
+nodes <- getNodes(tree)
+
+# select/remove rows in data frame to only keep nodes to aggregate 
+# this example chooses all level 3 nodes and two nodes from level 4 (Bacillales and Lactobacillales) 
+# to define the node selection. The dataframe can also be filtered by name and lineage.
+nodes <- nodes[level %in% c(3,4),][1:19]
+
+# aggregate counts to node selection
+agg_sel <- aggregateTree(mbiome, selectedLevel=3, selectedNodes=nodes, by="row")
+agg_sel
+```
