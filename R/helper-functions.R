@@ -321,7 +321,7 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
 #' @examples
 #' \dontrun{
 #' library(SingleCellExperiment)
-#' library(scuttle)
+#' library(scater)
 #' sce <- mockSCE()
 #' sce <- logNormCounts(sce)
 #' df <- generate_walktrap_hierarchy(sce)
@@ -359,19 +359,15 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
 #' @param columns vector containing columns with cluster information
 #' @param reduced_dim Vector of Dimensionality reduction information provided in `Seurat` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
-#' @export
-#' 
 #' @examples
-#' \dontrun{
 #' library(Seurat)
 #' data(pbmc_small)
 #' pbmc <- pbmc_small
 #' treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
-#' }
 #' @importFrom Seurat as.SingleCellExperiment
 #' @importFrom Seurat GetAssayData
 #' @importFrom Seurat Reductions
-
+#' @export
 createFromSeurat <- function(object,
    check_metadata = FALSE,
    col_regex = "*snn*",
@@ -413,11 +409,8 @@ createFromSeurat <- function(object,
 #' @param columns vector containing columns with cluster information
 #' @param reduced_dim Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
-#' @export
 #' @examples
-#' \dontrun{
 #' library(SingleCellExperiment)
-#' library(scuttle)
 #' library(scater)
 #' sce <- mockSCE()
 #' sce <- logNormCounts(sce)
@@ -429,8 +422,9 @@ createFromSeurat <- function(object,
 #' sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
 #' }
 #' treeviz <-createFromSCE(sce, check_coldata = TRUE, col_regex = "clust", reduced_dim = c("TSNE", "UMAP"))
-#' } 
+#' 
 #' @import SingleCellExperiment
+#' @export
 createFromSCE <-
   function(object,
            check_coldata = FALSE,
@@ -474,9 +468,7 @@ createFromSCE <-
 #' @param clusters `ClusterHierarchy` object or a dataframe containing cluster information at different resolutions
 #' @param counts matrix Dense or sparse matrix containing the count matrix
 #' @return `TreeViz`` Object
-#' @export
 #' @examples
-#' \dontrun{
 #' n=64
 #' # create a hierarchy
 #' df<- data.frame(cluster0=rep(1,n))
@@ -488,7 +480,8 @@ createFromSCE <-
 #' colnames(counts)<- seq(1:64)
 #' # create a `TreeViz` object
 #' treeViz <- createTreeViz(df, counts)
-#' } 
+#' 
+#' @export
 createTreeViz <- function(clusters, counts) {
   
   if (class(clusters) %in% "data.frame") {

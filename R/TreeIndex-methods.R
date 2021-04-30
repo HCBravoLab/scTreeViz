@@ -4,7 +4,6 @@
 #' @param ... other params to dataframe subset method
 #' @param drop drop the dimensions of the object. defaults to FALSE
 #' @importFrom methods callNextMethod
-#' @export
 setMethod("[", "TreeIndex",
           function(x, i, j, ..., drop = FALSE) {
             # obj <- callNextMethod()
@@ -19,7 +18,6 @@ setMethod("[", "TreeIndex",
 #' Generic method to get nodes at a tree level
 #' @param x object
 #' @param ... other parameters
-#' @export
 setGeneric("getNodes", signature = "x",
            function(x, ...)
              standardGeneric("getNodes"))
@@ -27,6 +25,13 @@ setGeneric("getNodes", signature = "x",
 #' Method to get nodes at a tree level
 #' @param x a TreeIndex object
 #' @param selectedLevel tree level to select nodes from
+#' @examples 
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
+#' getNodes(tree)
 #' @export
 setMethod("getNodes", "TreeIndex",
           function(x,
@@ -43,7 +48,6 @@ setMethod("getNodes", "TreeIndex",
 
 #' Generic method for possible node states
 #' @param x object
-#' @export
 setGeneric("getNodeStates", signature = "x",
            function(x)
              standardGeneric("getNodeStates"))
@@ -52,7 +56,6 @@ setGeneric("getNodeStates", signature = "x",
 #' a node state is 0 if removed, 1 if expanded to show children &
 #' 2 if counts are aggregated to the node
 #' @param x object
-#' @export
 setMethod("getNodeStates", "TreeIndex",
           function(x) {
             return(list(
@@ -66,7 +69,6 @@ setMethod("getNodeStates", "TreeIndex",
 #' Generic method to split the tree
 #' @param x object
 #' @param ... other parameters
-#' @export
 setGeneric("splitAt", signature = "x",
            function(x, ...)
              standardGeneric("splitAt"))
@@ -80,6 +82,13 @@ setGeneric("splitAt", signature = "x",
 #' @param format return format can be one of "list" or "TreeIndex"
 #' @importFrom stats na.omit
 #' @importFrom methods is
+#' @examples 
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
+#' splitAt(tree)
 #' @export
 setMethod("splitAt", "TreeIndex",
           function(x,
@@ -215,7 +224,6 @@ setMethod("splitAt", "TreeIndex",
 #' Show the TreeIndex object
 #' @importFrom methods show
 #' @param object TreeIndex object
-#' @export
 setMethod("show", "TreeIndex", function(object) {
   cat(
     "Tree Index",

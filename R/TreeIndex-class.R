@@ -24,6 +24,12 @@ setClass(
 #' @importFrom data.table setnames
 #' @importFrom S4Vectors DataFrame
 #' @import digest
+#' @examples 
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
 #' @export
 TreeIndex <- function(hierarchy = NULL,
                       feature_order = NULL) {

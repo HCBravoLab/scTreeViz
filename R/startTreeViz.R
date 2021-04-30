@@ -201,7 +201,7 @@
 }
 
 
-#' Start treeviz app and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.
+#' Start treeviz app and create \code{\link[scTreeViz]{TreeVizApp}} object to manage connection.
 #'
 #' @param data TreeViz object to explore
 #' @param genes (character vector) genes (rownames) to include in heatmap
@@ -211,12 +211,12 @@
 #' @param delay (integer) number of seconds to wait for application to load in browser
 #' @param ... additional parameters passed to \code{\link[epivizr]{startEpiviz}}.
 #'
-#' @return An object of class \code{\link[treevizr]{TreevizApp}}
+#' @return An object of class \code{\link[scTreeViz]{TreeVizApp}}
 #'
 #' @import epivizr
 #' @import sys
 #'
-#' @seealso \code{\link[TreeViz]{TreevizApp}}
+#' @seealso \code{\link[scTreeViz]{TreeVizApp}}
 #' @examples
 #' # see package vignette for example usage
 #' app <- startTreeviz(non_interactive=TRUE, open_browser=FALSE)
@@ -314,7 +314,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
   }
 }
 
-#' Start treeviz app in standalone (locally) and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.
+#' Start treeviz app in standalone (locally) and create \code{\link[scTreeViz]{TreeVizApp}} object to manage connection.
 #'
 #' @param data TreeViz data object to use in the app
 #' @param register_function (function) function used to register actions and charts on the treeviz app.
@@ -323,7 +323,7 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
 #'  This allows standalone app to run in Rstudio's viewer (FALSE by default)
 #' @param ... additional parameters passed to \code{\link[epivizrStandalone]{startStandalone}}.
 #'
-#' @return An object of class \code{\link[TreeViz]{TreevizApp}}
+#' @return An object of class \code{\link[scTreeViz]{TreeVizApp}}
 #'
 #' @import epivizrStandalone
 #' @importFrom GenomeInfoDb Seqinfo
@@ -410,15 +410,11 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
 #' @param local_path (character) if you already have a local instance of treeviz and would like to run standalone use this.
 #' @param non_interactive (logical) don't download repo, used for testing purposes.
 #' @return path to the treeviz app git repository
-#'
 #' @import epivizrStandalone
 #' @examples
-#'
 #' \dontrun{
-#' #' # see package vignette for example usage
 #' setTreevizStandalone()
 #' }
-#'
 #' @export
 setTreevizStandalone <- function(url="https://github.com/epiviz/epiviz.git", branch="treeviz", local_path=NULL, non_interactive=FALSE) {
   setStandalone(url = url, branch = branch, local_path = local_path, non_interactive = non_interactive)

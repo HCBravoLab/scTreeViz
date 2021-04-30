@@ -15,10 +15,9 @@ setMethod("show", signature("TreeViz"),
             cat(show(colData(object)))
           })
 
-#' Generic method to aggregateTree
+#' Method to aggregate a TreeViz object
 #' @param x object
-#' @param ... other parameters
-#' @export
+#' @param ... other params to the function
 setGeneric("aggregateTree", signature = "x",
            function(x, ...)
              standardGeneric("aggregateTree"))
@@ -32,6 +31,14 @@ setGeneric("aggregateTree", signature = "x",
 #' @param aggFun aggregate function to use, by default colSums if by="row", rowSums if by="col"
 #' @param format return format can be one of "counts" or "TreeViz"
 #' @importFrom Matrix rowSums colSums
+#' @examples
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
+#' mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
+#' aggregateTree(mbiome)
 #' @export
 setMethod("aggregateTree", "TreeViz",
           function(x,
@@ -177,6 +184,17 @@ setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...)
 #' 
 #' @import ggraph
 #' @importFrom igraph graph_from_data_frame
+#' @importFrom ggplot2 aes
+#' @examples
+#' \dontrun{
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
+#' mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
+#' plot(mbiome)
+#' }
 #' @export
 #' 
 setMethod("plot", "TreeViz", function(x, y) {
@@ -206,8 +224,8 @@ setMethod("plot", "TreeViz", function(x, y) {
   fig <- ggraph(mygraph, layout = 'dendrogram', circular = FALSE) +
     ggraph::geom_edge_diagonal() +
     ggraph::geom_node_point(show.legend = TRUE) +
-    ggraph::geom_node_label(aes(label = substring(V(mygraph)$name, 8))) +
-    theme_void()
+    ggraph::geom_node_label(ggplot2::aes(label = substring(V(mygraph)$name, 8))) +
+    ggplot2::theme_void()
   show(fig)
   
 })
