@@ -3,11 +3,10 @@
 #' Used to serve hierarchical data (used in e.g., icicle plots and heatmaps).
 #' @importClassesFrom epivizrData EpivizData
 #' @importClassesFrom epivizrData SparseEpivizMeasurement
-#' @import data.table
+#' @rawNamespace import(data.table, except=shift)
 #' @import digest
 #' @import methods
 #' @import httr
-#' @import SummarizedExperiment
 #' @import Rtsne
 #' @exportClass EpivizTreeData
 EpivizTreeData <- setRefClass("EpivizTreeData",

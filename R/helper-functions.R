@@ -69,6 +69,7 @@ change_assignment <- function(graph, cluster_obj) {
 #' @param pruned_graph graph from clustree
 #' @return graph object after removing cyclic edges
 #' @importFrom utils str
+#' @import igraph
 check_cycle <- function(pruned_graph) {
   # Check if a diamond or circle still exists in tree
   delete_set_vertices <- vector('numeric')
@@ -367,7 +368,9 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
 #' pbmc <- pbmc_small
 #' treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
 #' }
-#' @import Seurat
+#' @importFrom Seurat as.SingleCellExperiment
+#' @importFrom Seurat GetAssayData
+#' @importFrom Seurat Reductions
 
 createFromSeurat <- function(object,
    check_metadata = FALSE,

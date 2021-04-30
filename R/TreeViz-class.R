@@ -48,7 +48,7 @@ TreeViz <- function(assays = SimpleList(),
 #' @param seurat seurat object that contains rowData
 #' @param cluster_names sluter names from seurat if different from standard
 #' @param clustree clustree object in graph format
-#' @import tidygraph
+#' @rawNamespace import(tidygraph,except=groups)
 #' @export
 ImportFromSeurat <- function(seurat, clustree, cluster_names = NULL) {
   # get clusters from seurat
@@ -91,7 +91,7 @@ ImportFromSeurat <- function(seurat, clustree, cluster_names = NULL) {
 #' @param scExp SingleCellExperiment object that contains colData
 #' @param cluster_names sluter names from SingleCellExperiment if different from standard
 #' @param clustree clustree object in graph format
-#' @import tidygraph
+#' @rawNamespace import(tidygraph, except=groups)
 #' @export
 ImportFromSingleCellExperiment <- function(scExp, clustree, cluster_names = NULL) {
   counts <- assays(scExp)$counts

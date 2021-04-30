@@ -175,9 +175,8 @@ setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...)
 #' @param y none
 #' @return Dataframe containing cluster information at different resolutions
 #' 
-#' @import dplyr
 #' @import ggraph
-#' @import igraph
+#' @importFrom igraph graph_from_data_frame
 #' @export
 #' 
 setMethod("plot", "TreeViz", function(x, y) {
