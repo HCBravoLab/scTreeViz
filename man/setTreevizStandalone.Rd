@@ -27,10 +27,7 @@ path to the treeviz app git repository
 set treeviz app standalone settings
 }
 \examples{
-
 \dontrun{
-#' # see package vignette for example usage
 setTreevizStandalone()
 }
-
 }

@@ -14,3 +14,10 @@ TreeIndex(hierarchy = NULL, feature_order = NULL)
 \description{
 create a new TreeIndex object
 }
+\examples{
+library(metagenomeSeq)
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+tree <- TreeIndex(hierarchy)
+}

@@ -2,15 +2,15 @@
 % Please edit documentation in R/TreeViz-methods.R
 \name{aggregateTree}
 \alias{aggregateTree}
-\title{Generic method to aggregateTree}
+\title{Method to aggregate a TreeViz object}
 \usage{
 aggregateTree(x, ...)
 }
 \arguments{
 \item{x}{object}
 
-\item{...}{other parameters}
+\item{...}{other params to the function}
 }
 \description{
-Generic method to aggregateTree
+Method to aggregate a TreeViz object
 }

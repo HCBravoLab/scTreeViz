@@ -20,3 +20,11 @@ SummarizedExperiment-like class for datasets that have hierarchies on either row
 For microbiome data, rowData is a tree hierarchy
 For single cell data, colData is a tree hierarchy
 }
+\examples{
+library(metagenomeSeq)
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+tree <- TreeIndex(hierarchy)
+mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
+}

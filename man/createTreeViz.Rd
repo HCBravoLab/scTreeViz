@@ -20,7 +20,6 @@ runs the necessary checks on the dataframe and tries to convert it to a tree by 
 Returns the `TreeViz` object if a tree is successfully generated from dataframe, throws error otherwise
 }
 \examples{
-\dontrun{
 n=64
 # create a hierarchy
 df<- data.frame(cluster0=rep(1,n))
@@ -32,5 +31,5 @@ counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
 colnames(counts)<- seq(1:64)
 # create a `TreeViz` object
 treeViz <- createTreeViz(df, counts)
-} 
+
 }

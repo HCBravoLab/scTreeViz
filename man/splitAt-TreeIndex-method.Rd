@@ -29,3 +29,11 @@ node selections and filters(start, end)}
 splitAt divides the TreeIndex into groups defined by the level,
 node selections and filters(start, end)
 }
+\examples{
+library(metagenomeSeq)
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+tree <- TreeIndex(hierarchy)
+splitAt(tree)
+}

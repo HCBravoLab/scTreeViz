@@ -2,7 +2,7 @@
 % Please edit documentation in R/startTreeViz.R
 \name{startTreeviz}
 \alias{startTreeviz}
-\title{Start treeviz app and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.}
+\title{Start treeviz app and create \code{\link[scTreeViz]{TreeVizApp}} object to manage connection.}
 \usage{
 startTreeviz(
   data = NULL,
@@ -30,10 +30,10 @@ startTreeviz(
 \item{...}{additional parameters passed to \code{\link[epivizr]{startEpiviz}}.}
 }
 \value{
-An object of class \code{\link[treevizr]{TreevizApp}}
+An object of class \code{\link[scTreeViz]{TreeVizApp}}
 }
 \description{
-Start treeviz app and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.
+Start treeviz app and create \code{\link[scTreeViz]{TreeVizApp}} object to manage connection.
 }
 \examples{
 # see package vignette for example usage
@@ -42,5 +42,5 @@ app$stop_app()
 
 }
 \seealso{
-\code{\link[TreeViz]{TreevizApp}}
+\code{\link[scTreeViz]{TreeVizApp}}
 }

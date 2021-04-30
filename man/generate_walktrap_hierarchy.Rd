@@ -24,7 +24,7 @@ Intermediate cluster assignments are created based on monotonically increasing l
 \examples{
 \dontrun{
 library(SingleCellExperiment)
-library(scuttle)
+library(scater)
 sce <- mockSCE()
 sce <- logNormCounts(sce)
 df <- generate_walktrap_hierarchy(sce)

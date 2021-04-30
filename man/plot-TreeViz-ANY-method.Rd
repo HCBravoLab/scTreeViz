@@ -17,3 +17,14 @@ Dataframe containing cluster information at different resolutions
 \description{
 plot tree from TreeViz
 }
+\examples{
+\dontrun{
+library(metagenomeSeq)
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+tree <- TreeIndex(hierarchy)
+mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
+plot(mbiome)
+}
+}
