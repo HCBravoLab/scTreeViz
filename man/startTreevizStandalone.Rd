@@ -13,7 +13,11 @@ startTreevizStandalone(
 )
 }
 \arguments{
+\item{data}{TreeViz data object to use in the app}
+
 \item{register_function}{(function) function used to register actions and charts on the treeviz app.}
+
+\item{delay}{(integer) seconds to wait for application to load on viewer}
 
 \item{use_viewer_option}{(function) run application in viewer defined by \code{getOption("viewer")}.
 This allows standalone app to run in Rstudio's viewer (FALSE by default)}

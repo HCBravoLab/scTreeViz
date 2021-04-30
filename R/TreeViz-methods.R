@@ -159,6 +159,7 @@ setMethod("aggregateTree", "TreeViz",
 #' Generic method to register data to the epiviz data server
 #'
 #' @param object The object to register to data server
+#' @param tree Is tree over rows or columns of the object (default: "row")
 #' @param columns Name of columns containing data to register
 #' @param ... Additional arguments passed to object constructors
 #' @return An \code{\link{EpivizTreeData-class}} object
@@ -179,7 +180,7 @@ setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...)
 #' @import igraph
 #' @export
 #' 
-setMethod("plot", "TreeViz", function(x, y, ...) {
+setMethod("plot", "TreeViz", function(x, y) {
   object <- x
   
   if(is(colData(object), "TreeIndex")) {

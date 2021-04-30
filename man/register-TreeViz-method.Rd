@@ -9,6 +9,8 @@
 \arguments{
 \item{object}{The object to register to data server}
 
+\item{tree}{Is tree over rows or columns of the object (default: "row")}
+
 \item{columns}{Name of columns containing data to register}
 
 \item{...}{Additional arguments passed to object constructors}

@@ -17,9 +17,15 @@ startTreeviz(
 \arguments{
 \item{data}{TreeViz object to explore}
 
+\item{genes}{(character vector) genes (rownames) to include in heatmap}
+
+\item{top_genes}{(integer) number of top variable genes to include in the heatmap}
+
 \item{host}{(character) host address to launch.}
 
 \item{register_function}{(function) function used to register actions and charts on the treeviz app.}
+
+\item{delay}{(integer) number of seconds to wait for application to load in browser}
 
 \item{...}{additional parameters passed to \code{\link[epivizr]{startEpiviz}}.}
 }

@@ -204,8 +204,11 @@
 #' Start treeviz app and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.
 #'
 #' @param data TreeViz object to explore
+#' @param genes (character vector) genes (rownames) to include in heatmap
+#' @param top_genes (integer) number of top variable genes to include in the heatmap 
 #' @param host (character) host address to launch.
 #' @param register_function (function) function used to register actions and charts on the treeviz app.
+#' @param delay (integer) number of seconds to wait for application to load in browser
 #' @param ... additional parameters passed to \code{\link[epivizr]{startEpiviz}}.
 #'
 #' @return An object of class \code{\link[treevizr]{TreevizApp}}
@@ -313,7 +316,9 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
 
 #' Start treeviz app in standalone (locally) and create \code{\link[TreeViz]{TreevizApp}} object to manage connection.
 #'
+#' @param data TreeViz data object to use in the app
 #' @param register_function (function) function used to register actions and charts on the treeviz app.
+#' @param delay (integer) seconds to wait for application to load on viewer
 #' @param use_viewer_option (function) run application in viewer defined by \code{getOption("viewer")}.
 #'  This allows standalone app to run in Rstudio's viewer (FALSE by default)
 #' @param ... additional parameters passed to \code{\link[epivizrStandalone]{startStandalone}}.

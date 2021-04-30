@@ -4,7 +4,7 @@
 \alias{plot,TreeViz,ANY-method}
 \title{plot tree from TreeViz}
 \usage{
-\S4method{plot}{TreeViz,ANY}(x, y, ...)
+\S4method{plot}{TreeViz,ANY}(x, y)
 }
 \arguments{
 \item{x}{treeviz object}
