@@ -18,6 +18,13 @@ setMethod("[", "TreeIndex",
 #' Generic method to get nodes at a tree level
 #' @param x object
 #' @param ... other parameters
+#' @examples 
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
+#' getNodes(tree)
 setGeneric("getNodes", signature = "x",
            function(x, ...)
              standardGeneric("getNodes"))
@@ -69,6 +76,13 @@ setMethod("getNodeStates", "TreeIndex",
 #' Generic method to split the tree
 #' @param x object
 #' @param ... other parameters
+#' @examples 
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
+#' splitAt(tree)
 setGeneric("splitAt", signature = "x",
            function(x, ...)
              standardGeneric("splitAt"))

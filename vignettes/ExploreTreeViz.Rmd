@@ -24,7 +24,6 @@ knitr::opts_chunk$set(
 
 ```{r load-packages, message=FALSE, warning=FALSE}
 library(scTreeViz)
-library(dplyr)
 library(Seurat)
 library(SC3)
 library(scran)

@@ -328,13 +328,10 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
 #' @import epivizrStandalone
 #' @importFrom GenomeInfoDb Seqinfo
 #' @examples
-#'
-#' #' # see package vignette for example usage
+#' \dontrun{
 #' app <- startTreevizStandalone(non_interactive=TRUE)
 #' app$stop_app()
-#'
-#'
-#' @export
+#' }
 startTreevizStandalone <- function(data = NULL, register_function = .register_all_treeviz_things, delay=10L,
                                    use_viewer_option=FALSE, ...) {
   chr="treevizr"
@@ -413,9 +410,8 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
 #' @import epivizrStandalone
 #' @examples
 #' \dontrun{
-#' setTreevizStandalone()
+#'   setTreevizStandalone()
 #' }
-#' @export
 setTreevizStandalone <- function(url="https://github.com/epiviz/epiviz.git", branch="treeviz", local_path=NULL, non_interactive=FALSE) {
   setStandalone(url = url, branch = branch, local_path = local_path, non_interactive = non_interactive)
 }

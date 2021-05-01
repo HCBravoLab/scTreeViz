@@ -138,14 +138,14 @@ TreeIndex <- function(hierarchy = NULL,
     for (i in seq_len(nrow(temp_level_count))) {
       row <- temp_level_count[i,]
       if (depth == 1 && i == 1) {
-        id <- paste(depth - 1, 0, sep = "-")
+        tid <- paste(depth - 1, 0, sep = "-")
       } else{
-        id <-
+        tid <-
           paste(depth - 1, paste(digest(row[, 1], algo = "crc32"), i, sep = ""), sep =
                   "-")
       }
       level_features <-
-        replace(level_features, which(level_features == row[[level]]), id)
+        replace(level_features, which(level_features == row[[level]]), tid)
     }
     level_features
   })

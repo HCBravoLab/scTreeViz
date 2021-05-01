@@ -18,6 +18,15 @@ setMethod("show", signature("TreeViz"),
 #' Method to aggregate a TreeViz object
 #' @param x object
 #' @param ... other params to the function
+#' @examples
+#' library(metagenomeSeq)
+#' data(mouseData)
+#' counts <- MRcounts(mouseData)
+#' hierarchy <- fData(mouseData)
+#' tree <- TreeIndex(hierarchy)
+#' mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
+#' aggregateTree(mbiome)
+#' @export
 setGeneric("aggregateTree", signature = "x",
            function(x, ...)
              standardGeneric("aggregateTree"))

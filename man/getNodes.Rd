@@ -14,3 +14,11 @@ getNodes(x, ...)
 \description{
 Generic method to get nodes at a tree level
 }
+\examples{
+library(metagenomeSeq)
+data(mouseData)
+counts <- MRcounts(mouseData)
+hierarchy <- fData(mouseData)
+tree <- TreeIndex(hierarchy)
+getNodes(tree)
+}

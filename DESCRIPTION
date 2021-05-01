@@ -18,7 +18,7 @@ License: Artistic-2.0
 Depends: R (>= 3.4), methods, epivizr, SummarizedExperiment
 Imports: epivizrStandalone, data.table, S4Vectors, digest, Matrix, Rtsne, GenomeInfoDb, 
         httr, igraph, clustree, scran, sys, epivizrData, epivizrServer,
-        dplyr, ggraph, scater, tidygraph, Seurat, SingleCellExperiment, ggplot2
+        ggraph, scater, tidygraph, Seurat, SingleCellExperiment, ggplot2
 Suggests: knitr, BiocStyle, testthat, SC3, scRNAseq, rmarkdown, msd16s, metagenomeSeq
 VignetteBuilder: knitr
 biocViews: Visualization, Infrastructure, GUI, SingleCell

@@ -28,6 +28,6 @@ set treeviz app standalone settings
 }
 \examples{
 \dontrun{
-setTreevizStandalone()
+  setTreevizStandalone()
 }
 }
