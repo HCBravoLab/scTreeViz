@@ -412,6 +412,8 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
 #' \dontrun{
 #'   setTreevizStandalone()
 #' }
-setTreevizStandalone <- function(url="https://github.com/epiviz/epiviz.git", branch="treeviz", local_path=NULL, non_interactive=FALSE) {
-  setStandalone(url = url, branch = branch, local_path = local_path, non_interactive = non_interactive)
+setTreevizStandalone <- function(url=NULL, branch="treeviz", local_path=NULL, non_interactive=FALSE) {
+  if (!is.null(url)){
+    setStandalone(url = url, branch = branch, local_path = local_path, non_interactive = non_interactive)
+  }
 }
