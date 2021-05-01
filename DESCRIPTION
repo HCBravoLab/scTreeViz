@@ -1,7 +1,7 @@
 Package: scTreeViz
 Type: Package
 Title: R/Bioconductor package to interactively explore and visualize single cell RNA-seq datasets with hierarhical annotations
-Version: 0.99.3
+Version: 0.99.4
 Authors@R: c( 
           person("Jayaram", "Kancherla", email="jayaram.kancherla@gmail.com", role=c("aut", "cre")),
           person("Hector", "Corrada Bravo", email="hcorrada@gmail.com", role=c("aut")),
