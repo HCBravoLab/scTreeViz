@@ -9,6 +9,9 @@ getNodeStates(x)
 \arguments{
 \item{x}{object}
 }
+\value{
+node state
+}
 \description{
 Generic method for possible node states
 }

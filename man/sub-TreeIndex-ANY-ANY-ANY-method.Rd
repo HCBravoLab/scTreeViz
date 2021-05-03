@@ -15,6 +15,9 @@
 
 \item{drop}{drop the dimensions of the object. defaults to FALSE}
 }
+\value{
+a `TreeIndex` subset object
+}
 \description{
 Subset TreeIndex
 }

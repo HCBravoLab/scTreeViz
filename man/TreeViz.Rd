@@ -15,6 +15,9 @@ TreeViz(assays = SimpleList(), rowData = NULL, colData = NULL, ...)
 
 \item{...}{other parameters for SummarizedExperiment}
 }
+\value{
+a `TreeViz` object
+}
 \description{
 SummarizedExperiment-like class for datasets that have hierarchies on either rowData or colData.
 For microbiome data, rowData is a tree hierarchy

@@ -11,6 +11,9 @@ aggregateTree(x, ...)
 
 \item{...}{other params to the function}
 }
+\value{
+a generic
+}
 \description{
 Method to aggregate a TreeViz object
 }

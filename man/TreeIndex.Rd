@@ -11,6 +11,9 @@ TreeIndex(hierarchy = NULL, feature_order = NULL)
 
 \item{feature_order}{order of the tree if different from colnames}
 }
+\value{
+a `TreeIndex` object
+}
 \description{
 create a new TreeIndex object
 }

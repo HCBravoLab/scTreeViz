@@ -11,6 +11,9 @@ getNodes(x, ...)
 
 \item{...}{other parameters}
 }
+\value{
+a generic
+}
 \description{
 Generic method to get nodes at a tree level
 }

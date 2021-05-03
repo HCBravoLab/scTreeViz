@@ -11,6 +11,9 @@ a node state is 0 if removed, 1 if expanded to show children &
 \arguments{
 \item{x}{object}
 }
+\value{
+node states
+}
 \description{
 Method to get possible node states
 a node state is 0 if removed, 1 if expanded to show children &

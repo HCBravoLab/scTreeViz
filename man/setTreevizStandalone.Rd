@@ -5,14 +5,14 @@
 \title{set treeviz app standalone settings}
 \usage{
 setTreevizStandalone(
-  url = "https://github.com/epiviz/epiviz.git",
+  url = NULL,
   branch = "treeviz",
   local_path = NULL,
   non_interactive = FALSE
 )
 }
 \arguments{
-\item{url}{(character) github url to use. defaults to (\url{"https://github.com/epiviz/epiviz.git"}).}
+\item{url}{(character) github url to use.}
 
 \item{branch}{(character) branch on the github repository. defaults to (master).}
 

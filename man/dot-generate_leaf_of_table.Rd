@@ -20,6 +20,9 @@
 
 \item{feature_order}{order of the tree if different from colnames}
 }
+\value{
+a data frame object
+}
 \description{
 generate leaf of table
 }

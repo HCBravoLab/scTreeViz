@@ -25,6 +25,9 @@ node selections and filters(start, end)}
 
 \item{format}{return format can be one of "list" or "TreeIndex"}
 }
+\value{
+a `TreeIndex` object or type set in format
+}
 \description{
 splitAt divides the TreeIndex into groups defined by the level,
 node selections and filters(start, end)

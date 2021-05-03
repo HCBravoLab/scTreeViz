@@ -11,6 +11,9 @@ splitAt(x, ...)
 
 \item{...}{other parameters}
 }
+\value{
+a generic
+}
 \description{
 Generic method to split the tree
 }

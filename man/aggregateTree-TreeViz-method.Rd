@@ -30,6 +30,9 @@
 
 \item{format}{return format can be one of "counts" or "TreeViz"}
 }
+\value{
+a Treeviz object or type specified by format
+}
 \description{
 Method to aggregate a TreeViz object
 }

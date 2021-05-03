@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{TreeIndex object}
 }
+\value{
+object description of the `TreeIndex` object
+}
 \description{
 Show the TreeIndex object
 }

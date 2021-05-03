@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{TreeViz object}
 }
+\value{
+describe a TreeIndex object
+}
 \description{
 show object
 }

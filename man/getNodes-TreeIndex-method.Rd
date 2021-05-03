@@ -11,6 +11,9 @@
 
 \item{selectedLevel}{tree level to select nodes from}
 }
+\value{
+levels at node cut
+}
 \description{
 Method to get nodes at a tree level
 }
