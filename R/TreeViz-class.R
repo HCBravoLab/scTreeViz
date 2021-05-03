@@ -35,6 +35,7 @@ setValidity("TreeViz", function(object) {
 #' tree <- TreeIndex(hierarchy)
 #' mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
 #' @export
+#' @return a `TreeViz` object
 TreeViz <- function(assays = SimpleList(),
                    rowData = NULL,
                    colData = NULL,

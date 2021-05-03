@@ -3,16 +3,17 @@
 #' @importFrom methods show
 #' @importFrom S4Vectors metadata
 #' @export
+#' @return describe a TreeIndex object
 setMethod("show", signature("TreeViz"),
           function(object) {
             cat("class: TreeViz \n", sep = " ")
             cat("dim:", nrow(object), ncol(object), "\n", sep = " ")
             cat("metadata:\n")
-            cat(show(metadata(object)))
+            cat(show(names(metadata(object))))
             cat("rowData:\n")
             cat(show(rowData(object)), "\n")
             cat("colData:\n")
-            cat(show(colData(object)))
+            cat(show(colnames(colData(object))))
           })
 
 #' Method to aggregate a TreeViz object
@@ -26,6 +27,7 @@ setMethod("show", signature("TreeViz"),
 #' tree <- TreeIndex(hierarchy)
 #' mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
 #' aggregateTree(mbiome)
+#' @return a generic
 #' @export
 setGeneric("aggregateTree", signature = "x",
            function(x, ...)
@@ -40,6 +42,7 @@ setGeneric("aggregateTree", signature = "x",
 #' @param aggFun aggregate function to use, by default colSums if by="row", rowSums if by="col"
 #' @param format return format can be one of "counts" or "TreeViz"
 #' @importFrom Matrix rowSums colSums
+#' @return a Treeviz object or type specified by format
 #' @examples
 #' library(metagenomeSeq)
 #' data(mouseData)

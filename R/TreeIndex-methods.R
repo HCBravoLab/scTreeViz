@@ -4,6 +4,7 @@
 #' @param ... other params to dataframe subset method
 #' @param drop drop the dimensions of the object. defaults to FALSE
 #' @importFrom methods callNextMethod
+#' @return a `TreeIndex` subset object
 setMethod("[", "TreeIndex",
           function(x, i, j, ..., drop = FALSE) {
             # obj <- callNextMethod()
@@ -25,6 +26,7 @@ setMethod("[", "TreeIndex",
 #' hierarchy <- fData(mouseData)
 #' tree <- TreeIndex(hierarchy)
 #' getNodes(tree)
+#' @return a generic
 setGeneric("getNodes", signature = "x",
            function(x, ...)
              standardGeneric("getNodes"))
@@ -40,6 +42,7 @@ setGeneric("getNodes", signature = "x",
 #' tree <- TreeIndex(hierarchy)
 #' getNodes(tree)
 #' @export
+#' @return levels at node cut
 setMethod("getNodes", "TreeIndex",
           function(x,
                    selectedLevel = NULL) {
@@ -55,6 +58,7 @@ setMethod("getNodes", "TreeIndex",
 
 #' Generic method for possible node states
 #' @param x object
+#' @return node state
 setGeneric("getNodeStates", signature = "x",
            function(x)
              standardGeneric("getNodeStates"))
@@ -63,6 +67,7 @@ setGeneric("getNodeStates", signature = "x",
 #' a node state is 0 if removed, 1 if expanded to show children &
 #' 2 if counts are aggregated to the node
 #' @param x object
+#' @return node states
 setMethod("getNodeStates", "TreeIndex",
           function(x) {
             return(list(
@@ -83,6 +88,7 @@ setMethod("getNodeStates", "TreeIndex",
 #' hierarchy <- fData(mouseData)
 #' tree <- TreeIndex(hierarchy)
 #' splitAt(tree)
+#' @return a generic
 setGeneric("splitAt", signature = "x",
            function(x, ...)
              standardGeneric("splitAt"))
@@ -104,6 +110,7 @@ setGeneric("splitAt", signature = "x",
 #' tree <- TreeIndex(hierarchy)
 #' splitAt(tree)
 #' @export
+#' @return a `TreeIndex` object or type set in format
 setMethod("splitAt", "TreeIndex",
           function(x,
                    selectedLevel = 3,
@@ -238,6 +245,7 @@ setMethod("splitAt", "TreeIndex",
 #' Show the TreeIndex object
 #' @importFrom methods show
 #' @param object TreeIndex object
+#' @return object description of the `TreeIndex` object
 setMethod("show", "TreeIndex", function(object) {
   cat(
     "Tree Index",

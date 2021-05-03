@@ -88,9 +88,6 @@
         stop("cannot find datasource", m)
       }
       res <- obj$getCombined(measurements, seqName, start, end, order, nodeSelection, selectedLevels)
-      if (class(obj) == "EpivizMetagenomicsDataTimeSeries"){
-        res$rows$metadata$splines <- "true"
-      }
       res
     })
     names(result) <- names(measurementsList)
@@ -402,7 +399,7 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
 
 #' set treeviz app standalone settings
 #'
-#' @param url (character) github url to use. defaults to (\url{"https://github.com/epiviz/epiviz.git"}).
+#' @param url (character) github url to use.
 #' @param branch (character) branch on the github repository. defaults to (master).
 #' @param local_path (character) if you already have a local instance of treeviz and would like to run standalone use this.
 #' @param non_interactive (logical) don't download repo, used for testing purposes.
