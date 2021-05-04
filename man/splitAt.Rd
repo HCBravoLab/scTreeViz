@@ -18,10 +18,12 @@ a generic
 Generic method to split the tree
 }
 \examples{
+\dontrun{ 
 library(metagenomeSeq)
 data(mouseData)
 counts <- MRcounts(mouseData)
 hierarchy <- fData(mouseData)
 tree <- TreeIndex(hierarchy)
 splitAt(tree)
+}
 }
