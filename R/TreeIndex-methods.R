@@ -82,12 +82,14 @@ setMethod("getNodeStates", "TreeIndex",
 #' @param x object
 #' @param ... other parameters
 #' @examples 
+#' \dontrun{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
 #' hierarchy <- fData(mouseData)
 #' tree <- TreeIndex(hierarchy)
 #' splitAt(tree)
+#' }
 #' @return a generic
 setGeneric("splitAt", signature = "x",
            function(x, ...)
@@ -103,12 +105,14 @@ setGeneric("splitAt", signature = "x",
 #' @importFrom stats na.omit
 #' @importFrom methods is
 #' @examples 
+#' \dontrun{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
 #' hierarchy <- fData(mouseData)
 #' tree <- TreeIndex(hierarchy)
 #' splitAt(tree)
+#' }
 #' @export
 #' @return a `TreeIndex` object or type set in format
 setMethod("splitAt", "TreeIndex",

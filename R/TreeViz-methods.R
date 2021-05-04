@@ -20,6 +20,7 @@ setMethod("show", signature("TreeViz"),
 #' @param x object
 #' @param ... other params to the function
 #' @examples
+#' \dontrun{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
@@ -27,6 +28,7 @@ setMethod("show", signature("TreeViz"),
 #' tree <- TreeIndex(hierarchy)
 #' mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
 #' aggregateTree(mbiome)
+#' }
 #' @return a generic
 #' @export
 setGeneric("aggregateTree", signature = "x",
@@ -44,6 +46,7 @@ setGeneric("aggregateTree", signature = "x",
 #' @importFrom Matrix rowSums colSums
 #' @return a Treeviz object or type specified by format
 #' @examples
+#' \dontrun{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
@@ -51,6 +54,7 @@ setGeneric("aggregateTree", signature = "x",
 #' tree <- TreeIndex(hierarchy)
 #' mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
 #' aggregateTree(mbiome)
+#' }
 #' @export
 setMethod("aggregateTree", "TreeViz",
           function(x,

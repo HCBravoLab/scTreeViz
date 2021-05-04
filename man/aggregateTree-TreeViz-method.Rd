@@ -37,6 +37,7 @@ a Treeviz object or type specified by format
 Method to aggregate a TreeViz object
 }
 \examples{
+\dontrun{ 
 library(metagenomeSeq)
 data(mouseData)
 counts <- MRcounts(mouseData)
@@ -44,4 +45,5 @@ hierarchy <- fData(mouseData)
 tree <- TreeIndex(hierarchy)
 mbiome <- TreeViz(SimpleList(counts=counts), rowData=tree)
 aggregateTree(mbiome)
+}
 }
