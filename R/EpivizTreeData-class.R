@@ -59,13 +59,13 @@ EpivizTreeData <- setRefClass("EpivizTreeData",
         featureSelection <- featureSelection[which(names(featureSelection) != "no_match")]
         
         if(tree == "row") {
-          node_ids <- sapply(names(featureSelection), function(n) {
+          node_ids <- vapply(names(featureSelection), function(n) {
             as.character(rowData(object)$nodes_table[node_label==n,id])
-          })
+          }, character(1))
         } else {
-          node_ids <- sapply(names(featureSelection), function(n) {
+          node_ids <- vapply(names(featureSelection), function(n) {
             as.character(colData(object)$nodes_table[node_label==n,id])
-          })
+          }, character(1))
         }
         
         temp_selections <- unname(featureSelection)
@@ -238,7 +238,7 @@ EpivizTreeData$methods(
     
     hierarchy_slice <- unique(.self$.graph@node_ids_table[get(taxonomy)==nodeId, (level+1):last_level_of_subtree])
     
-    nodes_of_subtree <- sapply(seq(1,length((level+1):last_level_of_subtree)), function(i) {
+    nodes_of_subtree <- lapply(seq(1,length((level+1):last_level_of_subtree)), function(i) {
       unname(unlist(unique(hierarchy_slice[,i, with=FALSE])))
     })
     
@@ -407,9 +407,9 @@ EpivizTreeData$methods(
       result[["rootTaxonomies"]] = .self$.graph@feature_order
       lineage = .self$.graph@nodes_table[get("id")==nodesToRet[1],get("lineage")][[1]]
       
-      lineageLabel <- sapply(strsplit(lineage, ",")[[1]], function(str_id) {
+      lineageLabel <- vapply(strsplit(lineage, ",")[[1]], function(str_id) {
         .self$.graph@nodes_table[get("id") == str_id, get("node_label")][[1]]
-      })
+      }, character(1))
       
       result[["lineageLabel"]] = paste(lineageLabel, sep=", ")
       
@@ -434,9 +434,9 @@ EpivizTreeData$methods(
     "
     
     if(request_with_labels && !is.null(selection)){
-      selection_ids <- sapply(names(selection), function(i){
+      selection_ids <- vapply(names(selection), function(i){
         .self$.graph@nodes_table[node_label==i,id]
-      })
+      }, character(1))
       names(selection) <- selection_ids
     }
     

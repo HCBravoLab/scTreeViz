@@ -81,7 +81,7 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   collapsed_graph <- collapse_tree(hierarchy_graph)
   
   cluster_names <-
-    unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))
+    unique(vapply(strsplit(collapsed_graph$node, "C"), '[', character(1), 1))
   
   #take only uncollapsed columns
   hierarchy <- hierarchy[, cluster_names]

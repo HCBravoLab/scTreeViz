@@ -153,9 +153,14 @@ prune_tree <- function(graph, cluster_df) {
 #' @return Dataframe containing cluster information at different resolutions
 collapse_tree <- function(original_graph) {
   #find all roots
-  root_list <- which(sapply(sapply(V(original_graph),
-                                   function(x)
-                                     neighbors(original_graph, x, mode = "in")), length) == 0)
+  root_list <- which(
+    vapply(
+      V(original_graph),
+      function(x) {
+        length(neighbors(original_graph, x, mode = "in")) == 0
+      },
+      logical(1)
+    ))
   
   delete_set_vertices <- vector('numeric')
   for (roots in root_list) {
@@ -293,7 +298,7 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   
   # collapses tree if the levels are the same at different resolutions
   collapsed_graph <- collapse_tree(modified_graph)
-  cluster_names <- unique(sapply(strsplit(collapsed_graph$node, "C"), '[', 1))
+  cluster_names <- unique(vapply(strsplit(collapsed_graph$node, "C"), '[', chracter(1), 1))
   clusters_new <- clusters_new[, cluster_names]
   
   for (clusnames in names(clusters_new)) {
