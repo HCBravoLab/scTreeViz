@@ -43,14 +43,14 @@ check_alternate <- function(sub_df, all_df)
 change_assignment <- function(graph, cluster_obj) {
   #for each row in the core edge false dataset, find out corresponding
   #source and sink in Seurat, and change accordingly
-  for (i in seq(1:nrow(graph))) {
+  for (i in seq_len(nrow(graph))) {
     sink_res = match(paste0('cluster', graph$`Sink_node_res`[i]),
                      colnames(cluster_obj))
     source_res = match(paste0('cluster', graph$`Assign_from_res`[i]),
                        colnames(cluster_obj))
     
     
-    for (j in 1:nrow(cluster_obj)) {
+    for (j in seq_len(nrow(cluster_obj))) {
       
       if (as.numeric(as.character(cluster_obj[[j, sink_res]])) == as.numeric(graph$Sink_node_clust[i])  &&
           as.numeric(as.character(cluster_obj[[j, source_res]])) == as.numeric(graph$Assign_from_clust[i])) {
@@ -339,14 +339,14 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   clusters <- igraph::cluster_walktrap(SNN_Graph, steps = nsteps)
   modularity <- c()
   
-  for (i in 1:length(clusters)) {
+  for (i in seq_len(length(clusters))) {
     modularity[i] <-
       igraph::modularity(SNN_Graph, igraph::cut_at(clusters, n = i))
   }
   
   monotonic_index <- match(unique(cummax(modularity)), modularity)
   cluster_data =  list()
-  for (i in 1:length(monotonic_index)) {
+  for (i in seq_along(monotomic_index)) {
     cluster_data[[i]] =  list(igraph::cut_at(clusters, n = monotonic_index[i]))
   }
   
@@ -397,7 +397,7 @@ createFromSeurat <- function(object,
     if (dim_names %in% Reductions(object)) {
       reducdim <- Reductions(object, slot = dim_names)
       
-      metadata(treeviz)$reduced_dim[[dim_names]] <- reducdim@cell.embeddings[, 1:2]
+      metadata(treeviz)$reduced_dim[[dim_names]] <- reducdim@cell.embeddings[, c(1,2)]
       rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
     }
   }
@@ -456,7 +456,7 @@ createFromSCE <-
     for (dim_names in reduced_dim) {
       if (dim_names %in% reducedDimNames(object)) {
         metadata(treeviz)$reduced_dim[[dim_names]] <-
-          reducedDims(object)[[dim_names]][, 1:2]
+          reducedDims(object)[[dim_names]][, c(1,2)]
         
         rownames(metadata(treeviz)$reduced_dim[[dim_names]]) <- colnames(object)
       }
@@ -567,7 +567,7 @@ calculate_tsne <- function(treeviz) {
   message("No defaults dimensionality reductions provided")
   message("Calculating TSNE")
   tsne <- calculateTSNE(assays(treeviz)$counts)
-  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne[, 1:2]
+  metadata(treeviz)$reduced_dim[['TSNE']] <- tsne[, c(1,2)]
   rownames(metadata(treeviz)$reduced_dim[['TSNE']]) <- colnames(treeviz)
   message("adding tsne to reduced dim slots")
   treeviz

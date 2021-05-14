@@ -105,12 +105,12 @@ TreeIndex <- function(hierarchy = NULL,
     .replaceNAFeatures(replacing_na_obj_fData, feature_order)
 
   obj_fData <- as.data.table(nas_replaced)
-  cols <- feature_order[1:length(feature_order) - 1]
+  cols <- feature_order[seq_len(length(feature_order) - 1)]
   order <- rep(1, length(feature_order) - 1)
   ordered_fData <- setorderv(obj_fData, cols = cols, order = order)
 
   otu_indexes <-
-    seq(1:length(ordered_fData[, get(feature_order[length(feature_order)])]))
+    seq_along(ordered_fData[, get(feature_order[length(feature_order)])])
   ordered_fData <- ordered_fData[, otu_index := otu_indexes]
   ordered_fData_df <- as.data.frame(ordered_fData)
 
@@ -246,7 +246,7 @@ TreeIndex <- function(hierarchy = NULL,
       melt(
         temp_hiearchy_DT,
         id.vars = c(feature_order[num_features], "otu_index"),
-        measure.vars = c(hiearchy_cols[1:(length(hiearchy_cols) -
+        measure.vars = c(hiearchy_cols[seq_len(length(hiearchy_cols) -
                                             1)])
       )
     label_table <- melt_res[, c(1, 2, 4)]
@@ -272,7 +272,7 @@ TreeIndex <- function(hierarchy = NULL,
       melt(
         lineage_DT,
         id.vars = c(feature_order[num_features], "otu_index"),
-        measure.vars = c(hiearchy_cols[1:(length(hiearchy_cols)) - 1])
+        measure.vars = c(hiearchy_cols[seq_len(length(hiearchy_cols) - 1)])
       )
 
     lineage_leaf_of_table <- unique(melt_res_lineage[, c(2, 4)])

@@ -279,8 +279,9 @@ EpivizTreeData$methods(
     }
     lineage_DT <- as.data.table(lineage_DF)
     
+    ncols <- ncol(lineage_DT)
     lineage_DT_long <- melt(lineage_DT, id.vars = c("otu_index"),
-                            measure.vars = c(colnames(lineage_DT)[1:(length(colnames(lineage_DT))-1)]),
+                            measure.vars = c(colnames(lineage_DT)[seq_len(ncols-1)]),
                             variable.name = "taxonomy", variable.factor = FALSE)
     
     setnames(lineage_DT_long, c("otu_index", "taxonomy", "lineage"))
@@ -631,7 +632,7 @@ EpivizTreeData$methods(
     # max(data_rows$end)
     
     cluster_names <- rep("removed", max_length)
-    for (i in 1:length(data_rows$metadata$label)) {
+    for (i in seq_along(data_rows$metadata$label)) {
       start <- data_rows$start[i]
       end <- data_rows$end[i]
       cluster_names[start:end] <- data_rows$metadata$label[i]
@@ -680,7 +681,7 @@ EpivizTreeData$methods(
     # max(data_rows$end)
     
     cluster_names <- rep("removed", max_length)
-    for (i in 1:length(data_rows$metadata$label)) {
+    for (i in seq_along(data_rows$metadata$label)) {
       start <- data_rows$start[i]
       end <- data_rows$end[i]
       cluster_names[start:end] <- data_rows$metadata$label[i]
@@ -710,7 +711,7 @@ EpivizTreeData$methods(
     # max(data_rows$end)
     
     cluster_names <- rep("removed", max_length)
-    for (i in 1:length(data_rows$metadata$label)) {
+    for (i in seq_along(data_rows$metadata$label)) {
       start <- data_rows$start[i]
       end <- data_rows$end[i]
       cluster_names[start:end] <- data_rows$metadata$label[i]

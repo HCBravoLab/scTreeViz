@@ -47,7 +47,9 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   
   hierarchy_dt <- as.data.table(hierarchy)
   hierarchy_dt$samples <- rownames(hierarchy_dt) <- rownames(hierarchy)
-  cols <- colnames(hierarchy_dt)[1:length(colnames(hierarchy_dt))-1]
+  
+  ncols <- ncol(hierarchy_dt)
+  cols <- colnames(hierarchy_dt)[seq_len(ncols-1)]
   order <- rep(1, length(hierarchy_dt)-1)
   hierarchy_dt <- setorderv(hierarchy_dt, cols = cols, order = order)
   hierarchy_df <- as.data.frame(hierarchy_dt)
@@ -98,8 +100,8 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   names(hierarchy)<- cluster_names
  
   samples <- rownames(hierarchy)
-  if(is.null(rownames(hierarchy))){
-    samples<- 1:nrow(hierarchy)
+  if (is.null(rownames(hierarchy))) {
+    samples <- seq_len(nrow(hierarchy))
   }
   
   hierarchy <- cbind(hierarchy, samples)

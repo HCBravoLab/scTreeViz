@@ -206,7 +206,7 @@ setMethod("splitAt", "TreeIndex",
             }
             else if (format == "TreeIndex") {
               toLevel <- selectedLevel
-              new_feature_order <- x@feature_order[1:toLevel]
+              new_feature_order <- x@feature_order[seq_len(toLevel)]
               new_hierarchy_tree <-
                 unique(x@hierarchy_tree[start:end, new_feature_order])
               new_hierarchy_tree <- na.omit(new_hierarchy_tree)
