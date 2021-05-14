@@ -33,7 +33,7 @@ splitAt divides the TreeIndex into groups defined by the level,
 node selections and filters(start, end)
 }
 \examples{
-\dontrun{ 
+\donttest{ 
 library(metagenomeSeq)
 data(mouseData)
 counts <- MRcounts(mouseData)

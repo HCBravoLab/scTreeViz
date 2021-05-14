@@ -16,7 +16,7 @@ calculate_tsne(treeviz)
 The result is added to reduced_dim slot in metadata
 }
 \examples{
-\dontrun{
+\donttest{
 library(Seurat)
 data(pbmc_small)
 pbmc <- pbmc_small

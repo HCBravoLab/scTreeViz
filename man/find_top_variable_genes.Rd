@@ -18,12 +18,12 @@ find_top_variable_genes(treeviz, top = 100)
 Finds the n top variable genes within the genes present in `TreeViz` object
 }
 \examples{
-\dontrun{
+\donttest{
 library(Seurat)
 data(pbmc_small)
 pbmc <- pbmc_small
-treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
-treeviz<-find_top_variable_genes(treeviz)
+treeviz <- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+treeviz <- find_top_variable_genes(treeviz)
 metadata(treeviz)
 }
 }

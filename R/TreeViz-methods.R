@@ -20,7 +20,7 @@ setMethod("show", signature("TreeViz"),
 #' @param x object
 #' @param ... other params to the function
 #' @examples
-#' \dontrun{ 
+#' \donttest{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
@@ -46,7 +46,7 @@ setGeneric("aggregateTree", signature = "x",
 #' @importFrom Matrix rowSums colSums
 #' @return a Treeviz object or type specified by format
 #' @examples
-#' \dontrun{ 
+#' \donttest{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
@@ -202,7 +202,7 @@ setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...)
 #' @importFrom igraph graph_from_data_frame
 #' @importFrom ggplot2 aes
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
@@ -236,11 +236,16 @@ setMethod("plot", "TreeViz", function(x, y) {
   }
   
   mygraph <- graph_from_data_frame(df)
-  
+  .nms <- V(mygraph)$name
+  .nm_suffix <- vapply(.nms, function(nm) substring(nm, first=length(nm)-4, last=length(nm)), character(1))
+  V(mygraph)$plot_label <- 
+    paste0(substring(.nms, first=1, last=4), "...", .nm_suffix)
+
+
   fig <- ggraph(mygraph, layout = 'dendrogram', circular = FALSE) +
     ggraph::geom_edge_diagonal() +
     ggraph::geom_node_point(show.legend = TRUE) +
-    ggraph::geom_node_label(ggplot2::aes(label = substring(V(mygraph)$name, 8))) +
+   # ggraph::geom_node_label(ggplot2::aes(label = plot_label)) +
     ggplot2::theme_void()
   show(fig)
   

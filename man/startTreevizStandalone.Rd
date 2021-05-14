@@ -31,7 +31,7 @@ An object of class \code{\link[scTreeViz]{TreeVizApp}}
 Start treeviz app in standalone (locally) and create \code{\link[scTreeViz]{TreeVizApp}} object to manage connection.
 }
 \examples{
-\dontrun{
+\donttest{
 app <- startTreevizStandalone(non_interactive=TRUE)
 app$stop_app()
 }

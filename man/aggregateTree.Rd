@@ -18,7 +18,7 @@ a generic
 Method to aggregate a TreeViz object
 }
 \examples{
-\dontrun{ 
+\donttest{ 
 library(metagenomeSeq)
 data(mouseData)
 counts <- MRcounts(mouseData)

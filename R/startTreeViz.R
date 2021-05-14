@@ -324,8 +324,10 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
 #'
 #' @import epivizrStandalone
 #' @importFrom GenomeInfoDb Seqinfo
+#' 
+#' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' app <- startTreevizStandalone(non_interactive=TRUE)
 #' app$stop_app()
 #' }
@@ -405,10 +407,6 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
 #' @param non_interactive (logical) don't download repo, used for testing purposes.
 #' @return path to the treeviz app git repository
 #' @import epivizrStandalone
-#' @examples
-#' \dontrun{
-#'   setTreevizStandalone()
-#' }
 setTreevizStandalone <- function(url=NULL, branch="treeviz", local_path=NULL, non_interactive=FALSE) {
   if (!is.null(url)){
     setStandalone(url = url, branch = branch, local_path = local_path, non_interactive = non_interactive)

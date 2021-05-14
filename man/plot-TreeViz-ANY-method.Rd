@@ -18,7 +18,7 @@ Dataframe containing cluster information at different resolutions
 plot tree from TreeViz
 }
 \examples{
-\dontrun{
+\donttest{
 library(metagenomeSeq)
 data(mouseData)
 counts <- MRcounts(mouseData)

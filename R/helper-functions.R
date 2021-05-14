@@ -323,8 +323,10 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
 #' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
 #' @param nsteps number of steps to use in `cluster_walktrap`
 #' @return dataframe with hierarchy information
+#' @export
+#' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(SingleCellExperiment)
 #' library(scater)
 #' sce <- mockSCE()
@@ -346,7 +348,7 @@ generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   
   monotonic_index <- match(unique(cummax(modularity)), modularity)
   cluster_data =  list()
-  for (i in seq_along(monotomic_index)) {
+  for (i in seq_along(monotonic_index)) {
     cluster_data[[i]] =  list(igraph::cut_at(clusters, n = monotonic_index[i]))
   }
   
@@ -519,14 +521,15 @@ createTreeViz <- function(clusters, counts) {
 #' @return `TreeViz` Object with added top_variable_gene information in metadata slot
 #' @importFrom scran getTopHVGs
 #' @importFrom scran modelGeneVar
-#'
+#' @export
+#' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(Seurat)
 #' data(pbmc_small)
 #' pbmc <- pbmc_small
-#' treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
-#' treeviz<-find_top_variable_genes(treeviz)
+#' treeviz <- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+#' treeviz <- find_top_variable_genes(treeviz)
 #' metadata(treeviz)
 #' }
 find_top_variable_genes <- function(treeviz, top = 100) {
@@ -554,8 +557,10 @@ set_gene_list <- function(treeviz, genes) {
 #' @param treeviz TreeViz object
 #' @return `TreeViz` Object with added `TSNE` iinformation in reduced_dim slot of metadata
 #' @importFrom scater calculateTSNE
+#' @export
+#' 
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(Seurat)
 #' data(pbmc_small)
 #' pbmc <- pbmc_small

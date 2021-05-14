@@ -18,7 +18,7 @@ a generic
 Generic method to split the tree
 }
 \examples{
-\dontrun{ 
+\donttest{ 
 library(metagenomeSeq)
 data(mouseData)
 counts <- MRcounts(mouseData)

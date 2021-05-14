@@ -22,7 +22,7 @@ walktrap returns clustering at highest modularity. The modularity value indicate
 Intermediate cluster assignments are created based on monotonically increasing level of modularity
 }
 \examples{
-\dontrun{
+\donttest{
 library(SingleCellExperiment)
 library(scater)
 sce <- mockSCE()

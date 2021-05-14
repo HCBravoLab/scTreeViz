@@ -82,7 +82,7 @@ setMethod("getNodeStates", "TreeIndex",
 #' @param x object
 #' @param ... other parameters
 #' @examples 
-#' \dontrun{ 
+#' \donttest{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
@@ -105,7 +105,7 @@ setGeneric("splitAt", signature = "x",
 #' @importFrom stats na.omit
 #' @importFrom methods is
 #' @examples 
-#' \dontrun{ 
+#' \donttest{ 
 #' library(metagenomeSeq)
 #' data(mouseData)
 #' counts <- MRcounts(mouseData)
