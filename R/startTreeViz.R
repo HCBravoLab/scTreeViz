@@ -252,11 +252,11 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
       if (!is.null(genes)) {
         data <- set_gene_list(data, genes)
       } else {
-        data <- find_top_variable_genes(data, top_genes)
+        data <- .find_top_variable_genes(data, top_genes)
       }
 
       if (!("reduced_dim"  %in% names(metadata(data)))) {
-        data <- calculate_tsne(data)
+        data <- .calculate_tsne(data)
       }
       
       mApp$navigate(chr, start, end)
@@ -360,9 +360,9 @@ startTreevizStandalone <- function(data = NULL, register_function = .register_al
     
     if (!is.null(data)) {
       
-      data <- find_top_variable_genes(data, 100)
+      data <- .find_top_variable_genes(data, 100)
       if (!("reduced_dim"  %in% names(metadata(data)))) {
-        data <- calculate_tsne(data)
+        data <- .calculate_tsne(data)
         
       }
       mApp$navigate(chr, start, end)

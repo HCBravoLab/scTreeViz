@@ -1,10 +1,4 @@
-#' check if alternative edge exists
-#' @param sub_df dataframe
-#' @param all_df dataframe
-#' @return Dataframe with assigned edges
-#'
-check_alternate <- function(sub_df, all_df)
-{
+.check_alternate <- function(sub_df, all_df) {
   #check where clusters from not-core edges should actually belong
   assign_df <- data.frame(
     "Sink_node_res" = character(),
@@ -35,12 +29,7 @@ check_alternate <- function(sub_df, all_df)
 }
 
 
-#' propagate cluster assignment changes from graph object to hierarchy
-#'
-#' @param graph graph from clustree
-#' @param cluster_obj cluster hierarchies at different resolutions
-#' @return hierarchy of cluster resolutions
-change_assignment <- function(graph, cluster_obj) {
+.change_assignment <- function(graph, cluster_obj) {
   #for each row in the core edge false dataset, find out corresponding
   #source and sink in Seurat, and change accordingly
   for (i in seq_len(nrow(graph))) {
@@ -64,13 +53,9 @@ change_assignment <- function(graph, cluster_obj) {
   return (cluster_obj)
 }
 
-#' check if graph is cyclic
-#'
-#' @param pruned_graph graph from clustree
-#' @return graph object after removing cyclic edges
 #' @importFrom utils str
 #' @import igraph
-check_cycle <- function(pruned_graph) {
+.check_cycle <- function(pruned_graph) {
   # Check if a diamond or circle still exists in tree
   delete_set_vertices <- vector('numeric')
   ver_list <- V(pruned_graph)
@@ -98,12 +83,7 @@ check_cycle <- function(pruned_graph) {
   pruned_graph <- delete.vertices(pruned_graph, delete_set_vertices)
 }
 
-#' prune tree to remove non-core edges from clustree hierarchy
-#'
-#' @param graph graph from clustree
-#' @param cluster_df Original cluster hierarchy as dataframe
-#' @return Dataframe containing cluster information at different resolutions
-prune_tree <- function(graph, cluster_df) {
+.prune_tree <- function(graph, cluster_df) {
   # Prune the tree so only core edges remain
   
   repeat {
@@ -126,9 +106,9 @@ prune_tree <- function(graph, cluster_df) {
     
     # Apply function
     assign_df <-
-      check_alternate(graph[graph$is_core == FALSE, ], graph[graph$is_core == TRUE, ])
+      .check_alternate(graph[graph$is_core == FALSE, ], graph[graph$is_core == TRUE, ])
     
-    cluster_df <- change_assignment(assign_df, cluster_df)
+    cluster_df <- .change_assignment(assign_df, cluster_df)
     ngraph <-
       clustree(
         cluster_df ,
@@ -140,18 +120,14 @@ prune_tree <- function(graph, cluster_df) {
     graph <- as_long_data_frame(ngraph)
   }
   
-  ngraph <- check_cycle(ngraph)
+  ngraph <- .check_cycle(ngraph)
   
   result <-
     list("Cluster_obj" = cluster_df, "Clustree_obj" = ngraph)
   result
 }
 
-#' collapse tree if resolutions does not change cluster assignments
-#'
-#' @param original_graph Dataframe containing cluster information at different resolutions
-#' @return Dataframe containing cluster information at different resolutions
-collapse_tree <- function(original_graph) {
+.collapse_tree <- function(original_graph) {
   #find all roots
   root_list <- which(
     vapply(
@@ -200,11 +176,7 @@ collapse_tree <- function(original_graph) {
   ver_list
 }
 
-#' check if hierarchy has more than 1 root, if do create a root
-#'
-#' @param cluster_df Dataframe containing cluster information at different resolutions
-#' @return Dataframe containing cluster information at different resolutions
-checkRoot <- function(cluster_df) {
+.checkRoot <- function(cluster_df) {
   # Handle Forests
   cols <- colnames(cluster_df)
   if (length(unique(cluster_df[[1]])) > 1) {
@@ -216,12 +188,7 @@ checkRoot <- function(cluster_df) {
   cluster_df[cols]
 }
 
-#' check if every node has a single parent (tree vs graph)
-#'
-#' @param clusterdata Dataframe containing cluster information at different resolutions
-#' @return Dataframe containing cluster information at different resolutions
-#'
-check_unique_parent <- function(clusterdata) {
+.check_unique_parent <- function(clusterdata) {
   #check if user provided data has unique parents at each level
   for (i in seq(2, ncol(clusterdata))) {
     childs <- unique(clusterdata[[i]])
@@ -247,12 +214,7 @@ check_unique_parent <- function(clusterdata) {
 }
 
 
-#' Renames cluster names for consistency in visualization
-#'
-#' @param clusterdata Dataframe containing cluster information at different resolutions
-#' @return Dataframe containing cluster information at different resolutions
-#'
-rename_clusters <- function(clusterdata) {
+.rename_clusters <- function(clusterdata) {
   message("Renaming cluster Levels...")
   message("Previous Level names ", paste(colnames(clusterdata), collapse = "\t"))
 
@@ -264,17 +226,11 @@ rename_clusters <- function(clusterdata) {
 }
 
 
-#' Creates the `TreeViz` object from cluster hierarchy and count matrix.
-#' Also prunes and collapses the hierarchy to remove redundant levels.
-#'
-#' @param clusters Dataframe containing cluster information at different resolutions
-#' @param counts matrix Dense or sparse matrix containing the count matrix
-#' @return TreeSummarizedExperiment Object that can be visualized with metavizr
 #' @import clustree
 #' @importFrom data.table setorder
 #' @importFrom igraph as_long_data_frame
-preprocessAndCreateTreeViz <- function(clusters, counts) {
-  clusters <- rename_clusters(clusters)
+.preprocessAndCreateTreeViz <- function(clusters, counts) {
+  clusters <- .rename_clusters(clusters)
   setorder(clusters)
   counts <- counts[, rownames(clusters)]
   
@@ -290,14 +246,14 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   graph_df <- as_long_data_frame(clustree_graph)
   
   # prune the graph with only core edges (this makes it a ~tree)
-  modified_obj <- prune_tree(graph_df, clusters)
+  modified_obj <- .prune_tree(graph_df, clusters)
   
   # modified graph and seurat object
   modified_graph <- modified_obj$Clustree_obj
   clusters_new <-  modified_obj$Cluster_obj
   
   # collapses tree if the levels are the same at different resolutions
-  collapsed_graph <- collapse_tree(modified_graph)
+  collapsed_graph <- .collapse_tree(modified_graph)
   cluster_names <- unique(vapply(strsplit(collapsed_graph$node, "C"), '[', chracter(1), 1))
   clusters_new <- clusters_new[, cluster_names]
   
@@ -308,7 +264,7 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   
   samples <- rownames(clusters_new)
   clusters_new <- cbind(clusters_new, samples)
-  clusters_new <- checkRoot(clusters_new)
+  clusters_new <- .checkRoot(clusters_new)
   
   tree <- TreeIndex(clusters_new)
   rownames(tree) <- rownames(clusters_new)
@@ -317,24 +273,7 @@ preprocessAndCreateTreeViz <- function(clusters, counts) {
   treeviz
 }
 
-#' Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm.
-#' walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
-#' Intermediate cluster assignments are created based on monotonically increasing level of modularity
-#' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
-#' @param nsteps number of steps to use in `cluster_walktrap`
-#' @return dataframe with hierarchy information
-#' @export
-#' 
-#' @examples
-#' \donttest{
-#' library(SingleCellExperiment)
-#' library(scater)
-#' sce <- mockSCE()
-#' sce <- logNormCounts(sce)
-#' df <- generate_walktrap_hierarchy(sce)
-#' } 
-#'
-generate_walktrap_hierarchy <- function(object, nsteps = 7) {
+.generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   
   message("calculating walktrap clusters")
   SNN_Graph <- scran::buildSNNGraph(object)
@@ -384,7 +323,7 @@ createFromSeurat <- function(object,
   if (check_metadata==FALSE) {
     message("No default clusters provided")
     object.sce <- as.SingleCellExperiment(object)
-    clusterdata <- generate_walktrap_hierarchy(object.sce)
+    clusterdata <- .generate_walktrap_hierarchy(object.sce)
     clusterdata <- ClusterHierarchy(clusterdata)
   }
   else{
@@ -446,7 +385,7 @@ createFromSCE <-
     }
     else{
       message("No default clusters provided")
-      clusterdata <- generate_walktrap_hierarchy(object)
+      clusterdata <- .generate_walktrap_hierarchy(object)
       clusterdata$samples <- rownames(clusterdata) <- colnames(object)
       clusterdata <- ClusterHierarchy(clusterdata)
     }
@@ -513,26 +452,9 @@ createTreeViz <- function(clusters, counts) {
 }
 
 
-#' Finds top variable genes `TreeViz`
-#' 
-#' Finds the n top variable genes within the genes present in `TreeViz` object
-#' @param treeviz TreeViz object
-#' @param top number of top genes to be calculated
-#' @return `TreeViz` Object with added top_variable_gene information in metadata slot
 #' @importFrom scran getTopHVGs
 #' @importFrom scran modelGeneVar
-#' @export
-#' 
-#' @examples
-#' \donttest{
-#' library(Seurat)
-#' data(pbmc_small)
-#' pbmc <- pbmc_small
-#' treeviz <- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
-#' treeviz <- find_top_variable_genes(treeviz)
-#' metadata(treeviz)
-#' }
-find_top_variable_genes <- function(treeviz, top = 100) {
+.find_top_variable_genes <- function(treeviz, top = 100) {
   dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
   top_n <- getTopHVGs(dec.treeviz, n = top)
   metadata(treeviz)$top_variable <- top_n
@@ -551,24 +473,8 @@ set_gene_list <- function(treeviz, genes) {
   treeviz
 }
 
-#' Calculates `tsne` Dimensionality Reduction on `TreeViz` object. 
-#' 
-#' The result is added to reduced_dim slot in metadata
-#' @param treeviz TreeViz object
-#' @return `TreeViz` Object with added `TSNE` iinformation in reduced_dim slot of metadata
 #' @importFrom scater calculateTSNE
-#' @export
-#' 
-#' @examples
-#' \donttest{
-#' library(Seurat)
-#' data(pbmc_small)
-#' pbmc <- pbmc_small
-#' treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
-#' treeviz<- calculate_tsne(treeviz)
-#' metadata(treeviz)$reduced_dim$TSNE
-#' }
-calculate_tsne <- function(treeviz) {
+.calculate_tsne <- function(treeviz) {
   message("No defaults dimensionality reductions provided")
   message("Calculating TSNE")
   tsne <- calculateTSNE(assays(treeviz)$counts)

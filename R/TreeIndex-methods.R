@@ -5,6 +5,8 @@
 #' @param drop drop the dimensions of the object. defaults to FALSE
 #' @importFrom methods callNextMethod
 #' @return a `TreeIndex` subset object
+#' 
+#' @rdname TreeIndex-methods
 setMethod("[", "TreeIndex",
           function(x, i, j, ..., drop = FALSE) {
             # obj <- callNextMethod()
@@ -27,6 +29,8 @@ setMethod("[", "TreeIndex",
 #' tree <- TreeIndex(hierarchy)
 #' getNodes(tree)
 #' @return a generic
+#' 
+#' @rdname TreeIndex-methods
 setGeneric("getNodes", signature = "x",
            function(x, ...)
              standardGeneric("getNodes"))
@@ -43,6 +47,8 @@ setGeneric("getNodes", signature = "x",
 #' getNodes(tree)
 #' @export
 #' @return levels at node cut
+#' 
+#' @rdname TreeIndex-methods
 setMethod("getNodes", "TreeIndex",
           function(x,
                    selectedLevel = NULL) {
@@ -59,6 +65,7 @@ setMethod("getNodes", "TreeIndex",
 #' Generic method for possible node states
 #' @param x object
 #' @return node state
+#' @rdname TreeIndex-methods
 setGeneric("getNodeStates", signature = "x",
            function(x)
              standardGeneric("getNodeStates"))
@@ -68,6 +75,7 @@ setGeneric("getNodeStates", signature = "x",
 #' 2 if counts are aggregated to the node
 #' @param x object
 #' @return node states
+#' @rdname TreeIndex-methods
 setMethod("getNodeStates", "TreeIndex",
           function(x) {
             return(list(
@@ -91,6 +99,7 @@ setMethod("getNodeStates", "TreeIndex",
 #' splitAt(tree)
 #' }
 #' @return a generic
+#' @rdname TreeIndex-methods
 setGeneric("splitAt", signature = "x",
            function(x, ...)
              standardGeneric("splitAt"))
@@ -115,6 +124,7 @@ setGeneric("splitAt", signature = "x",
 #' }
 #' @export
 #' @return a `TreeIndex` object or type set in format
+#' @rdname TreeIndex-methods
 setMethod("splitAt", "TreeIndex",
           function(x,
                    selectedLevel = 3,
@@ -250,6 +260,7 @@ setMethod("splitAt", "TreeIndex",
 #' @importFrom methods show
 #' @param object TreeIndex object
 #' @return object description of the `TreeIndex` object
+#' @rdname TreeIndex-methods
 setMethod("show", "TreeIndex", function(object) {
   cat(
     "Tree Index",

@@ -57,9 +57,9 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   hierarchy <- hierarchy_df[,cols]
   
   # hierarchy<- as.data.frame(hierarchy)
-  hierarchy <- rename_clusters(hierarchy)
+  hierarchy <- .rename_clusters(hierarchy)
   
-  uniqeness <- check_unique_parent(hierarchy)
+  uniqeness <- .check_unique_parent(hierarchy)
   
   #print(str(hierarchy))
   # Create clustree object
@@ -74,13 +74,13 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   if(uniqeness==FALSE){
     # prune the graph with only core edges (this makes it a ~tree)
     graph_df <- as_long_data_frame(hierarchy_graph)
-    hierarchy <- prune_tree(graph_df, hierarchy)
+    hierarchy <- .prune_tree(graph_df, hierarchy)
     hierarchy_graph = hierarchy$Clustree_obj
     hierarchy <- DataFrame(hierarchy$Cluster_obj)
   }
   
   # collapses tree if the levels are the same at different resolutions
-  collapsed_graph <- collapse_tree(hierarchy_graph)
+  collapsed_graph <- .collapse_tree(hierarchy_graph)
   
   cluster_names <-
     unique(vapply(strsplit(collapsed_graph$node, "C"), '[', character(1), 1))
@@ -105,7 +105,7 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   }
   
   hierarchy <- cbind(hierarchy, samples)
-  hierarchy <- checkRoot(hierarchy)
+  hierarchy <- .checkRoot(hierarchy)
   
   new(
     "ClusterHierarchy",

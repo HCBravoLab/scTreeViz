@@ -3,6 +3,9 @@
 #' @importFrom methods show
 #' @importFrom S4Vectors metadata
 #' @export
+#' 
+#' @describeIn TreeViz-methods
+#' 
 #' @return describe a TreeIndex object
 setMethod("show", signature("TreeViz"),
           function(object) {
@@ -19,6 +22,9 @@ setMethod("show", signature("TreeViz"),
 #' Method to aggregate a TreeViz object
 #' @param x object
 #' @param ... other params to the function
+#' 
+#' @describeIn TreeViz-methods
+#' 
 #' @examples
 #' \donttest{ 
 #' library(metagenomeSeq)
@@ -45,6 +51,9 @@ setGeneric("aggregateTree", signature = "x",
 #' @param format return format can be one of "counts" or "TreeViz"
 #' @importFrom Matrix rowSums colSums
 #' @return a Treeviz object or type specified by format
+#' 
+#' @describeIn TreeViz-methods
+#' 
 #' @examples
 #' \donttest{ 
 #' library(metagenomeSeq)
@@ -186,6 +195,9 @@ setMethod("aggregateTree", "TreeViz",
 #' @param columns Name of columns containing data to register
 #' @param ... Additional arguments passed to object constructors
 #' @return An \code{\link{EpivizTreeData-class}} object
+#' 
+#' @describeIn TreeViz-methods
+#' 
 #' @importMethodsFrom epivizrData register
 #'
 setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...) {
@@ -201,6 +213,9 @@ setMethod("register", "TreeViz", function(object, tree="row", columns=NULL, ...)
 #' @import ggraph
 #' @importFrom igraph graph_from_data_frame
 #' @importFrom ggplot2 aes
+#' 
+#' @describeIn TreeViz-methods
+#' 
 #' @examples
 #' \donttest{
 #' library(metagenomeSeq)
