@@ -133,7 +133,7 @@ treeViz <- createTreeViz(df, counts)
 plot(treeViz)
 ```
 
-## Visualize gene expression across clusters
+
 
 ## Start the TreeViz App (using hosted app)
 
@@ -148,11 +148,24 @@ app <- startTreeviz(treeViz, top_genes = 500)
 
 Users can also use the interface to explore the same dataset using different visualizations available through Epiviz.
 
-## Adding Gene Box Plots
+## Visualize gene expression across clusters
 
-The users can also add Gene Box plots via the `Add Visualization` option in frontend, or from R session. In the following example, we visualize the 5th, 50th and 500th most variable gene as Box plot 
-![BoxPlot](images/Boxplot.png)
+The users can also add Gene Box plots in frontend, or from R session. In the following example, we visualize the 5th, 50th and 500th most variable gene as Box plot 
+s
+![visualizing expression of a gene across clusters](images/Boxplot.png)
 
+### Adding Gene Box Plots via UI
+
+Users need to select  `Add Visualization -> Gene Box PLot` option from menu and then select the desired gene using the search pane in the appeared dialogue box
+
+![Selecting a gene to visualize](images/dest_boxplot_dialogue.png)
+
+### Adding Gene Box Plots via R Session
+
+Users can also select the gene from R session by using the `plotGene` command followed by Gene name.
+```{r, eval=FALSE}
+app$plotGene(gene="AIF1")
+```
 ## Stop App
 
 After exploring the dataset, this command the websocket connection. 
