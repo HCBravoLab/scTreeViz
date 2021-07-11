@@ -113,7 +113,7 @@ these will be labeled as `removed`.
 
 We can also quickly look at the the total number of cells in each of the clusters.
 
-```{}
+```
 > table(sce$treeviz_clusters)
 
 cluster2C1 cluster4C0 cluster4C3 cluster4C5    removed 
@@ -143,7 +143,7 @@ markers_pr <- lapply(markers, function(x) {
 markers_pr
 ```
 
-```{}
+```
 $cluster2C1
 [1] "AIF1"   "CST3"   "CFD"    "S100A8" "TYROBP" "LGALS2"
 

@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 ## Loading required packages
 
-```{r load-packages, message=FALSE, warning=FALSE}
+```{r load-packages, eval=FALSE, message=FALSE, warning=FALSE}
 library(palmtree)
 library(dplyr)
 library(Seurat)

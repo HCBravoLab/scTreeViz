@@ -74,7 +74,7 @@ test_that("check aggregate_tree", {
 })
 
 test_that("Testing CreatefromSeurat class", {
-  #skip("need data here")
+  skip("conflict between new Seurat and Summarized Experiment")
   pbmc_small
   treeviz<-createFromSeurat(pbmc_small)
   expect_is(treeviz, "TreeViz")
