@@ -25,10 +25,14 @@ col_regex or  columns option to filter the columns or specify
 the column order
 }
 \examples{
+\donttest{
 n=64
-df <- data.frame(cluster0=rep(1,n))
+# create a hierarchy
+df<- data.frame(cluster0=rep(1,n))
 for(i in seq(1,5)){
-  df[[paste0("cluster",i)]] <- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+  df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
 }
-clus <- ClusterHierarchy(df, col_regex = "clus")
+clus_hier<-ClusterHierarchy(df, col_regex = "clus")
+} 
+
 }
