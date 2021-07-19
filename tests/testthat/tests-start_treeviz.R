@@ -1,6 +1,8 @@
 context("create TreeVizApp class")
+library(Seurat)
+library(scater)
 
-test_that("startTreeViz creates a TreeVizApp Object", {
+test_that("startTreeViz creates a TreeVizApp Object from Seurat", {
   skip("need data here")
   app <- startTreeviz(non_interactive=TRUE)
   expect_is(app, "TreeVizApp")

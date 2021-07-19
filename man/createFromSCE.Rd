@@ -44,5 +44,4 @@ clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
 sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
 }
 treeviz <-createFromSCE(sce, check_coldata = TRUE, col_regex = "clust", reduced_dim = c("TSNE", "UMAP"))
-
 }

@@ -68,7 +68,7 @@
       adj_ver <-
         adjacent_vertices(pruned_graph, nodes, mode = "in")
       adj_ver <- as_ids(adj_ver[[1]])
-      str(adj_ver)
+      
       remove_node <- sample(adj_ver, 1)
       
       remove_edge <-
@@ -273,7 +273,23 @@
   treeviz
 }
 
-.generate_walktrap_hierarchy <- function(object, nsteps = 7) {
+#' Creates hierarchical clustering on `Single Cell Experiment` object via the walktrap algorithm
+#' 
+#' walktrap returns clustering at highest modularity. The modularity value indicates quality of cluster division.
+#' Intermediate cluster assignments are created based on monotonically increasing level of modularity
+#' @param object `Single Cell Experiment` on which `WalkTrap` clustering will be computed
+#' @param nsteps number of steps to use in `cluster_walktrap`
+#' @return dataframe with hierarchy information
+#' @examples
+#' \dontrun{
+#' library(SingleCellExperiment)
+#' library(scuttle)
+#' sce <- mockSCE()
+#' sce <- logNormCounts(sce)
+#' df <- generate_walktrap_hierarchy(sce)
+#' } 
+#'
+generate_walktrap_hierarchy <- function(object, nsteps = 7) {
   
   message("calculating walktrap clusters")
   SNN_Graph <- scran::buildSNNGraph(object)
@@ -314,6 +330,16 @@
 #' @importFrom Seurat GetAssayData
 #' @importFrom Seurat Reductions
 #' @export
+#' 
+#' @examples
+#' \dontrun{
+#' library(Seurat)
+#' data(pbmc_small)
+#' pbmc <- pbmc_small
+#' treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+#' }
+#' @import Seurat
+
 createFromSeurat <- function(object,
    check_metadata = FALSE,
    col_regex = "*snn*",
@@ -355,8 +381,11 @@ createFromSeurat <- function(object,
 #' @param columns vector containing columns with cluster information
 #' @param reduced_dim Vector of Dimensionality reduction information provided in `SingeCellExperiment` object to be added in `TreeViz` (if exists)
 #' @return `TreeViz` Object
+#' @export
 #' @examples
+#' \dontrun{
 #' library(SingleCellExperiment)
+#' library(scuttle)
 #' library(scater)
 #' sce <- mockSCE()
 #' sce <- logNormCounts(sce)
@@ -368,7 +397,7 @@ createFromSeurat <- function(object,
 #' sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
 #' }
 #' treeviz <-createFromSCE(sce, check_coldata = TRUE, col_regex = "clust", reduced_dim = c("TSNE", "UMAP"))
-#' 
+#' } 
 #' @import SingleCellExperiment
 #' @export
 createFromSCE <-
@@ -428,6 +457,20 @@ createFromSCE <-
 #' treeViz <- createTreeViz(df, counts)
 #' 
 #' @export
+#' @examples
+#' \dontrun{
+#' n=64
+#' # create a hierarchy
+#' df<- data.frame(cluster0=rep(1,n))
+#' for(i in seq(1,5)){
+#'   df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+#' }
+#' # generate a count matrix
+#' counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
+#' colnames(counts)<- seq(1:64)
+#' # create a `TreeViz` object
+#' treeViz <- createTreeViz(df, counts)
+#' } 
 createTreeViz <- function(clusters, counts) {
   
   if (is(clusters,"data.frame") ){
@@ -452,9 +495,26 @@ createTreeViz <- function(clusters, counts) {
 }
 
 
+#' Finds top variable genes `TreeViz`
+#' 
+#' Finds the n top variable genes within the genes present in `TreeViz` object
+#' @param treeviz TreeViz object
+#' @param top number of top genes to be calculated
+#' @return `TreeViz` Object with added top_variable_gene information in metadata slot
 #' @importFrom scran getTopHVGs
 #' @importFrom scran modelGeneVar
-.find_top_variable_genes <- function(treeviz, top = 100) {
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(Seurat)
+#' data(pbmc_small)
+#' pbmc <- pbmc_small
+#' treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+#' treeviz<-find_top_variable_genes(treeviz)
+#' metadata(treeviz)
+#' }
+find_top_variable_genes <- function(treeviz, top = 100) {
   dec.treeviz <- modelGeneVar(assays(treeviz)$counts)
   top_n <- getTopHVGs(dec.treeviz, n = top)
   metadata(treeviz)$top_variable <- top_n
@@ -473,8 +533,22 @@ set_gene_list <- function(treeviz, genes) {
   treeviz
 }
 
+#' Calculates `tsne` Dimensionality Reduction on `TreeViz` object. 
+#' 
+#' The result is added to reduced_dim slot in metadata
+#' @param treeviz TreeViz object
+#' @return `TreeViz` Object with added `TSNE` iinformation in reduced_dim slot of metadata
 #' @importFrom scater calculateTSNE
-.calculate_tsne <- function(treeviz) {
+#' @examples
+#' \dontrun{
+#' library(Seurat)
+#' data(pbmc_small)
+#' pbmc <- pbmc_small
+#' treeviz<- createFromSeurat(pbmc, check_metadata = TRUE, reduced_dim = c("pca","tsne"))
+#' treeviz<- calculate_tsne(treeviz)
+#' metadata(treeviz)$reduced_dim$TSNE
+#' }
+calculate_tsne <- function(treeviz) {
   message("No defaults dimensionality reductions provided")
   message("Calculating TSNE")
   tsne <- calculateTSNE(assays(treeviz)$counts)

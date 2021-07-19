@@ -31,5 +31,4 @@ counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
 colnames(counts)<- seq(1:64)
 # create a `TreeViz` object
 treeViz <- createTreeViz(df, counts)
-
 }
