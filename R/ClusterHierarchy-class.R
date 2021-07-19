@@ -21,7 +21,7 @@ setClass(
 #' @importFrom S4Vectors DataFrame
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' n=64
 #' # create a hierarchy
 #' df<- data.frame(cluster0=rep(1,n))
