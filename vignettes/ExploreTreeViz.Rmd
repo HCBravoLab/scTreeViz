@@ -149,8 +149,7 @@ Users can also use the interface to explore the same dataset using different vis
 
 ## Visualize gene expression across clusters
 
-The users can also add Gene Box plots in frontend, or from R session. In the following example, we visualize the 5th, 50th and 500th most variable gene as Box plot 
-s
+Users can also add Gene Box plots using either the frontend application, or from R session. In the following example, we visualize the 5th, 50th and 500th most variable gene as Box plots
 ![visualizing expression of a gene across clusters](images/Boxplot.png)
 
 ### Adding Gene Box Plots via UI
@@ -165,20 +164,10 @@ Users can also select the gene from R session by using the `plotGene` command fo
 ```{r, eval=FALSE}
 app$plotGene(gene="AIF1")
 ```
+
 ## Stop App
 
 After exploring the dataset, this command the websocket connection. 
-
-```{r, eval=FALSE, echo=TRUE}
-app$stop_app()
-```
-## Start TreeViz with app running locally
-
-```{r, eval=FALSE, echo=TRUE}
-setTreevizStandalone()
-app <- startTreevizStandalone(treeViz)
-```
-## Stop App
 
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()

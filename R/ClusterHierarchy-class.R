@@ -21,7 +21,6 @@ setClass(
 #' @importFrom S4Vectors DataFrame
 #' @export
 #' @examples
-#' \donttest{
 #' n=64
 #' # create a hierarchy
 #' df<- data.frame(cluster0=rep(1,n))
@@ -29,7 +28,6 @@ setClass(
 #'   df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
 #' }
 #' clus_hier<-ClusterHierarchy(df, col_regex = "clus")
-#' } 
 #' 
 ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
 
