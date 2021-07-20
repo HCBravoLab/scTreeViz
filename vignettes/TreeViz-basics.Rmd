@@ -56,8 +56,8 @@ aggr
 ### Defining a cut in the tree
 
 In the previous example, we use the `selectedLevel` parameter to aggregate counts at level 3. 
-We also provide another parameter `selectedNodes` to allow users specify nodes for aggregating the tree. 
-using this parameter, we can perform aggregations at different levels of the tree.
+We also provide another parameter `selectedNodes` to allow users specify nodes to 
+perform aggregations at different levels of the tree.
 
 Note: A `facetZoom` visualization from `metavizr` will help make node selections easier.
 
