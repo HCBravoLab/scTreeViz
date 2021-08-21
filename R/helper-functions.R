@@ -9,8 +9,8 @@
     "Assign_to_clust" = character(),
     stringsAsFactors = FALSE
   )
-  for (i in seq(1, nrow(sub_df))) {
-    for (j in seq(1, nrow(all_df))) {
+  for (i in seq_len(nrow(sub_df))) {
+    for (j in seq_len(nrow(all_df))) {
       if (sub_df$to_node[i] == all_df$to_node[j]) {
         assign_df[nrow(assign_df) + 1, ] <-
           c(
@@ -207,7 +207,6 @@
         )
         return (FALSE)
       }
-      #cat(nrow(subsetted_list)," ",parent, "\n")
     }
   }
   return(TRUE)
@@ -218,7 +217,7 @@
   message("Renaming cluster Levels...")
   message("Previous Level names ", paste(colnames(clusterdata), collapse = "\t"))
   
-  clusnames <- seq(length(colnames(clusterdata)))
+  clusnames <- seq_len(length(colnames(clusterdata)))
   clusnames <- paste0("cluster", clusnames)
   colnames(clusterdata) <- clusnames
   message("New Level names ", paste(colnames(clusterdata), collapse = "\t"))
@@ -363,7 +362,7 @@ createFromSeurat <- function(object,
 #' sce <- runTSNE(sce)
 #' sce <- runUMAP(sce)
 #' set.seed(1000)
-#' for (i in  seq(5)) {
+#' for (i in  seq_len(5)) {
 #' clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
 #' sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
 #' }
@@ -418,12 +417,12 @@ createFromSCE <-
 #' n=64
 #' # create a hierarchy
 #' df<- data.frame(cluster0=rep(1,n))
-#' for(i in seq(1,5)){
+#' for(i in seq_len(5)){
 #'   df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
 #' }
 #' # generate a count matrix
 #' counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
-#' colnames(counts)<- seq(1:64)
+#' colnames(counts)<- seq_len(64)
 #' # create a `TreeViz` object
 #' treeViz <- createTreeViz(df, counts)
 #' 

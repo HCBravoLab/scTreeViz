@@ -154,11 +154,6 @@ EpivizTreeData$methods(
     toRet['parentId'] = row['parentId']
     toRet['order'] = row['order']
     toRet['id'] = row['id']
-    # if(toRet['id'] %in% names(.self$.nodeSelections)){
-    #   toRet['selectionType'] = .self$.nodeSelections[[as.character(toRet['id'])]]
-    # } else{
-    #   toRet['selectionType'] = 1
-    # }
     toRet['selectionType'] = 1
     toRet['taxonomy'] = row['taxonomy']
     toRet['size'] = 1
@@ -238,7 +233,7 @@ EpivizTreeData$methods(
     
     hierarchy_slice <- unique(.self$.graph@node_ids_table[get(taxonomy)==nodeId, (level+1):last_level_of_subtree])
     
-    nodes_of_subtree <- lapply(seq(1,length((level+1):last_level_of_subtree)), function(i) {
+    nodes_of_subtree <- lapply(seq_len(length((level+1):last_level_of_subtree)), function(i) {
       unname(unlist(unique(hierarchy_slice[,i, with=FALSE])))
     })
     
@@ -346,7 +341,6 @@ EpivizTreeData$methods(
           parents_match <- ids_match[parent == parentIds[i]]
           leaf_indexes_temp <- temp_nodes_table[lineage == parents_match[,lineage,], otu_index,]
         }
-        #leaf_indexes_temp <- temp_nodes_table[lineage == .self$.graph@nodes_table[id == nodesToRet[i],lineage,], otu_index,]
         if(length(leaf_indexes_temp) > 0){
           start <- min(leaf_indexes_temp)
         }    else{
@@ -629,8 +623,7 @@ EpivizTreeData$methods(
                               selections = .self$.nodeSelections)
     
     max_length <- ncol(.self$.object)
-    # max(data_rows$end)
-    
+
     cluster_names <- rep("removed", max_length)
     for (i in seq_along(data_rows$metadata$label)) {
       start <- data_rows$start[i]
@@ -678,8 +671,7 @@ EpivizTreeData$methods(
                               selections = .self$.nodeSelections)
     
     max_length <- ncol(.self$.object)
-    # max(data_rows$end)
-    
+
     cluster_names <- rep("removed", max_length)
     for (i in seq_along(data_rows$metadata$label)) {
       start <- data_rows$start[i]
@@ -708,8 +700,7 @@ EpivizTreeData$methods(
                               selections = .self$.nodeSelections)
     
     max_length <- ncol(.self$.object)
-    # max(data_rows$end)
-    
+
     cluster_names <- rep("removed", max_length)
     for (i in seq_along(data_rows$metadata$label)) {
       start <- data_rows$start[i]

@@ -94,7 +94,7 @@ TreeIndex <- function(hierarchy = NULL,
 #' @return a data frame object
 .generate_hierarchy_tree <- function(hierarchy, feature_order) {
   fd <- hierarchy
-  for (i in seq(ncol(fd))) {
+  for (i in seq_len(ncol(fd))) {
     fd[, i] = as.character(fd[, i])
   }
   hierarchy <- fd
@@ -152,7 +152,7 @@ TreeIndex <- function(hierarchy = NULL,
     }
     level_features
   })
-
+  
   node_ids_dt <- as.data.table(id_list)
   node_ids_dt$otu_index <- as.character(table_node_ids$otu_index)
 
@@ -168,6 +168,7 @@ TreeIndex <- function(hierarchy = NULL,
   function(hierarchy_tree,
            node_ids_table,
            feature_order) {
+    print(feature_order)
     lineage_DF <- as.data.frame(node_ids_table)
     lineage_table <- node_ids_table
     lineage_DF[, feature_order[1]] <-
@@ -300,10 +301,10 @@ TreeIndex <- function(hierarchy = NULL,
 #' @param feature_order order of the tree if different from colnames
 #' @return a data frame object
 .replaceNAFeatures = function(replacing_na_obj_fData, feature_order) {
-  for (i in seq(1, length(feature_order))) {
+  for (i in seq_len(length(feature_order))) {
     na_indices <-
       which(is.na(replacing_na_obj_fData[, feature_order[i]]))
-    for (j in seq(1, length(na_indices))) {
+    for (j in seq_len(length(na_indices))) {
       if (i > 1) {
         replacing_na_obj_fData[, feature_order[i]][na_indices[j]] <-
           paste("Not_Annotated",
@@ -317,7 +318,7 @@ TreeIndex <- function(hierarchy = NULL,
     }
     na_indices <-
       which(replacing_na_obj_fData[, feature_order[i]] == "NA")
-    for (j in seq(1, length(na_indices))) {
+    for (j in seq_len(length(na_indices))) {
       if (i > 1) {
         replacing_na_obj_fData[, feature_order[i]][na_indices[j]] <-
           paste("Not_Annotated",
@@ -332,7 +333,7 @@ TreeIndex <- function(hierarchy = NULL,
     
     null_indices <-
       which(replacing_na_obj_fData[, feature_order[i]] == "NULL")
-    for (j in seq(1, length(null_indices))) {
+    for (j in seq_len(length(null_indices))) {
       if (i > 1) {
         replacing_na_obj_fData[, feature_order[i]][null_indices[j]] <-
           paste("Not_Annotated",

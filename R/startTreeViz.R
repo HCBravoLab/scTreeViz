@@ -231,14 +231,6 @@ startTreeviz <- function(data = NULL, genes=NULL, top_genes=100, host="http://ep
   mApp <- TreeVizApp$new(.url_parms=app$.url_parms, .browser_fun=app$.browser_fun,
                          server=app$server, data_mgr=app$data_mgr, chart_mgr=app$chart_mgr)
   
-  
-  # if (is(data, "Seurat")) {
-  #   treeViz <- createFromSeurat(data)
-  # }
-  # else if (is(data, "SingleCellExperiment")) {
-  #   treeViz <- createFromSCE(data)
-  # }
-  
   tryCatch({
     
     send_request <- mApp$server$is_interactive()

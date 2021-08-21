@@ -58,12 +58,10 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   rownames(hierarchy_df) <- hierarchy_df$samples
   hierarchy <- hierarchy_df[,cols]
   
-  # hierarchy<- as.data.frame(hierarchy)
   hierarchy <- .rename_clusters(hierarchy)
   
   uniqeness <- .check_unique_parent(hierarchy)
   
-  #print(str(hierarchy))
   # Create clustree object
   hierarchy_graph <-
     clustree(

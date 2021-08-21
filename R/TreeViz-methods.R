@@ -243,7 +243,7 @@ setMethod("plot", "TreeViz", function(x, y) {
   
   df <- data.frame(from = numeric(), to = numeric())
   
-  for (i in seq(ncol(hierarchydf) - 1)) {
+  for (i in seq_len(ncol(hierarchydf) - 1)) {
     edges<- hierarchydf[,c(i,i+1)]
     edges<-unique(edges)
     colnames(edges)<- c("from","to")
@@ -260,7 +260,6 @@ setMethod("plot", "TreeViz", function(x, y) {
   fig <- ggraph(mygraph, layout = 'dendrogram', circular = FALSE) +
     ggraph::geom_edge_diagonal() +
     ggraph::geom_node_point(show.legend = TRUE) +
-   # ggraph::geom_node_label(ggplot2::aes(label = plot_label)) +
     ggplot2::theme_void()
   show(fig)
   
