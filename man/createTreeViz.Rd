@@ -23,12 +23,12 @@ Returns the `TreeViz` object if a tree is successfully generated from dataframe,
 n=64
 # create a hierarchy
 df<- data.frame(cluster0=rep(1,n))
-for(i in seq(1,5)){
+for(i in seq_len(5)){
   df[[paste0("cluster",i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
 }
 # generate a count matrix
 counts <- matrix(rpois(6400, lambda = 10), ncol=n, nrow=100)
-colnames(counts)<- seq(1:64)
+colnames(counts)<- seq_len(64)
 # create a `TreeViz` object
 treeViz <- createTreeViz(df, counts)
 

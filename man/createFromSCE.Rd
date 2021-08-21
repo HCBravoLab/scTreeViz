@@ -39,7 +39,7 @@ sce <- logNormCounts(sce)
 sce <- runTSNE(sce)
 sce <- runUMAP(sce)
 set.seed(1000)
-for (i in  seq(5)) {
+for (i in  seq_len(5)) {
 clust.kmeans <- kmeans(reducedDim(sce, "TSNE"), centers = i)
 sce[[paste0("clust", i)]] <- factor(clust.kmeans$cluster)
 }

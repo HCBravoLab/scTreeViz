@@ -3,14 +3,14 @@ library(Seurat)
 library(scater)
 
 n=32
-df <- data.frame(cluster0=rep(seq(1:2),each=ceiling(n/(2)),len=n))
+df <- data.frame(cluster0=rep(seq_len(2),each=ceiling(n/(2)),len=n))
 
-for(i in seq(1,2)){
-  df[[paste0("cluster",2*i-1)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
-  df[[paste0("cluster",2*i)]]<- rep(seq(1:(2**i)),each=ceiling(n/(2**i)),len=n)
+for(i in seq_len(2)){
+  df[[paste0("cluster",2*i-1)]]<- rep(seq_len((2**i)),each=ceiling(n/(2**i)),len=n)
+  df[[paste0("cluster",2*i)]]<- rep(seq_len((2**i)),each=ceiling(n/(2**i)),len=n)
 }
 
-df[[paste0("cluster",2*i+1)]]<- rep(seq(1:7),each=ceiling(n/7),len=n)
+df[[paste0("cluster",2*i+1)]]<- rep(seq_len(7),each=ceiling(n/7),len=n)
 counts <- matrix(rpois(3200, lambda = 10), ncol=n, nrow=100)
 
 for(cols in colnames(df)){

@@ -170,3 +170,8 @@ After exploring the dataset, this command the websocket connection.
 ```{r, eval=FALSE, echo=TRUE}
 app$stop_app()
 ```
+
+## Session
+
+```{r}
+sessionInfo()
