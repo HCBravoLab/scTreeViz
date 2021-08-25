@@ -129,7 +129,7 @@ TreeIndex <- function(hierarchy = NULL,
 #' @return a data frame object
 .generate_node_ids <- function(hierarchy_tree, feature_order) {
   table_node_ids <- hierarchy_tree
-  id_list <- sapply(feature_order, function(level) {
+  id_list <- vapply(feature_order, function(level) {
     depth <- which(feature_order == level)
     temp_level <-
       data.table(table_node_ids[, c(level, "otu_index")])
@@ -151,7 +151,7 @@ TreeIndex <- function(hierarchy = NULL,
         replace(level_features, which(level_features == row[[level]]), tid)
     }
     level_features
-  })
+  }, character(nrow(table_node_ids)))
   
   node_ids_dt <- as.data.table(id_list)
   node_ids_dt$otu_index <- as.character(table_node_ids$otu_index)
