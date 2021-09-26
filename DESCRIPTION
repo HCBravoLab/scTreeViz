@@ -1,7 +1,7 @@
 Package: scTreeViz
 Type: Package
 Title: R/Bioconductor package to interactively explore and visualize single cell RNA-seq datasets with hierarhical annotations
-Version: 0.99.10
+Version: 0.99.11
 Authors@R: c( 
           person("Jayaram", "Kancherla", email="jayaram.kancherla@gmail.com", role=c("aut", "cre")),
           person("Hector", "Corrada Bravo", email="hcorrada@gmail.com", role=c("aut")),
@@ -15,7 +15,7 @@ Description: scTreeViz provides classes to support interactive data
           across resolutions. The `TreeViz` class extends `SummarizedExperiment` 
           and can performs quick aggregations on the count matrix defined by clusters.
 License: Artistic-2.0
-Depends: R (>= 4.1), methods, epivizr, SummarizedExperiment
+Depends: R (>= 4.0), methods, epivizr, SummarizedExperiment
 Imports: data.table, S4Vectors, digest, Matrix, Rtsne,
         httr, igraph, clustree, scran, sys, epivizrData, epivizrServer,
         ggraph, scater, Seurat, SingleCellExperiment, ggplot2, stats, utils

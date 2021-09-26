@@ -109,6 +109,6 @@ ClusterHierarchy <- function(hierarchy, col_regex=NULL, columns =NULL) {
   
   new(
     "ClusterHierarchy",
-    hierarchy
+    as(hierarchy, "DataFrame")
   )
 }
